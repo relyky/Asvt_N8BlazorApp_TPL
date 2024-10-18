@@ -1,0 +1,69 @@
+﻿@using Vista.Component.Models
+@implements IAsyncDisposable
+@inject IJSRuntime jsr
+
+<div class=@($"wrapper {Class}") style=@Style>
+  <div @ref=refRoot></div>
+  <InputFile style=@hiddenInput id=@uploadInputId OnChange=OnFileUpload />
+</div>
+
+@code {
+  [Parameter] public EventCallback OnImageCropBefore { get; set; }
+  [Parameter] public EventCallback<ImageCropInfo> OnImageCrop { get; set; }
+  [Parameter] public EventCallback<InputFileChangeEventArgs> OnFileUpload { get; set; }
+  [Parameter] public int MaxHeight { get; set; } = 1280;
+  [Parameter] public int MaxWidth { get; set; } = 1280;
+  [Parameter] public string? Class { get; set; }
+  [Parameter] public string? Style { get; set; }
+
+  //# Resource
+  Lazy<Task<IJSObjectReference>> moduleTask = default!;
+  IDisposable? dotNetObject = null;
+  ElementReference refRoot;
+
+  const string hiddenInput = @"visibility:hidden; position:fixed; top:-200vh";
+
+  //※ 將用於間接上傳已裁剪完成的圖片。
+  string uploadInputId = $"upload-input-{Guid.NewGuid():N}";
+
+  public async ValueTask DisposeAsync()
+  {
+    dotNetObject?.Dispose();
+    dotNetObject = null;
+
+    if (moduleTask.IsValueCreated)
+    {
+      var module = await moduleTask.Value;
+      await module.DisposeAsync();
+    }
+  }
+
+  protected override void OnInitialized()
+  {
+    moduleTask = new(() => jsr.InvokeAsync<IJSObjectReference>("import", "./_content/Vista.Component/rxphotocrop.bundle.js").AsTask());
+    dotNetObject = DotNetObjectReference.Create(this);
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      var module = await moduleTask.Value;
+      await jsr.InvokeVoidAsync("renderRxPhotoCrop", dotNetObject, refRoot, uploadInputId, MaxHeight, MaxWidth);
+    }
+  }
+
+  /// <summary>
+  /// 當 React 元件有訊息送上來時觸發。
+  /// 已取得照片並裁剪。
+  /// </summary>
+  [JSInvokable]
+  public Task JsInvokeImageCrop(ImageCropInfo info) => OnImageCrop.InvokeAsync(info);
+
+  /// <summary>
+  /// 當 React 元件有訊息送上來時觸發。
+  /// 已取得照片在裁剪之前。
+  /// </summary>
+  [JSInvokable]
+  public Task JsInvokeImageCropBefore() => OnImageCropBefore.InvokeAsync();
+}

@@ -1,0 +1,54 @@
+﻿@implements IAsyncDisposable
+@inject IJSRuntime jsr
+
+<div @ref=refRoot></div>
+
+@code {
+  /// <summary>
+  /// screenshotFormat := [image/webp | image/jpeg]
+  /// </summary>
+  [Parameter] public string Format { get; set; } = "image/webp";
+
+  [Parameter] public EventCallback<string> OnCapture { get; set; }
+
+  //# Resource
+  Lazy<Task<IJSObjectReference>> moduleTask = default!;
+  IDisposable? dotNetObject = null;
+  ElementReference refRoot;
+
+  public async ValueTask DisposeAsync()
+  {
+    dotNetObject?.Dispose();
+    dotNetObject = null;
+
+    if (moduleTask.IsValueCreated)
+    {
+      var module = await moduleTask.Value;
+      await module.DisposeAsync();
+    }
+  }
+
+  protected override void OnInitialized()
+  {
+    moduleTask = new(() => jsr.InvokeAsync<IJSObjectReference>("import", "./_content/Vista.Component/rxwebcamera.bundle.js").AsTask());
+    dotNetObject = DotNetObjectReference.Create(this);
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      var module = await moduleTask.Value;
+      await jsr.InvokeVoidAsync("renderRxWebCamera", dotNetObject, refRoot, Format);
+    }
+  }
+
+  /// <summary>
+  /// 當 React 元件有訊息送上來時觸發。
+  /// </summary>
+  [JSInvokable]
+  public async Task JsInvokeCapture(string photo)
+  {
+    await OnCapture.InvokeAsync(photo);
+  }
+}

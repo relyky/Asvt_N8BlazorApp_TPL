@@ -1,0 +1,135 @@
+﻿@page "/auth"
+@attribute [Page("auth", "環境參數與授權狀態")]
+@* @attribute [Authorize] *@
+@attribute [AllowAnonymous]
+@inject IConfiguration config
+@inject IWebHostEnvironment env
+@inject NavigationManager navSvc
+@inject IAuthUser authSvc
+@inject JSInterOpService jsTool
+
+@* <PageTitle>授權狀態</PageTitle> *@
+
+<MudContainer>
+  <MudText Typo=Typo.h3>環境參數與授權狀態</MudText>
+  <AuthorizeView Roles="Admin">
+    @* 發現環境參數有隱密性資料，改成不公開。 *@
+    <MudText Typo=Typo.h4>環境參數</MudText>
+    <MudSimpleTable Dense Hover Striped FixedHeader Class="mb-4" Style="height:35vh;">
+      <thead>
+        <tr>
+          <th class="mud-theme-dark">名稱</th>
+          <th class="mud-theme-dark">數值</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>ApplicationName</th>
+          <td>@env.ApplicationName</td>
+        </tr>
+        <tr>
+          <th>EnvironmentName</th>
+          <td>@env.EnvironmentName</td>
+        </tr>
+        <tr>
+          <th>MachineName</th>
+          <td>@Environment.MachineName</td>
+        </tr>
+        <tr>
+          <th>DomainUserName</th>
+          <td>@($"{Environment.UserDomainName}\\{Environment.UserName}")</td>
+        </tr>
+        <tr>
+          <th>WebRootPath</th>
+          <td>@env.WebRootPath</td>
+        </tr>
+        <tr>
+          <th>ContentRootPath</th>
+          <td>@env.ContentRootPath</td>
+        </tr>
+        <tr>
+          <th>Base Uri</th>
+          <td>@navSvc.BaseUri</td>
+        </tr>
+        <tr>
+          <th>Outbound Base Url</th>
+          <td>@outboundBaseUrl</td>
+        </tr>
+        <tr>
+          <th>語系(Current Culture)</th>
+          <td>@System.Globalization.CultureInfo.CurrentCulture</td>
+        </tr>
+        <tr>
+          <th>UI語系(Current UI-Culture)</th>
+          <td>@System.Globalization.CultureInfo.CurrentUICulture</td>
+        </tr>
+        @foreach (var c in config.AsEnumerable().Where(c => !String.IsNullOrEmpty(c.Key)).OrderBy(c => c.Key))
+        {
+          <tr>
+            <th>@c.Key</th>
+            <td>@c.Value</td>
+          </tr>
+        }
+      </tbody>
+    </MudSimpleTable>
+  </AuthorizeView>
+
+  @* 登入狀態 - AuthorizeView *@
+  <AuthorizeView Context="auth">
+    <Authorized>
+      <MudText Typo=Typo.h4>AuthorizeView</MudText>
+      <MudSimpleTable Dense Hover Striped FixedHeader Elevation=0 Class="mb-4">
+        <tbody>
+          <tr>
+            <th class="mud-theme-dark" style="width:200px;">Identity Name</th>
+            <td>@auth.User.Identity?.Name</td>
+          </tr>
+          <tr>
+            <th class="mud-theme-dark">Role</th>
+            <td>
+              <MudText Typo=Typo.caption>
+                @(String.Join(", ", auth.User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value)))
+              </MudText>
+            </td>
+          </tr>
+        </tbody>
+      </MudSimpleTable>
+    </Authorized>
+    <Authorizing>
+      <MudText Typo=Typo.h4>Authorizing</MudText>
+    </Authorizing>
+    <NotAuthorized>
+      <MudText Typo=Typo.h4>NotAuthorized</MudText>
+    </NotAuthorized>
+  </AuthorizeView>
+
+  @* 登入狀態 - AuthUser *@
+  <MudDivider Class="my-3" />
+  <MudText Typo=Typo.h4>AuthUser</MudText>
+  <MudPaper Class="pa-4">
+    <pre>
+      @Utils.JsonSerialize(loginUser)
+    </pre>
+  </MudPaper>
+</MudContainer>
+
+@code {
+  [CascadingParameter] Task<AuthenticationState> AuthStateTask { get; set; } = default!;
+
+  //## State
+  AuthenticationState? authState;
+  AuthUser? loginUser;
+  string outboundBaseUrl = string.Empty;
+
+  protected override async Task OnInitializedAsync()
+  {
+    authState = await AuthStateTask; // 現在登入狀態
+    loginUser = await authSvc.GetCurrentUserAsync(); // 取完整授權資料。
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    outboundBaseUrl = await jsTool.GetBaseUrlAsync();
+    await InvokeAsync(StateHasChanged);
+  }
+}

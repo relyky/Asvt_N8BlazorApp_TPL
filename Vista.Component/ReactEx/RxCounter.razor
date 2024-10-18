@@ -1,0 +1,58 @@
+﻿@implements IAsyncDisposable
+@inject IJSRuntime jsr
+
+@*
+ * //## 註冊雙向繫結 React 元件：RxCounter
+*@
+
+<div @ref=refRoot></div>
+
+@code {
+  [Parameter] public int InitCount { get; set; } = 0;
+  [Parameter] public EventCallback<int> OnChange { get; set; }
+
+  //# Resource
+  Lazy<Task<IJSObjectReference>> moduleTask = default!;
+  IDisposable? dotNetObject = null;
+  ElementReference refRoot;
+
+  public async ValueTask DisposeAsync()
+  {
+    dotNetObject?.Dispose();
+    dotNetObject = null;
+
+    if (moduleTask.IsValueCreated)
+    {
+      var module = await moduleTask.Value;
+      await module.DisposeAsync();
+    }
+  }
+
+  protected override void OnInitialized()
+  {
+    moduleTask = new(() => jsr.InvokeAsync<IJSObjectReference>("import", "./_content/Vista.Component/rxcounter.bundle.js").AsTask());
+    dotNetObject = DotNetObjectReference.Create(this);
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      var module = await moduleTask.Value;
+      await jsr.InvokeVoidAsync("renderRxCounter", dotNetObject, refRoot, InitCount);
+      await OnChange.InvokeAsync(InitCount);
+    }
+  }
+
+  public async Task ResetAsync()
+  {
+    await jsr.InvokeVoidAsync("renderRxCounter", dotNetObject, refRoot, InitCount);
+    await OnChange.InvokeAsync(InitCount);
+  }
+
+  /// <summary>
+  /// 當 React 元件有訊息送上來時觸發。
+  /// </summary>
+  [JSInvokable]
+  public Task JsInvokeChange(int newCount) => OnChange.InvokeAsync(newCount);
+}

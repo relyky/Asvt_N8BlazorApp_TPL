@@ -1,0 +1,304 @@
+﻿@using MudBlazor.Utilities
+@* Palette: 展示基本色調與文字 *@
+
+<MudText Typo=Typo.body1>說明：展示基本色調與文字</MudText>
+
+@*@if (CurrentTheme.Palette == null)
+{
+  <div class="d-flex">
+    <MudProgressCircular Class="mx-auto" Style="height:140px;width:140px;" Indeterminate />
+  </div>
+  return;
+}*@
+
+<MudText Typo=Typo.h4>顏色</MudText>
+<MudGrid>
+  <MudItem md="4">
+    <MudPaper>
+      <MudText Typo="Typo.body1" Class="mud-theme-primary pa-8">
+        mud-theme-primary<br />
+        @CurrentTheme.PaletteLight.Primary.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+      <div class="d-flex">
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-primary-lighten); color: var(--mud-palette-primary-text); ">
+          Lighten<br />
+          @CurrentTheme.PaletteLight.Primary.ColorRgbLighten().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-primary-darken); color: var(--mud-palette-primary-text); ">
+          Darken<br />
+          @CurrentTheme.PaletteLight.Primary.ColorRgbDarken().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+      </div>
+    </MudPaper>
+  </MudItem>
+  <MudItem md="4">
+    <MudPaper>
+      <MudText Typo="Typo.body1" Class="mud-theme-secondary pa-8">
+        mud-theme-secondary<br />
+        @CurrentTheme.PaletteLight.Secondary.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+      <div class="d-flex">
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-secondary-lighten); color: var(--mud-palette-secondary-text); ">
+          Lighten<br />
+          @CurrentTheme.PaletteLight.Secondary.ColorRgbLighten().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-secondary-darken); color: var(--mud-palette-secondary-text); ">
+          Darken<br />
+          @CurrentTheme.PaletteLight.Secondary.ColorRgbDarken().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+      </div>
+    </MudPaper>
+  </MudItem>
+  <MudItem md="4">
+    <MudPaper>
+      <MudText Typo="Typo.body1" Class="mud-theme-tertiary pa-8">
+        mud-theme-tertiary<br />
+        @CurrentTheme.PaletteLight.Tertiary.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+      <div class="d-flex">
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-tertiary-lighten); color: var(--mud-palette-tertiary-text); ">
+          Lighten<br />
+          @CurrentTheme.PaletteLight.Tertiary.ColorRgbLighten().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-tertiary-darken); color: var(--mud-palette-tertiary-text); ">
+          Darken<br />
+          @CurrentTheme.PaletteLight.Tertiary.ColorRgbDarken().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+      </div>
+    </MudPaper>
+  </MudItem>
+  <MudItem md="3">
+    <MudPaper>
+      <MudText Typo="Typo.body1" Class="mud-theme-info pa-8">
+        mud-theme-info<br />
+        @CurrentTheme.PaletteLight.Info.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+      <div class="d-flex">
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-info-lighten); color: var(--mud-palette-info-text); ">
+          Lighten<br />
+          @CurrentTheme.PaletteLight.Info.ColorRgbLighten().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-info-darken); color: var(--mud-palette-info-text); ">
+          Darken<br />
+          @CurrentTheme.PaletteLight.Info.ColorRgbDarken().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+      </div>
+    </MudPaper>
+  </MudItem>
+  <MudItem md="3">
+    <MudPaper>
+      <MudText Typo="Typo.body1" Class="mud-theme-success pa-8">
+        mud-theme-success<br />
+        @CurrentTheme.PaletteLight.Success.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+      <div class="d-flex">
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-success-lighten); color: var(--mud-palette-success-text); ">
+          Lighten<br />
+          @CurrentTheme.PaletteLight.Success.ColorRgbLighten().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-success-darken); color: var(--mud-palette-success-text); ">
+          Darken<br />
+          @CurrentTheme.PaletteLight.Success.ColorRgbDarken().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+      </div>
+    </MudPaper>
+  </MudItem>
+  <MudItem md="3">
+    <MudPaper>
+      <MudText Typo="Typo.body1" Class="mud-theme-warning pa-8">
+        mud-theme-warning<br />
+        @CurrentTheme.PaletteLight.Warning.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+      <div class="d-flex">
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-warning-lighten); color: var(--mud-palette-warning-text); ">
+          Lighten<br />
+          @CurrentTheme.PaletteLight.Warning.ColorRgbLighten().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-warning-darken); color: var(--mud-palette-warning-text); ">
+          Darken<br />
+          @CurrentTheme.PaletteLight.Warning.ColorRgbDarken().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+      </div>
+    </MudPaper>
+  </MudItem>
+  <MudItem md="3">
+    <MudPaper>
+      <MudText Typo="Typo.body1" Class="mud-theme-error pa-8">
+        mud-theme-error<br />
+        @CurrentTheme.PaletteLight.Error.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+      <div class="d-flex">
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-error-lighten); color: var(--mud-palette-error-text); ">
+          Lighten<br />
+          @CurrentTheme.PaletteLight.Error.ColorRgbLighten().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-error-darken); color: var(--mud-palette-error-text); ">
+          Darken<br />
+          @CurrentTheme.PaletteLight.Error.ColorRgbDarken().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+      </div>
+    </MudPaper>
+  </MudItem>
+  <MudItem md="3">
+    <MudPaper>
+      <MudText Typo="Typo.body1" Class="mud-theme-dark pa-8">
+        mud-theme-dark<br />
+        @CurrentTheme.PaletteLight.Dark.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+      <div class="d-flex">
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-dark-lighten); color: var(--mud-palette-dark-text); ">
+          Lighten<br />
+          @CurrentTheme.PaletteLight.Dark.ColorRgbLighten().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+        <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+                 Style="background-color: var(--mud-palette-dark-darken); color: var(--mud-palette-dark-text); ">
+          Darken<br />
+          @CurrentTheme.PaletteLight.Dark.ColorRgbDarken().ToString(MudColorOutputFormats.HexA)
+        </MudText>
+      </div>
+    </MudPaper>
+  </MudItem>
+  <MudItem md="3">
+    <MudPaper>
+      <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+               Style="background-color: var(--mud-palette-surface); color: var(--mud-palette-text-primary); ">
+        Surface<br />
+        @CurrentTheme.PaletteLight.Surface.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+      <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+               Style="background-color: var(--mud-palette-background); color: var(--mud-palette-text-primary); ">
+        Background<br />
+        @CurrentTheme.PaletteLight.Background.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+      <MudText Typo="Typo.body1" Class="flex-grow-1 pa-4"
+               Style="background-color: var(--mud-palette-background-gray); color: var(--mud-palette-text-primary); ">
+        Background-Gray<br />
+        @CurrentTheme.PaletteLight.BackgroundGray.ToString(MudColorOutputFormats.HexA)
+      </MudText>
+    </MudPaper>
+  </MudItem>
+</MudGrid>
+
+<MudText Typo=Typo.h4>按鈕</MudText>
+<MudStack Class="mb-4">
+  <MudText Typo=Typo.subtitle1>Filled Buttons</MudText>
+  <MudStack Row Class="flex-wrap">
+    <MudButton Variant=Variant.Filled>Default</MudButton>
+    <MudButton Variant=Variant.Filled Color=Color.Primary>Primary</MudButton>
+    <MudButton Variant=Variant.Filled Color=Color.Secondary>Secondary</MudButton>
+    <MudButton Variant=Variant.Filled Color=Color.Tertiary>Tertiary</MudButton>
+    <MudButton Variant=Variant.Filled Color=Color.Info>Info</MudButton>
+    <MudButton Variant=Variant.Filled Color=Color.Success>Success</MudButton>
+    <MudButton Variant=Variant.Filled Color=Color.Error>Error</MudButton>
+    <MudButton Variant=Variant.Filled Color=Color.Warning>Warning</MudButton>
+    <MudButton Variant=Variant.Filled Color=Color.Dark>Dark</MudButton>
+    <MudButton Variant=Variant.Filled Disabled>Disabled</MudButton>
+  </MudStack>
+
+  <MudText Typo=Typo.subtitle1>Outlined Buttons</MudText>
+  <MudStack Row Class="flex-wrap">
+    <MudButton Variant=Variant.Outlined>Default</MudButton>
+    <MudButton Variant=Variant.Outlined Color=Color.Primary>Primary</MudButton>
+    <MudButton Variant=Variant.Outlined Color=Color.Secondary>Secondary</MudButton>
+    <MudButton Variant=Variant.Outlined Color=Color.Tertiary>Tertiary</MudButton>
+    <MudButton Variant=Variant.Outlined Color=Color.Info>Info</MudButton>
+    <MudButton Variant=Variant.Outlined Color=Color.Success>Success</MudButton>
+    <MudButton Variant=Variant.Outlined Color=Color.Error>Error</MudButton>
+    <MudButton Variant=Variant.Outlined Color=Color.Warning>Warning</MudButton>
+    <MudButton Variant=Variant.Outlined Color=Color.Dark>Dark</MudButton>
+    <MudButton Variant=Variant.Outlined Disabled>Disabled</MudButton>
+  </MudStack>
+
+  <MudText Typo=Typo.subtitle1>Text Buttons</MudText>
+  <MudStack Row Class="flex-wrap">
+    <MudButton Variant=Variant.Text>Default</MudButton>
+    <MudButton Variant=Variant.Text Color=Color.Primary>Primary</MudButton>
+    <MudButton Variant=Variant.Text Color=Color.Secondary>Secondary</MudButton>
+    <MudButton Variant=Variant.Text Color=Color.Tertiary>Tertiary</MudButton>
+    <MudButton Variant=Variant.Text Color=Color.Info>Info</MudButton>
+    <MudButton Variant=Variant.Text Color=Color.Success>Success</MudButton>
+    <MudButton Variant=Variant.Text Color=Color.Error>Error</MudButton>
+    <MudButton Variant=Variant.Text Color=Color.Warning>Warning</MudButton>
+    <MudButton Variant=Variant.Text Color=Color.Dark>Dark</MudButton>
+    <MudButton Variant=Variant.Text Disabled>Disabled</MudButton>
+  </MudStack>
+
+</MudStack>
+
+<MudText Typo=Typo.h4>文字</MudText>
+<MudGrid>
+  <MudItem>
+    <MudPaper Class="pa-4">
+      <MudText Typo=Typo.h6 Class="mud-text-primary">h6.mud-text-primary</MudText>
+      <MudDivider DividerType=DividerType.FullWidth Class="mb-2" />
+      <MudText Typo=Typo.body1 Class="mud-text-primary">一言難盡 二句解決<br /> mud-text-primary</MudText>
+      <MudText Typo=Typo.body1 Class="mud-text-primary" Style="font-size:1.5em">一言難盡 二句解決<br /> mud-text-primary 1.5em</MudText>
+      <MudText Typo=Typo.body1 Class="mud-text-primary" Style="font-size:1.5rem">一言難盡 二句解決<br /> mud-text-primary 1.5rem</MudText>
+    </MudPaper>
+  </MudItem>
+  <MudItem>
+    <MudPaper Class="pa-4">
+      <MudText Typo=Typo.h6 Class="mud-text-secondary">h6.mud-text-secondary</MudText>
+      <MudDivider DividerType=DividerType.FullWidth Class="mb-2" />
+      <MudText Typo=Typo.body1 Class="mud-text-secondary">一言難盡 二句解決<br /> mud-text-secondary</MudText>
+      <MudText Typo=Typo.body1 Class="mud-text-secondary" Style="font-size:1.5em">一言難盡 二句解決<br /> mud-text-secondary 1.5em</MudText>
+      <MudText Typo=Typo.body1 Class="mud-text-secondary" Style="font-size:1.5rem">一言難盡 二句解決<br /> mud-text-secondary 1.5rem</MudText>
+    </MudPaper>
+  </MudItem>
+  <MudItem>
+    <MudPaper Class="pa-4">
+      <MudText Typo=Typo.h6 Class="mud-text-disabled">h6.mud-text-disabled</MudText>
+      <MudDivider DividerType=DividerType.FullWidth Class="mb-2" />
+      <MudText Typo=Typo.body1 Class="mud-text-disabled">一言難盡 二句解決<br /> mud-text-disabled</MudText>
+      <MudText Typo=Typo.body1 Class="mud-text-disabled" Style="font-size:1.5em">一言難盡 二句解決<br /> mud-text-disabled 1.5em</MudText>
+      <MudText Typo=Typo.body1 Class="mud-text-disabled" Style="font-size:1.5rem">一言難盡 二句解決<br /> mud-text-disabled 1.5rem</MudText>
+    </MudPaper>
+  </MudItem>
+</MudGrid>
+
+<MudText Typo=Typo.h4>文字縮放</MudText>
+
+<MudPaper Class="pa-4 mb-2">
+  <MudText>
+    基準文字 body1<br />
+    <b>em</b> 是相對單位，子元素的字體大小為<b>父元素</b>字體大小的倍數值。
+    <MudText Style="font-size:1.5em">
+      放大文字1.5倍 mud-text-primary 1.5em
+      <MudText Style="font-size:1.5em">
+        再放大文字1.5倍 mud-text-primary 1.5em
+      </MudText>
+    </MudText>
+  </MudText>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-2">
+  <MudText>
+    基準文字 body1<br />
+    <b>rem</b> 是相對單位，子元素的字體大小為<b>根元素</b>字體大小的倍數值。
+    <MudText Style="font-size:1.5rem">
+      放大文字1.5倍 mud-text-primary 1.5rem
+      <MudText Style="font-size:1.5rem">
+        再放大文字1.5倍 mud-text-primary 1.5rem
+      </MudText>
+    </MudText>
+  </MudText>
+</MudPaper>
+
+@code {
+  [CascadingParameter(Name = "CurrentTheme")] MudTheme CurrentTheme { get; set; } = default!;
+}

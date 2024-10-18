@@ -1,0 +1,121 @@
+﻿@using Vista.Biz.DEMO
+@inject IDialogServiceEx dlgSvc
+@inject DEMO014Biz bizSvc
+
+@if (formData is null)
+{
+  <MudProgressCircular Indeterminate Color=Color.Info />
+  return;
+}
+
+<ScreenOverlay Visible=f_loading />
+<MudPaper role="panel">
+  <MudText Typo=Typo.h5>案件內容</MudText>
+  <EditForm Model=formData>
+    <FluentValidationValidator />
+
+    <AsvtFormRow>
+      <AsvtStaticField For="()=>formData.FormNo" Label="合約書版本" Grid=@([12]) Variant=Variant.Text InnerPadding=false>
+        <MudChip T="string" Color=Color.Primary>PE</MudChip>
+        <MudChip T="string" Color=Color.Primary>ABC</MudChip>
+        <MudChip T="string" Color=Color.Primary>XYZ</MudChip>
+      </AsvtStaticField>
+
+      <AsvtStaticField For="()=>formData.Gender">
+        @OptionRepos.Gender[formData.Gender]
+      </AsvtStaticField>
+      <AsvtStaticField For="()=>formData.FormNo" />
+      <AsvtStaticField For="()=>formData.SpentAmount" />
+      <AsvtStaticField For="()=>formData.SpentDate" />
+      <AsvtStaticField For="()=>formData.CreditNo" />
+      <AsvtStaticField For="()=>formData.IsSkiProject" />
+    </AsvtFormRow>
+
+    @if (!String.IsNullOrWhiteSpace(formData.CheckResult))
+    {
+      Severity severity = formData.CheckResult == "檢核通過" ? formData.CaseRemark == "已取消申請分期付款。" ? Severity.Info : Severity.Success : Severity.Error;
+
+      <MudAlert Severity=@severity ContentAlignment=HorizontalAlignment.Left Class="my-3">
+        <MudText Typo=Typo.subtitle1>
+          檢核結果：@formData.CheckResult
+        </MudText>
+        <MudText Typo=Typo.body1>
+          專案備註：@formData.CaseRemark
+        </MudText>
+      </MudAlert>
+    }
+    else
+    {
+      <MudStack Row Justify=Justify.Center Class="my-3">
+        <MudButton Variant=Variant.Filled Color=Color.Primary StartIcon=@Icons.Material.Filled.Save OnClick="()=>HandleSubmit(context)">申請分期</MudButton>
+        <MudButton Variant=Variant.Outlined Color=Color.Primary OnClick=HandleCancle>取消</MudButton>
+      </MudStack>
+    }
+
+    <DialogValidationSummary />
+  </EditForm>
+</MudPaper>
+
+@code {
+  [CascadingParameter] _DEMO014 BizState { get; init; } = default!;
+
+  //## Properties
+  List<DEMO014Profile> dataList => BizState.dataList;
+  DEMO014Profile? dataAim { get => BizState.dataAim; set => BizState.dataAim = value; }
+  DEMO014FormData? formData { get => BizState.formData; set => BizState.formData = value; }
+
+  //## State
+  bool f_loading = false;
+
+  void HandleCancle()
+  {
+    // 回到上一步
+    dataAim = null;
+    BizState.mode = DisplayMode.Step2;
+  }
+
+  async Task HandleSubmit(EditContext ctx)
+  {
+    try
+    {
+      // 基本檢查
+      if (!ctx.Validate()) return;
+
+      // GO
+      f_loading = true;
+      formData = await Task.Run(() => bizSvc.ApproveCase(formData!));
+
+      // 有 UI 操作故停止 loading 狀態。
+      f_loading = false;
+      StateHasChanged(); // 此處需手動通知刷新UI才有效
+
+      if (formData.CheckResult == "檢核通過")
+      {
+        //dlgSvc.ShowAlert($"檢核通過。", type:Severity.Success);
+        //## 若檢核通過需再確認意願？
+        var result = await dlgSvc.ShowExAsync<DialogReconfirm>(new { FormData = formData });
+        if (!result.Canceled && "Yes".Equals(result.Data))
+        {
+          dlgSvc.ShowAlert($"已送出申請，申請單號：{formData.FormNo}", Color.Success);
+        }
+        else
+        {
+          formData.CaseRemark = "已取消申請分期付款。";
+          dlgSvc.ShowAlert($"已取消申請，申請單號：{formData.FormNo}", Color.Warning);
+        }
+      }
+      else
+      {
+        dlgSvc.ShowAlert($"檢核不通過。{formData.CaseRemark}");
+      }
+    }
+    catch (Exception msg)
+    {
+      dlgSvc.ShowAlert(msg.Message);
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+}

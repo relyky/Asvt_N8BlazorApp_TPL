@@ -1,0 +1,259 @@
+﻿@using FluentValidation
+@inject ISnackbar snackSvc
+
+<ScreenOverlay Visible=@f_loading />
+<MudCard>
+  <MudToolBar Class="gap-2">
+    <MudText Typo=Typo.h4>Form Field</MudText>
+    <MudSpacer />
+
+    <MudSelect T="Variant" Label="Variant" @bind-Value=@f_variant Variant=@f_variant ReadOnly=@f_readOnly Disabled=@f_disabled>
+      <MudSelectItem Value=@(Variant.Text) />
+      <MudSelectItem Value=@(Variant.Filled) />
+      <MudSelectItem Value=@(Variant.Outlined) />
+    </MudSelect>
+    <MudSwitch @bind-Value=@f_readOnly Label="ReadOnly" Color=Color.Primary />
+    <MudSwitch @bind-Value=@f_disabled Label="Disabled" Color=Color.Secondary />
+  </MudToolBar>
+
+  <MudForm Model=@model @ref=@refForm Validation=@(orderValidator.ValidateValue) ValidationDelay=0>
+    <MudCardContent>
+      <MudTextField Label="Name"
+                    @bind-Value=@model.Name
+                    For="() => model.Name"
+                    Variant=@f_variant
+                    ReadOnly=@f_readOnly
+                    Disabled=@f_disabled />
+
+      <MudTextField Label="Email"
+                    @bind-Value="model.Email"
+                    For="() => model.Email"
+                    Variant=@f_variant
+                    ReadOnly=@f_readOnly
+                    Disabled=@f_disabled />
+
+      <MudTextField Label="Credit card nr"
+                    @bind-Value="model.CCNumber"
+                    For="() => model.CCNumber"
+                    Variant=@f_variant
+                    ReadOnly=@f_readOnly
+                    Disabled=@f_disabled />
+
+      <MudTextField Label="Address"
+                    @bind-Value="model.Address.Address"
+                    For="() => model.Address.Address"
+                    Variant=@f_variant
+                    ReadOnly=@f_readOnly
+                    Disabled=@f_disabled />
+
+      <MudTextField Label="City"
+                    @bind-Value="model.Address.City"
+                    For="() => model.Address.City"
+                    Variant=@f_variant
+                    ReadOnly=@f_readOnly
+                    Disabled=@f_disabled />
+
+      <MudTextField Label="Country"
+                    @bind-Value=@model.Address.Country
+                    For="() => model.Address.Country"
+                    Variant=@f_variant
+                    ReadOnly=@f_readOnly
+                    Disabled=@f_disabled />
+    </MudCardContent>
+
+    <MudCardContent Class="pa-0">
+
+      <MudTable Items="@model.OrderDetails" Hover="true" Breakpoint="Breakpoint.None" Dense="@true" Elevation="0">
+        <HeaderContent>
+          <MudTh>Description</MudTh>
+          <MudTh>Offer</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+          <MudTd DataLabel="Description">
+            <MudForm Model="@context" Validation=@(orderDetailsValidator.ValidateValue)>
+              <MudTextField Label="Enter Description"
+                            @bind-Value="context.Description"
+                            For="(() => context.Description)"
+                            Variant=@f_variant
+                            ReadOnly=@f_readOnly
+                            Disabled=@f_disabled />
+            </MudForm>
+          </MudTd>
+          <MudTd DataLabel="Offer">
+            <MudForm Model="@context">
+              <MudNumericField Label="Enter Offer"
+                               @bind-Value="context.Offer"
+                               For="(() => context.Offer)"
+                               Validation=@(orderDetailsValidator.ValidateValue)
+                               Variant=@f_variant
+                               ReadOnly=@f_readOnly
+                               Disabled=@f_disabled />
+            </MudForm>
+          </MudTd>
+        </RowTemplate>
+      </MudTable>
+
+    </MudCardContent>
+  </MudForm>
+  <MudCardActions Class="justify-center gap-2">
+    <MudButton Variant=@f_variant Color=Color.Primary OnClick=Submit>Primary</MudButton>
+    <MudButton Variant=@f_variant Color=Color.Secondary OnClick=Submit>Secondary</MudButton>
+    <MudButton Variant=@f_variant Color=Color.Tertiary OnClick=Submit>Tertiary</MudButton>
+    <MudButton Variant=@f_variant Color=Color.Error OnClick=Submit>Error</MudButton>
+    <MudButton Variant=@f_variant Color=Color.Warning OnClick=Submit>Warning</MudButton>
+    <MudButton Variant=@f_variant OnClick=Submit>Default</MudButton>
+  </MudCardActions>
+</MudCard>
+
+@code {
+
+  //## Resource
+  MudForm refForm = default!;
+  OrderModelFluentValidator orderValidator = new OrderModelFluentValidator();
+  OrderDetailsModelFluentValidator orderDetailsValidator = new OrderDetailsModelFluentValidator();
+  OrderModel model = new OrderModel();
+
+  //## State
+  bool f_readOnly = false;
+  bool f_disabled = false;
+  Variant f_variant = Variant.Text;
+  bool f_loading = false;
+
+  public class OrderModel
+  {
+    public string Name { get; set; } = "高大上";
+    public string Email { get; set; } = "test@mail.server";
+    public string CCNumber { get; set; } = "4012 8888 8888 1881";
+    public AddressModel Address { get; set; } = new AddressModel() { Address = "中正路755號7樓", City = "新北市中和區", Country = "中華民國" };
+    public List<OrderDetailsModel> OrderDetails = new List<OrderDetailsModel>()
+    {
+      new OrderDetailsModel()
+        {
+          Description = "Perform Work order 1",
+          Offer = 100
+        },
+      new OrderDetailsModel()
+        {
+          Description = "白玻瑰",
+          Offer = 999
+        },
+    };
+  }
+
+  public class AddressModel
+  {
+    public string Address { get; set; } = default!;
+    public string City { get; set; } = default!;
+    public string Country { get; set; } = default!;
+  }
+
+  public class OrderDetailsModel
+  {
+    public string Description { get; set; } = default!;
+    public decimal Offer { get; set; }
+  }
+
+  async Task Submit()
+  {
+    try
+    {
+      f_loading = true;
+      await refForm.Validate();
+      if (refForm.IsValid)
+      {
+        snackSvc.Add("送出訂單", MudBlazor.Severity.Info);
+      }
+    }
+    catch
+    {
+      throw;
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  #region data model 定義
+  /// <summary>
+  /// A standard AbstractValidator which contains multiple rules and can be shared with the back end API
+  /// </summary>
+  /// <typeparam name="OrderModel"></typeparam>
+  public class OrderModelFluentValidator : AbstractValidator<OrderModel>
+  {
+    public OrderModelFluentValidator()
+    {
+      RuleFor(x => x.Name)
+          .NotEmpty()
+          .Length(1, 100);
+
+      RuleFor(x => x.Email)
+          .Cascade(CascadeMode.Stop)
+          .NotEmpty()
+          .EmailAddress()
+          .MustAsync(async (value, cancellationToken) => await IsUniqueAsync(value));
+
+      RuleFor(x => x.CCNumber)
+          .NotEmpty()
+          .Length(1, 100)
+          .CreditCard();
+
+      RuleFor(x => x.Address.Address)
+          .NotEmpty()
+          .Length(1, 100);
+
+      RuleFor(x => x.Address.City)
+          .NotEmpty()
+          .Length(1, 100);
+
+      RuleFor(x => x.Address.Country)
+          .NotEmpty()
+          .Length(1, 100);
+
+      RuleForEach(x => x.OrderDetails)
+        .SetValidator(new OrderDetailsModelFluentValidator());
+    }
+
+    private async Task<bool> IsUniqueAsync(string email)
+    {
+      // Simulates a long running http call
+      await Task.Delay(2000);
+      return email.ToLower() != "test@test.com";
+    }
+
+    public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+    {
+      var result = await ValidateAsync(ValidationContext<OrderModel>.CreateWithOptions((OrderModel)model, x => x.IncludeProperties(propertyName)));
+      if (result.IsValid)
+        return Array.Empty<string>();
+      return result.Errors.Select(e => e.ErrorMessage);
+    };
+  }
+
+  /// <summary>
+  /// A standard AbstractValidator for the Collection Object
+  /// </summary>
+  /// <typeparam name="OrderDetailsModel"></typeparam>
+  public class OrderDetailsModelFluentValidator : AbstractValidator<OrderDetailsModel>
+  {
+    public OrderDetailsModelFluentValidator()
+    {
+      RuleFor(x => x.Description)
+          .NotEmpty()
+          .Length(1, 100);
+
+      RuleFor(x => x.Offer)
+        .GreaterThan(0)
+        .LessThan(999);
+    }
+
+    public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
+    {
+      var result = await ValidateAsync(ValidationContext<OrderDetailsModel>.CreateWithOptions((OrderDetailsModel)model, x => x.IncludeProperties(propertyName)));
+      if (result.IsValid)
+        return Array.Empty<string>();
+      return result.Errors.Select(e => e.ErrorMessage);
+    };
+  }
+  #endregion
+}

@@ -1,0 +1,28 @@
+@inherits AsvtFieldBase<string>
+
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+  <MudTextField T=string
+                @bind-Value=@FieldValue
+                For=@For
+                Immediate=@Immediate
+                Label=@_label
+                ReadOnly=@_readOnly
+                HelperText=@HelperText
+                Required=@Required
+                Class=@Class
+                Variant=@(_readOnly ? Variant.Filled : Variant.Outlined)
+                AutoGrow=true
+                Lines=@Lines
+                MaxLines=@MaxLines />
+</MudItem>
+
+@code {
+  /// <summary>
+  /// 程ぶ︽计
+  /// </summary>
+  [Parameter] public int Lines { get; set; } = 4;
+  /// <summary>
+  /// 程︽计: 0 ボぃ
+  /// </summary>
+  [Parameter] public int MaxLines { get; set; } = 8;
+}

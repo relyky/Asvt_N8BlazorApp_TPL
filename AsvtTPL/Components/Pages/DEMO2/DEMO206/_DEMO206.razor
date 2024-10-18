@@ -1,0 +1,13 @@
+﻿@page "/DEMO206"
+@attribute [Page("DEMO206", "Dynamic Expression")]
+@attribute [Authorize("AuthPage")]
+
+<MudContainer>
+  <MudText Typo=Typo.h3 GutterBottom>Dynamic Expression</MudText>
+
+  <div class="d-flex gap-3">
+    <TestDynExpress />
+    <TestDynExpress2 />
+  </div>
+
+</MudContainer>

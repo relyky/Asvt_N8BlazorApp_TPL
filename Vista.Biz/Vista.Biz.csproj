@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BlazorComponentBus" Version="2.2.0" />
+    <PackageReference Include="ClosedXML.Report" Version="0.2.10" />
+    <PackageReference Include="DynamicExpresso.Core" Version="2.16.1" />
+    <PackageReference Include="FluentValidation" Version="11.9.1" />
+    <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.93" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Vista.DB\Vista.DB.csproj" />
+  </ItemGroup>
+
+</Project>

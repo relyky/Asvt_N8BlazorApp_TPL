@@ -1,0 +1,143 @@
+﻿@using Vista.Biz.DEMO
+@inject IDialogServiceEx dlgSvc
+@inject DEMO012Biz bizSvc
+
+<ScreenOverlay Visible=f_loading />
+<MudContainer>
+  <EditForm Model=formData>
+    <FluentValidationValidator />
+
+    <MudPaper role="panel">
+      <AsvtFormRow>
+        <AsvtTextField For="()=>formData.formNo" ReadOnly=true />
+        <AsvtTextField For="()=>formData.dataFieldA" Required />
+        <AsvtTextField For="()=>formData.dataFieldB" />
+        <AsvtTextField For="()=>formData.dataFieldC" />
+        <AsvtTextField For="()=>formData.dataFieldD" />
+        <AsvtTextField For="()=>formData.dataFieldE" />
+        <AsvtTextField For="()=>formData.dataFieldF" />
+      </AsvtFormRow>
+      <AsvtFormRow>
+        <AsvtStaticField For="()=>formData.AddUser" />
+        <AsvtStaticField For="()=>formData.AddDtm" />
+        <AsvtStaticField For="()=>formData.UpdUser" />
+        <AsvtStaticField For="()=>formData.UpdDtm" />
+      </AsvtFormRow>
+    </MudPaper>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=@(()=>HandleSubmit(context))>存檔</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Warning OnClick=HandleRemove>刪除</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary OnClick=HandleCancel>取消</MudButton>
+    </MudStack>
+
+    <DialogValidationSummary />
+  </EditForm>
+</MudContainer>
+
+@code {
+  [CascadingParameter] _DEMO012 BizState { get; set; } = default!;
+
+  //## State
+  bool f_loading = false;
+  DEMO012FormData formData { get => BizState.formData; set => BizState.formData = value; }
+
+  protected override async Task OnInitializedAsync()
+  {
+    await base.OnInitializedAsync();
+    try
+    {
+      //# block UI
+      f_loading = true;
+      StateHasChanged();
+
+      //# 資料演算
+      formData = await Task.Run(() => bizSvc.GetFormData(BizState.dataAim));
+    }
+    catch (Exception ex)
+    {
+      dlgSvc.ShowAlert(ex.Message, title: "出現例外！");
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  async Task HandleSubmit(EditContext context)
+  {
+    try
+    {
+      //# 基本檢查
+      if (!context.Validate()) return;
+
+      //# 進階檢查
+      //if (!ValidateMore())
+      //{
+      //    dlgSvc.ShowAlert("未通過進階檢查！");
+      //    return;
+      //}
+
+      //# block UI
+      f_loading = true;
+      StateHasChanged();
+
+      //# 資料演算
+      (formData, string message) = await Task.Run(() => bizSvc.UpdFormData(formData));
+      if (message != "SUCCESS")
+      {
+        dlgSvc.ShowAlert(message);
+        return;
+      }
+
+      //# 成功後同步UI資料 & 刷新畫面
+      var idx = BizState.dataList.FindIndex(c => c.formNo.Equals(formData.formNo));
+      BizState.dataList[idx] = new DEMO012Profile(formData);
+      BizState.mode = DisplayMode.List;
+    }
+    catch (Exception ex)
+    {
+      dlgSvc.ShowAlert(ex.Message, title: "出現例外！");
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  async Task HandleRemove()
+  {
+    try
+    {
+      //# 再確定一次
+      bool isConfirm = await dlgSvc.ConfirmAsync($"再確定一次要刪除這筆資料？");
+      if (!isConfirm) return;
+
+      //# block UI
+      f_loading = true;
+      StateHasChanged();
+
+      //# 資料演算
+      var aim = BizState.dataAim;
+      await Task.Run(() => bizSvc.DelFormData(aim));
+
+      //# 成功後同步UI資料 & 刷新畫面
+      BizState.dataList.RemoveAll(c => c.formNo.Equals(aim.formNo));
+      BizState.mode = DisplayMode.List;
+    }
+    catch (Exception ex)
+    {
+      dlgSvc.ShowAlert(ex.Message, title: "出現例外！");
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  void HandleCancel()
+  {
+    BizState.mode = DisplayMode.List;
+  }
+
+}

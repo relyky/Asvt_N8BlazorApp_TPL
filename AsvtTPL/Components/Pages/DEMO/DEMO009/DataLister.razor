@@ -1,0 +1,74 @@
+﻿@using Vista.Biz.DEMO
+@inject IDialogServiceEx dlgSvc
+@inject DEMO009Biz bizSvc
+@inject JSInterOpService jsTool
+
+@if (DataList is null)
+{
+  <MudProgressCircular Indeterminate Color=Color.Info />
+  return;
+}
+
+<ScreenOverlay Visible=f_loading />
+<MudDataGrid T="DEMO009Data" Items=DataList Hover Striped Dense ShowColumnOptions=false
+             FixedHeader Height="calc(100vh - 340px)"
+             SelectOnRowClick RowClass="cursor-pointer"
+             HeaderClass="custom-secondary" Class="mb-3">
+  <ToolBarContent>
+    <MudButton StartIcon=@Icons.Material.Rounded.FileDownload Variant=Variant.Filled Color=Color.Secondary Class="mr-2" OnClick=HandleExport>匯出</MudButton>
+    <MudChip Color=Color.Warning>注意標籤</MudChip>
+    <MudChip Color=Color.Info>資訊標籤</MudChip>
+    <MudChip Color=Color.Info Variant=Variant.Outlined>@($"總共{DataList.Count:N0}筆")</MudChip>
+  </ToolBarContent>
+  <Columns>
+    <PropertyColumn Property="m => m.SN" Title="序號" />
+    <PropertyColumn Property="m => m.Title" Title="抬頭" />
+    <PropertyColumn Property="m => m.Code" Title="模擬數字編碼" />
+    <PropertyColumn Property="m => m.Date" Title="日期" />
+    <PropertyColumn Property="m => m.A" Title="欄位A" />
+    <PropertyColumn Property="m => m.B" Title="欄位B" />
+    <TemplateColumn Title="A+B">
+      <CellTemplate>
+        @($"{context.Item.A + context.Item.B:N0}")
+      </CellTemplate>
+    </TemplateColumn>
+  </Columns>
+</MudDataGrid>
+
+@code {
+  [Parameter,EditorRequired] public List<DEMO009Data> DataList { get; set; } = default!;
+
+  //## State
+  bool f_loading = false;
+
+  /// <summary>
+  /// 匯出查詢結果
+  /// </summary>
+  async Task HandleExport()
+  {
+    try
+    {
+      f_loading = true;
+
+      //## 轉成Excel
+      using MemoryStream file = await Task.Run(() => bizSvc.ExporyExcel(DataList));
+
+      //# 下載檔案
+      string filenameA = $"模擬連續下載檔案{DateTime.Now.ToString("yyyyMMdd")}.xlsx";
+      await jsTool.DownloadFileAsync(filenameA, file);
+
+      //# 模擬連續下載檔案二，並測試另一種下載方式。
+      byte[] fileBlob = file.ToArray();
+      string filenameB = $"模擬連續下載檔案二{DateTime.Now.ToString("yyyyMMdd")}.xlsx";
+      await jsTool.DownloadFileAsync(filenameB, fileBlob);
+    }
+    catch (Exception ex)
+    {
+      dlgSvc.ShowAlert("查詢出現例外！" + ex.Message);
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+}

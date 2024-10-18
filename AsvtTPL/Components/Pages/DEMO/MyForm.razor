@@ -1,0 +1,87 @@
+﻿@using System.ComponentModel.DataAnnotations
+@page "/myform"
+@attribute [Page("myform", "我的表單１")]
+
+<MudContainer>
+  <MudText Typo=Typo.h3>EditForm with DataAnnotation</MudText>
+
+  <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <MudGrid>
+      <MudItem xs="12" sm="7">
+        <MudCard>
+          <MudCardContent>
+            <MudTextField Label="用戶名稱" HelperText="Max. 8 characters"
+                          @bind-Value="model.Username" For="() => model.Username" />
+            <MudTextField Label="電郵地址" Class="mt-3"
+                          @bind-Value="model.Email" For="() => model.Email" />
+            <MudTextField Label="密碼" HelperText="Choose a strong password" Class="mt-3"
+                          @bind-Value="model.Password" For="() => model.Password" InputType="InputType.Password" />
+            <MudTextField Label="確認密碼" HelperText="Repeat the password" Class="mt-3"
+                          @bind-Value="model.Password2" For="() => model.Password2" InputType="InputType.Password" />
+          </MudCardContent>
+          <MudCardActions>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+          </MudCardActions>
+        </MudCard>
+      </MudItem>
+      <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+          <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+          @if (success)
+          {
+            <MudText Color="Color.Success">Success</MudText>
+          }
+          else
+          {
+            <MudText Color="@Color.Error">
+              <ValidationSummary />
+            </MudText>
+          }
+        </MudPaper>
+      </MudItem>
+      <MudItem xs="12">
+        <MudText Typo="Typo.body2" Align="Align.Center">
+          Fill out the form correctly to see the success message.
+        </MudText>
+      </MudItem>
+    </MudGrid>
+  </EditForm>
+
+</MudContainer>
+
+@code {
+  RegisterAccountForm model = new RegisterAccountForm();
+  bool success;
+
+  public class RegisterAccountForm
+  {
+    [Display(Name = "用戶名稱")]
+    [Required]
+    [StringLength(8)]
+    public string? Username { get; set; } = "user01";
+
+    [Display(Name = "電郵地址")]
+    [Required]
+    [EmailAddress]
+    public string? Email { get; set; } = "nobody@mail.server";
+
+    [Display(Name = "密碼")]
+    [Required]
+    [StringLength(30, MinimumLength = 8)]
+    [DataType(DataType.Password)]
+    public string? Password { get; set; } = "1qaz@WSX";
+
+    [Display(Name = "確認密碼")]
+    [Required]
+    [Compare(nameof(Password))]
+    public string? Password2 { get; set; } = "1qaz@WSX";
+
+  }
+
+  private void OnValidSubmit(EditContext context)
+  {
+    success = true;
+    StateHasChanged();
+  }
+}

@@ -1,0 +1,64 @@
+﻿@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Components.Forms
+@implements IDisposable
+
+<MudDialog @bind-Visible=@f_show>
+  <TitleContent>
+    <MudText Typo=Typo.h6>
+      <MudIcon Icon=@Icons.Material.Filled.Error Size=Size.Large Color=Color.Error Class="mr-3" Style="vertical-align:middle;" />
+      <span>Validation Summary</span>
+    </MudText>
+  </TitleContent>
+  <DialogContent>
+    <MudList T="string">
+      @foreach (var message in messageList)
+      {
+        <MudListItem Text=@message Icon=@Icons.Material.Filled.PriorityHigh IconColor=Color.Error />
+      }
+    </MudList>
+  </DialogContent>
+  <DialogActions>
+    <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=HandleClose Class="px-4">關閉</MudButton>
+  </DialogActions>
+</MudDialog>
+
+@code {
+  [CascadingParameter, EditorRequired] EditContext EditContext { get; set; } = default!;
+
+  IEnumerable<string> messageList = default!;
+  bool f_show = false;
+
+  protected override void OnInitialized()
+  {
+    messageList = EditContext.GetValidationMessages();
+    f_show = messageList.Any();
+    EditContext.OnValidationRequested += HandleValidationRequested!;
+    //EditContext.OnValidationStateChanged += HandleValidationStateChanged;
+  }
+
+  public void Dispose()
+  {
+    EditContext.OnValidationRequested -= HandleValidationRequested!;
+    //EditContext.OnValidationStateChanged -= HandleValidationStateChanged;
+  }
+
+  void HandleValidationRequested(object sender, ValidationRequestedEventArgs args)
+  {
+    //## 於Submit時觸發
+    f_show = messageList.Any();
+    StateHasChanged();
+  }
+
+  //void HandleValidationStateChanged(object o, ValidationStateChangedEventArgs args)
+  //{
+  //    messageList = EditContext.GetValidationMessages();
+  //    f_show = messageList.Any();
+  //    StateHasChanged();
+  //}
+
+  void HandleClose()
+  {
+    f_show = false;
+    StateHasChanged();
+  }
+}

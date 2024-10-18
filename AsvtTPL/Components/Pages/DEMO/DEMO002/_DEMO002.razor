@@ -1,0 +1,20 @@
+﻿@page "/DEMO002"
+@attribute [Page("DEMO002", "佈景主題")]
+@attribute [Authorize("AuthPage")]
+
+<MudContainer>
+  <MudTabs Rounded ApplyEffectsToContainer>
+    <MudTabPanel Text="調色盤">
+      <ThemePaletteTabPage />
+    </MudTabPanel>
+
+    <MudTabPanel Text="文字排版">
+      <ThemeTypographyTabPage />
+    </MudTabPanel>
+
+    <MudTabPanel Text="Form Field">
+      <FormValidationTabPage />
+    </MudTabPanel>
+
+  </MudTabs>
+</MudContainer>

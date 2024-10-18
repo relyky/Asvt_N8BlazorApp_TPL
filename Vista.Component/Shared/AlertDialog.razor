@@ -1,0 +1,34 @@
+﻿@inject IDialogService Dialog
+
+<MudDialog DefaultFocus=DefaultFocus.Element>
+  <TitleContent>
+    <MudText Typo=Typo.h5 Color=@Color>@Title</MudText>
+  </TitleContent>
+  <DialogContent>
+    <div style="min-width:260px;">
+      @* 可換行顯示 *@
+      @foreach(string line in ContentText.Split("\n"))
+      {
+        <MudText>@line</MudText>
+      }
+    </div>
+  </DialogContent>
+  <DialogActions>
+    <MudButton Color=@Color Variant=Variant.Filled OnClick=Submit>@ButtonText</MudButton>
+  </DialogActions>
+</MudDialog>
+
+@code {
+  [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+
+  [Parameter] public string ContentText { get; set; } = string.Empty;
+
+  [Parameter] public string Title { get; set; } = "訊息";
+
+  [Parameter] public string ButtonText { get; set; } = "確認";
+
+  [Parameter] public Color Color { get; set; } = Color.Primary;
+
+  void Submit() => MudDialog.Close(DialogResult.Ok(true));
+  void Cancel() => MudDialog.Cancel();
+}

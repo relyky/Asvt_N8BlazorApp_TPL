@@ -1,0 +1,53 @@
+﻿@inject IAuthUser authSvc
+
+@* <MudNavGroup Title="功能群組" Icon=@Icons.Material.Rounded.GridView IconColor=Color.Primary>
+  <MudNavLink Href="/auth">Auth</MudNavLink>
+  <MudNavLink Href="/counter">Counter</MudNavLink>
+  <MudNavLink Href="/weather">Weather</MudNavLink>
+  <MudNavLink Href="/myform">My Form</MudNavLink>
+  <MudNavLink Href="/myform2">My Form2</MudNavLink>
+</MudNavGroup>
+
+<MudNavGroup Title="功能展示" Icon=@Icons.Material.Rounded.GridView IconColor=Color.Primary>
+  <MudNavLink Href="/DEMO002">佈景主題</MudNavLink>
+  <MudNavLink Href="/DEMO007">各項機制測試</MudNavLink>
+  <MudNavLink Href="/DEMO017">基本表單驗證Ｙ</MudNavLink>
+</MudNavGroup> *@
+
+@* 授權功能清單 *@
+@if (loginUser != null)
+{
+  @* <MudNavLink Href="/mainpage" Icon=@Icons.Material.Rounded.Domain IconColor=Color.Primary>系統主畫面</MudNavLink> *@
+
+  @foreach (var g in loginUser.AuthMenu.GroupList.Where(g => g.IsShow))
+  {
+    <MudNavGroup Title=@g.GroupName Icon=@Icons.Material.Rounded.GridView IconColor=Color.Primary>
+      @foreach (var m in g.FuncList.Where(m => m.IsShow))
+      {
+        <MudNavLink Href=@m.Url>@m.FuncName</MudNavLink>
+      }
+    </MudNavGroup>
+  }
+}
+
+<MudDivider DividerType=DividerType.Middle Class="my-2" />
+<MudNavLink Href="/" Icon=@Icons.Material.Rounded.Home IconColor=Color.Primary Match=NavLinkMatch.All>首頁</MudNavLink>
+<MudNavLink Href="/blog/index" Icon=@Icons.Material.Filled.Newspaper IconColor=Color.Primary>部落格</MudNavLink>
+<AuthorizeView>
+  <NotAuthorized>
+    <MudNavLink Href="/login" Icon=@Icons.Material.Filled.Login IconColor=Color.Primary>登入</MudNavLink>
+  </NotAuthorized>
+  <Authorized>
+    <MudNavLink Href="/Account/Logout" Icon=@Icons.Material.Filled.Logout IconColor=Color.Primary>登出</MudNavLink>
+  </Authorized>
+</AuthorizeView>
+
+@code {
+  //## State
+  AuthUser? loginUser = null;
+
+  protected override async Task OnInitializedAsync()
+  {
+    loginUser = await authSvc.GetCurrentUserAsync();
+  }
+}

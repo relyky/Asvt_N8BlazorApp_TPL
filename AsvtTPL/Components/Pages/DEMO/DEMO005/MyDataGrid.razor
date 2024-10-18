@@ -1,0 +1,39 @@
+﻿
+<MudDataGrid Items=@elementList Breakpoint=Breakpoint.None Class=@Class HeaderClass="custom-secondary" Dense>
+  @* <ToolBarContent>
+    DataGrid 清單範例
+  </ToolBarContent> *@
+  <Columns>
+    <PropertyColumn Property="x => x.Number" Title="Nr" />
+    <PropertyColumn Property="x => x.Sign" />
+    <PropertyColumn Property="x => x.Name" />
+    <PropertyColumn Property="x => x.Position" />
+    <PropertyColumn Property="x => x.Molar" Title="Molar mass" />
+  </Columns>
+</MudDataGrid>
+
+@code {
+  [Parameter] public string? Class { get; set; }
+
+  List<Element> elementList = new List<Element>();
+
+  protected override void OnInitialized()
+  {
+    elementList.Add(new Element { Number = 1, Sign = "H", Name = "Hydrogen", Position = 0, Molar = 1.00794 });
+    elementList.Add(new Element { Number = 2, Sign = "He", Name = "Helium", Position = 17, Molar = 4.002602 });
+    elementList.Add(new Element { Number = 3, Sign = "Li", Name = "Lithium", Position = 0, Molar = 6.941 });
+    elementList.Add(new Element { Number = 4, Sign = "Be", Name = "Beryllium", Position = 1, Molar = 9.012182 });
+    elementList.Add(new Element { Number = 5, Sign = "B", Name = "Boron", Position = 12, Molar = 10.81 });
+    elementList.Add(new Element { Number = 6, Sign = "C", Name = "Carbon", Position = 13, Molar = 12.011 });
+    elementList.Add(new Element { Number = 7, Sign = "N", Name = "Nitrogen", Position = 14, Molar = 14.007 });
+  }
+
+  class Element
+  {
+    public int Number { get; set; }
+    public string Sign { get; set; } = "";
+    public string Name { get; set; } = "";
+    public int Position { get; set; }
+    public double Molar { get; set; }
+  }
+}

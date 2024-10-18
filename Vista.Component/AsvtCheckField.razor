@@ -1,0 +1,29 @@
+@inherits AsvtFieldBase<string>
+@* checkbox: Y/N *@
+
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+  <MudCheckBox T="bool"
+               @bind-Value=@boolValue
+               Label=@_label
+               ReadOnly=@_readOnly
+               Required=@Required
+               Class=@Class
+               Color=@(_readOnly ? Color.Default : Color.Primary)
+               Error=@ValidationError
+               ErrorText=@ValidationErrorText />
+</MudItem>
+
+@code {
+  [Parameter] public string TrueSign { get; set; } = "Y";
+  [Parameter] public string FalseSign { get; set; } = "N";
+
+  /// <summary>
+  /// ¡° Âà«¬ FieldValue
+  /// </summary>
+  bool boolValue
+  {
+    get => TrueSign.Equals(FieldValue);
+    set => FieldValue = value ? TrueSign : FalseSign;
+  }
+
+}

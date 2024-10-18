@@ -1,0 +1,31 @@
+﻿<MudPaper Class="pa-4 mb-3">
+  <MudText Typo=Typo.h4 GutterBottom>測試播放 YouTube 影片</MudText>
+
+  <MudToolBar>
+    <MudSwitch @bind-Value=f_playing Label="Playing" Color=Color.Info />
+    <MudSwitch @bind-Value=f_loop Label="Loop" Color=Color.Info />
+    <MudSwitch @bind-Value=f_controls Label="Controls (requires player reload)" Color=Color.Info />
+  </MudToolBar>
+
+  <MudSelect Label="YouTube 測試影片" Variant=Variant.Outlined @bind-Value=midiaUrl>
+    <MudSelectItem Value=@("https://www.youtube.com/watch?v=oUFJJNQGwhk")>TestA</MudSelectItem>
+    <MudSelectItem Value=@("https://www.youtube.com/watch?v=jNgP6d9HraI")>TestB</MudSelectItem>
+    <MudSelectItem Value=@("https://www.youtube.com/watch?v=uW3raatRj-A")>Tesla Made REAL Tesla Bot Gen 2 Optimus</MudSelectItem>
+    <MudSelectItem Value=@("https://www.youtube.com/watch?v=8mykeSkYCuA")>【直播】《立法院職權行使法》覆議案 投票表決大戰(已結束)</MudSelectItem>
+    <MudSelectItem Value=@("https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8")>HLS (m3u8) - 測試無法播放處理！</MudSelectItem>
+  </MudSelect>
+
+  <web-youtube-player url="@midiaUrl" playing="@Playing" loop="@Loop" controls="@Controls" />
+
+</MudPaper>
+
+@code {
+  string midiaUrl = "https://www.youtube.com/watch?v=oUFJJNQGwhk"; // TestA
+
+  bool f_playing = false;
+  string Playing => f_playing ? "true" : "false";
+  bool f_loop = false;
+  string Loop => f_loop ? "true" : "false";
+  bool f_controls = true;
+  string Controls => f_controls ? "true" : "false";
+}

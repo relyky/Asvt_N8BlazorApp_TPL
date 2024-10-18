@@ -1,0 +1,313 @@
+﻿@using Vista.Biz.DEMO
+@page "/DEMO006"
+@attribute [Page("DEMO006", "基本表單驗證")]
+@attribute [Authorize("AuthPage")]
+@inject ISnackbar snackSvc
+@inject IDialogServiceEx dlgSvc
+@inject IAuthUser userSvc
+
+<MudContainer>
+  <EditForm Model=formData>
+    <FluentValidationValidator />
+
+    <MudPaper role="panel">
+      <MudToolBar>
+        <MudText Typo=Typo.h5>基本表單編輯介面</MudText>
+        <MudChip T="string" Color=Color.Info>資訊標籤</MudChip>
+        <MudChip T="string" Color=Color.Warning>注意標籤</MudChip>
+        <MudChip T="string" Variant=Variant.Outlined Color=Color.Info>資訊標籤</MudChip>
+        <MudChip T="string" Variant=Variant.Outlined Color=Color.Warning>注意標籤</MudChip>
+        <MudSpacer />
+        <MudToggleIconButton Icon=@Icons.Material.Filled.Edit Color=Color.Info ToggledIcon=@Icons.Material.Outlined.EditOff @bind-Toggled=f_readOnly />
+        <MudIconButton Icon=@Icons.Material.Outlined.MoreVert Color=Color.Inherit />
+      </MudToolBar>
+
+      <StatusIndicator />
+
+      <AsvtFormRow ReadOnly=f_readOnly>
+        <AsvtStaticField For="()=>formData.FormNo" Label="合約書版本" Grid=@([12]) Variant=Variant.Text InnerPadding=false>
+          <MudChip T="string" Color=Color.Primary>PE</MudChip>
+          <MudChip T="string" Color=Color.Primary>ABC</MudChip>
+          <MudChip T="string" Color=Color.Primary>XYZ</MudChip>
+        </AsvtStaticField>
+
+        <AsvtTextField For="()=>formData.FormNo" ReadOnly=true />
+        <AsvtTextField For="()=>formData.Name" Required />
+        <AsvtRadioField For="()=>formData.Gender" Options=OptionRepos.Gender />
+        <AsvtMonthField For="()=>formData.BirthYearMonth" HelperText="年月數值格式預設為６碼『YYYYMM』" />
+        <AsvtDateField For="()=>formData.Birthday" HelperText="年月數值格式預設為８碼『YYYYMMDD』" />
+
+        <AsvtCheckField For="()=>formData.HasDriverLicense" />
+
+        <AsvtNumberField For="()=>formData.ExpectedSalary" />
+        <AsvtSelectField For="()=>formData.ExpectedJobTitle" Options=OptionRepos.PositionTitle />
+
+        <AsvtDropdownField For="()=>formData.SampleCode" CodeRepo=sampleRepo />
+
+        <AsvtDropdownField For="()=>formData.BankCd" CodeRepo=bankRepo />
+
+        <AsvtDropdown2Field For="()=>formData.BranchCd" CodeRepo=branchRepo Grid=@([12,6,8,6])
+                            GroupFor="()=>formData.BankCd" />
+
+        <AsvtAutoTextField For="()=>formData.Favorite" TextRepo=textRepo />
+
+        <AsvtTriStateField For="()=>formData.YesIam" TrueSign=@(["Y","是的"]) FuzySign=@(["X","有與沒有之間"]) />
+
+        <AsvtMultiCheckField For="()=>formData.InterestingList" Options=OptionRepos.Interesting Grid=@([12]) Required
+                             HelperText=@Utils.JsonSerialize(interestingList)
+                             Immediate OnChange="v => interestingList = v" />
+
+        <AsvtTextAreaField For="()=>formData.SelfIntroduction" Grid=@([12])
+                           Immediate OnChange=@(v => textAreaLen = formData.SelfIntroduction?.Length ?? 0)
+                           HelperText=@($"已輸入{textAreaLen:N0}字元。") />
+      </AsvtFormRow>
+      <AsvtFormRow>
+        <AsvtStaticField For="()=>formData.AddUser" />
+        <AsvtStaticField For="()=>formData.AddDtm" Format="yyyy-MM-dd HH:mm" />
+        <AsvtStaticField For="()=>formData.UpdUser" />
+        <AsvtStaticField For="()=>formData.UpdDtm" Format="yyyy-MM-dd HH:mm" />
+      </AsvtFormRow>
+    </MudPaper>
+
+    <MudPaper role="panel" Class="pt-2">
+      <MudText Typo=Typo.h6>聯絡方式(群組物件)</MudText>
+      <AsvtFormRow ReadOnly=f_readOnly>
+        <AsvtTextField For="()=>formData.Contact.Email" />
+        <AsvtTextField For="()=>formData.Contact.MobilePhone" />
+        <AsvtTextField For="()=>formData.Contact.Address" Grid=@([12,12,8,6]) />
+      </AsvtFormRow>
+    </MudPaper>
+
+    <MudDataGrid Items=@formData.EduList Class="mb-2" ReadOnly=false EditMode=DataGridEditMode.Cell SortMode=SortMode.None Dense>
+      <ToolBarContent>
+        <MudText Typo=Typo.h6>學歷(項目清單)</MudText>
+        <MudSpacer />
+        <MudIconButton Size=Size.Medium Icon=@Icons.Material.Filled.Add Color=Color.Primary OnClick=HandleAddEdu />
+      </ToolBarContent>
+      <Columns>
+        <PropertyColumn Context="itemCtx" Property="m => m.Level" Title="等級">
+          <EditTemplate>
+            <MudTextField @bind-Value=@itemCtx.Item.Level Validation=@((string value)=>{
+                          if(string.IsNullOrEmpty(value)) return "'等級' 不可空白。";
+                          return null; // success
+                          }) />
+          </EditTemplate>
+        </PropertyColumn>
+        <PropertyColumn Context="itemCtx" Property="m => m.SchoolName" Title="學校名稱">
+          <EditTemplate>
+            <MudTextField @bind-Value=@itemCtx.Item.SchoolName Validation=@((string value)=>{
+                          if(string.IsNullOrEmpty(value)) return "'學校名稱' 不可空白。";
+                          if(value.Length < 4) return "'學校名稱' 長度不可小於４。";
+                          return null; // success
+                          }) />
+          </EditTemplate>
+        </PropertyColumn>
+        <TemplateColumn Context="itemCtx" CellClass="d-flex justify-end">
+          <EditTemplate>
+            <MudIconButton Size=Size.Small Icon=@Icons.Material.Filled.Remove Color=Color.Primary OnClick="()=>HandleRemoveEdu(itemCtx.Item)" Style="height:30px" />
+          </EditTemplate>
+        </TemplateColumn>
+      </Columns>
+    </MudDataGrid>
+
+    @* <MudTable Items=@formData.EduList Hover Context="item" CanCancelEdit
+    OnCommitEditClick="@(() => snackSvc.Add("Commit Edit Handler Invoked"))"
+    RowEditPreview=BackupEditItem RowEditCancel=RestoreEditItem>
+    <HeaderContent>
+    <MudTh>等級</MudTh>
+    <MudTh>學校名稱</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+    <MudTd DataLabel="等級">@item.Level</MudTd>
+    <MudTd DataLabel="學校名稱">@item.SchoolName</MudTd>
+    </RowTemplate>
+    <RowEditingTemplate>
+    <MudTd DataLabel="等級">
+    <MudTextField @bind-Value=@item.Level
+    Validation=@((string value)=>{
+    if(string.IsNullOrEmpty(value)) return "'等級' 不可空白。";
+    return null; // success
+    }) />
+    </MudTd>
+    <MudTd DataLabel="學校名稱">
+    <MudTextField @bind-Value=@item.SchoolName
+    Validation=@((string value)=>{
+    if(string.IsNullOrEmpty(value)) return "'學校名稱' 不可空白。";
+    if(value.Length <= 2) return "'學校名稱' 長度不可小於2。";
+    return null; // success
+    }) />
+    </MudTd>
+    </RowEditingTemplate>
+    </MudTable> *@
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=@(()=>HandleSubmit(context))>送出</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary OnClick=HandleReset>重置</MudButton>
+    </MudStack>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary>送出</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary>預覽</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary>存檔</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary>結案</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary>套印</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary>歷史留言</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary>附件上傳</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Warning>刪除</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary>返回</MudButton>
+      <MudCheckBox @bind-Value=@f_publish Label="發佈" Color=Color.Primary Dense />
+    </MudStack>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary>送出</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary>預覽</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary>存檔</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary>結案</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary>套印</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary>歷史留言</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary>附件上傳</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Warning>刪除</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Default>返回</MudButton>
+      <MudCheckBox @bind-Value=@f_publish Label="發佈" Color=Color.Primary Dense />
+    </MudStack>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary StartIcon=@Icons.Material.Filled.Send>送出</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary StartIcon=@Icons.Material.Filled.Preview>預覽</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary StartIcon=@Icons.Material.Filled.Save>存檔</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary StartIcon=@Icons.Material.Filled.Lock>結案</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary StartIcon=@Icons.Material.Filled.PictureAsPdf>套印</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary StartIcon=@Icons.Material.Filled.ManageSearch>歷史留言</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary StartIcon=@Icons.Material.Filled.AttachFile>附件上傳</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Warning StartIcon=@Icons.Material.Filled.Delete>刪除</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary StartIcon=@Icons.Material.Filled.ArrowBack>返回</MudButton>
+      <MudCheckBox @bind-Value=@f_publish Label="發佈" Color=Color.Primary Dense />
+    </MudStack>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary StartIcon=@Icons.Material.Filled.Send>送出</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary StartIcon=@Icons.Material.Filled.Preview>預覽</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary StartIcon=@Icons.Material.Filled.Save>存檔</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary StartIcon=@Icons.Material.Filled.Lock>結案</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary StartIcon=@Icons.Material.Filled.PictureAsPdf>套印</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary StartIcon=@Icons.Material.Filled.ManageSearch>歷史留言</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Secondary StartIcon=@Icons.Material.Filled.AttachFile>附件上傳</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Warning StartIcon=@Icons.Material.Filled.Delete>刪除</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Default StartIcon=@Icons.Material.Filled.ArrowBack>返回</MudButton>
+      <MudCheckBox @bind-Value=@f_publish Label="發佈" Color=Color.Primary Dense />
+    </MudStack>
+
+    <DialogValidationSummary />
+  </EditForm>
+
+  @* for debug *@
+  <pre>
+    @Utils.JsonSerialize(formData)
+  </pre>
+</MudContainer>
+
+@code {
+  //[CascadingParameter] Task<AuthenticationState> AuthStateTask { get; set; } = default!;
+
+  //## Resource
+  SampleCodeRepo sampleRepo = new();
+  SampleCodeRepo sample2Repo = new();
+  SimsBankRepo bankRepo = new();
+  SimsBranchRepo branchRepo = new();
+  SampleTextRepo textRepo = new();
+
+  //## State
+  AuthUser? loginUser = null;
+  bool f_readOnly = false;
+  bool f_publish = false;
+  SampleFormData formData = new();
+  List<string> interestingList = new();
+  int textAreaLen = 0;
+
+  protected override async Task OnInitializedAsync()
+  {
+    loginUser = await userSvc.GetCurrentUserAsync();
+  }
+
+  void HandleSubmit(EditContext ctx)
+  {
+    if (!ctx.Validate())
+    {
+      // 未通過基本表單驗證！將觸發 CustomValidationSummary。
+      return;
+    }
+
+    dlgSvc.ShowAlert("已通過基本表單驗證。", Color.Success);
+  }
+
+  void HandleReset()
+  {
+    formData = new()
+      {
+        FormNo = "FN001-AB-168",
+        Gender = "M",
+        Birthday = "20240229",
+        BirthYearMonth = "202402",
+        HasDriverLicense = "N",
+        ExpectedSalary = 48000,
+        ExpectedJobTitle = "ENG",
+        Name = loginUser?.UserName ?? "來賓",
+        SampleCode = "086",
+        SampleCode2 = "086",
+        BankCd = "B002",
+        BranchCd = "BR0043",
+        Favorite = "冬眠",
+        YesIam = "X",
+        InterestingList = ["aquascape", "astrology", "climbing"],
+        AddUser = "smart",
+        AddDtm = DateTime.Now.AddDays(-7),
+        UpdUser = "beauty",
+        UpdDtm = DateTime.Now.AddDays(-1),
+        Contact = new()
+        {
+          Email = "nobody@mail.server",
+          MobilePhone = "0988123456",
+          Address = "新北市中和區沒有這條路０號"
+        },
+        EduList = new() {
+          new() { Level = "高中", SchoolName = "堪比建中" },
+          new() { Level = "大學", SchoolName = "超越台大" },
+        },
+        SelfIntroduction = @"很久很久以前，在一個遙遠遙遠的大沼澤裏，住着一隻叫史瑞克的綠色怪物，過着悠閒的生活。有一天，他平靜的生活被幾個不速之客打破，它們是一隻眼神不怎麼好的小老鼠，一隻大壞狼和三隻無家可歸的小豬，他們都是從童話王國裏逃出來的，史瑞克為了讓他們遠離自己沼澤地還自己以清淨，就讓一個會説話的驢子帶路，去了那個遙遠遙遠的王國找國王。
+
+此時國王正在為自己王位發愁，因為魔鏡告訴他要娶個公主才能真正成為國王，所以他選定了困在高塔之上，有火龍守護的公主菲奧娜，並且準備選拔騎士去解救公主。正好史瑞克趕來，打敗了所有騎士。國王本要抓史瑞克，後來將計就計，讓史瑞克去救公主，條件是還回史瑞克的沼澤地，於是，他和驢子上路了。
+
+史瑞克成功的救出公主，但在途中發現自己愛上了公主菲奧娜，而公主也已經對史瑞克有了感情，但是由於公主自身被詛咒，白天有着美麗的外貌，而晚上會變成怪物，所以一直不敢表白。但最後真愛戰勝了外貌，公主最終和史瑞克在一起。"
+      };
+  }
+
+  void HandleAddEdu()
+  {
+    formData.EduList.Add(new EducationInfo());
+  }
+
+  void HandleRemoveEdu(EducationInfo item)
+  {
+    formData.EduList.Remove(item);
+  }
+
+  #region for MudTable RowEditingTemplate to backup/restore the 'EditItem'.
+  EducationInfo? backupItem = null;
+
+  private void BackupEditItem(object element)
+  {
+    EducationInfo item = (EducationInfo)element;
+    backupItem = new()
+      {
+        Level = item.Level,
+        SchoolName = item.SchoolName
+      };
+  }
+
+  private void RestoreEditItem(object element)
+  {
+    ((EducationInfo)element).Level = backupItem!.Level;
+    ((EducationInfo)element).SchoolName = backupItem!.SchoolName;
+  }
+  #endregion
+}

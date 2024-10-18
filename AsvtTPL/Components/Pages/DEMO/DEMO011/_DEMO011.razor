@@ -1,0 +1,35 @@
+﻿@using Vista.Biz.DEMO
+@page "/DEMO011"
+@attribute [Page("DEMO011", "ＣＲＵＤ少欄位樣板")]
+@attribute [Authorize("AuthPage")]
+
+<CascadingValue Value="this">
+  <MudContainer>
+    <MudGrid>
+      <MudItem md=6>
+        <ListView />
+      </MudItem>
+      <MudItem md=6>
+        @if (dataAim == null)
+        {
+          <AddView />
+        }
+        else
+        {
+          <EditView />
+        }
+      </MudItem>
+    </MudGrid>
+  </MudContainer>
+</CascadingValue>
+
+@code {
+  /// <summary>
+  /// 通知去刷新全部頁面。
+  /// </summary>
+  internal void NotifyStateChanged() => StateHasChanged();
+
+  //## State
+  internal List<DEMO011FormData> dataList = [];
+  internal DEMO011FormData? dataAim = null; // 處理資料標的
+}

@@ -1,0 +1,21 @@
+﻿@using Vista.Biz.DEMO
+@page "/DEMO009/{qarg1?}"
+@attribute [Page("DEMO009", "查詢作業樣板")]
+@attribute [Authorize("AuthPage")]
+
+<MudContainer>
+  <QueryPanel QArg1=@QArg1 OnRetrieveDataList=HandleRetrieveDataList />
+  <DataLister DataList=@dataList />
+</MudContainer>
+
+@code {
+  [Parameter] public string? QArg1 { get; set; }
+
+  //## State
+  List<DEMO009Data> dataList = [];
+
+  void HandleRetrieveDataList(List<DEMO009Data> _dataList)
+  {
+    dataList = _dataList;
+  }
+}

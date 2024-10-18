@@ -1,0 +1,68 @@
+﻿@using DynamicExpresso
+
+<MudPaper role="panel">
+  <MudText Typo=Typo.h6>Parse & Invoke</MudText>
+  <MudNumericField T="decimal" Label="foo" @bind-Value=foo />
+  <MudNumericField T="decimal" Label="bar" @bind-Value=bar />
+  <MudTextField Label="expression" @bind-Value=expression />
+  <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=HandleParse>Parse</MudButton>
+  <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=HandleInvoke>Invoke</MudButton>
+  <MudText>message: @message</MudText>
+</MudPaper>
+
+@code {
+  string message = string.Empty;
+  decimal foo = 987654321m;
+  decimal bar = 7654321m;
+  string expression = "foo - bar";
+
+  Lambda? lambda = null;
+
+  async Task HandleParse()
+  {
+    try
+    {
+      message = "解析中...";
+      await Task.Yield();
+
+      var interpreter = new Interpreter();
+      //interpreter.SetVariable("foo", foo);
+      //interpreter.SetVariable("bar", bar);
+      //lambda = interpreter.Parse(expression); 
+
+      lambda = interpreter.Parse(expression, 
+        new Parameter("foo", typeof(decimal)), 
+        new Parameter("bar", typeof(decimal)));
+
+      message = $"The lambda parsed.";
+    }
+    catch (Exception ex)
+    {
+      lambda = null;
+      message = $"出現例外: " + ex.GetType().Name + ", " + ex.Message;
+    }
+  }
+
+  async Task HandleInvoke()
+  {
+    try
+    {
+      message = "計算中...";
+      await Task.Yield();
+
+      if(lambda is null)
+      {
+        message = $"lambda 未解析無法計算。";
+        return;
+      }
+
+      //var result = lambda.Invoke();
+      var result = lambda.Invoke(foo, bar);
+      message = $"{result}";
+    }
+    catch (Exception ex)
+    {
+      message = $"出現例外: " + ex.GetType().Name + ", " + ex.Message;
+    }
+  }
+}

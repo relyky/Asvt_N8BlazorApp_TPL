@@ -1,0 +1,39 @@
+﻿@implements IAsyncDisposable
+@inject IJSRuntime jsr
+
+@*
+ * //## 註冊單向繫結 React 元件：RxTitle
+*@
+
+<div @ref=refRoot></div>
+
+@code {
+  [Parameter] public string Title { get; set; } = string.Empty;
+
+  //# Resource
+  Lazy<Task<IJSObjectReference>> moduleTask = default!;
+  ElementReference refRoot;
+
+  public async ValueTask DisposeAsync()
+  {
+    if (moduleTask.IsValueCreated)
+    {
+      var module = await moduleTask.Value;
+      await module.DisposeAsync();
+    }
+  }
+
+  protected override void OnInitialized()
+  {
+    moduleTask = new(() => jsr.InvokeAsync<IJSObjectReference>("import", "./_content/Vista.Component/rxcounter.bundle.js").AsTask());
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      var module = await moduleTask.Value;
+      await jsr.InvokeVoidAsync("renderRxTitle", refRoot, Title);
+    }
+  }
+}

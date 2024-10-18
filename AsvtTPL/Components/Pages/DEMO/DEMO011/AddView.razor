@@ -1,0 +1,66 @@
+﻿@using Vista.Biz.DEMO
+@inject IDialogServiceEx dlgSvc
+@inject DEMO011Biz bizSvc
+
+<ScreenOverlay Visible=f_loading />
+
+<EditForm Model=formData>
+  <FluentValidationValidator />
+
+  <MudPaper role="panel">
+    <AsvtFormRow Grid=@([12,6])>
+      <AsvtTextField For="()=>formData.formNo" Required />
+      <AsvtTextField For="()=>formData.dataFieldA" Required />
+      <AsvtTextField For="()=>formData.dataFieldB" />
+      <AsvtTextField For="()=>formData.dataFieldC" />
+    </AsvtFormRow>
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary OnClick="()=>HandleSubmit(context)">存檔</MudButton>
+    </MudStack>
+  </MudPaper>
+
+  <DialogValidationSummary />
+</EditForm>
+
+@code {
+  [CascadingParameter] _DEMO011 BizState { get; set; } = default!;
+
+  //## State
+  DEMO011FormData formData = new();
+  bool f_loading = false;
+
+  async Task HandleSubmit(EditContext context)
+  {
+    try
+    {
+      //# 基本檢查
+      if (!context.Validate()) return;
+
+      //# block UI
+      f_loading = true;
+      StateHasChanged();
+
+      //# 資料演算
+      (formData, string message) = await Task.Run(() => bizSvc.AddFormData(formData));
+      if (message != "SUCCESS")
+      {
+        dlgSvc.ShowAlert(message);
+        return;
+      }
+
+      //# 成功後同步UI資料 & 刷新畫面
+      BizState.dataList.Insert(0, formData);
+      BizState.dataAim = formData;
+      BizState.NotifyStateChanged();
+      dlgSvc.ShowAlert("新增完成。", Color.Success);
+    }
+    catch (Exception ex)
+    {
+      dlgSvc.ShowAlert(ex.Message, title: "出現例外！");
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+}

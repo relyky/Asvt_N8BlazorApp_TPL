@@ -1,0 +1,147 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Logging
+@using System.Linq.Expressions
+@using System.Reflection
+@inherits AsvtFieldBase<string>
+@implements IDisposable
+@inject ILogger<AsvtDropdown2Field> logger
+
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+  <MudAutocomplete T="ICodeName" @ref=refElement
+                   @bind-Value=codeValue
+                   Immediate=@Immediate
+                   Label=@_label
+                   ReadOnly=@(_suppressInput || _readOnly)
+                   HelperText=@HelperText
+                   Required=@Required
+                   Class=@(CodeRepo.IsLoaded ? Class : "d-none")
+                   Variant=@(_suppressInput || _readOnly ? Variant.Filled : Variant.Text)
+                   Error=@ValidationError
+                   ErrorText=@ValidationErrorText
+                   SearchFunc=@CodeRepo.SearchFunc
+                   ToStringFunc=@(c => c == null ? null : $"{c.Code}-{c.Name}")
+                   MaxItems=@MaxItems
+                   MaxHeight="500"
+                   OpenIcon=@Icons.Material.Filled.ExpandMore
+                   CloseIcon=@Icons.Material.Filled.ExpandLess
+                   Clearable=true
+                   ResetValueOnEmptyText=true
+                   CoerceValue=false
+                   CoerceText=true
+                   SelectValueOnTab=true
+                   Strict=false
+                   ShowProgressIndicator=true
+                   ProgressIndicatorColor=Color.Info>
+    <MoreItemsTemplate>
+      <MudText Align=Align.Center Class="px-4 py-1 mud-theme-dark">
+        @($"只顯示前{MaxItems}/{CodeRepo.CodeList.Count}筆")
+      </MudText>
+    </MoreItemsTemplate>
+  </MudAutocomplete>
+
+  @if (!CodeRepo.IsLoaded)
+  {
+    @* 延遲載入中時，以 Skeleton 呈現。 *@
+    <MudSkeleton Animation=MudBlazor.Animation.Pulse Width="40%" />
+    <MudSkeleton Animation=MudBlazor.Animation.Wave Width="80%" Height="32px" />
+  }
+</MudItem>
+
+@code {
+  /// <summary>
+  /// the CodeName Repository
+  /// </summary>
+  [Parameter, EditorRequired] public ICodeNameRepo CodeRepo { get; init; } = default!;
+
+  /// <summary>
+  /// Group by the field。
+  /// ※ GroupFor 必需一開始就指定有或無。
+  /// </summary>
+  [Parameter] public Expression<Func<string>>? GroupFor { get; set; }
+
+  /// <summary>
+  /// 呈現下拉項目筆數。null 表示不限制。
+  /// </summary>
+  [Parameter] public int? MaxItems { get; set; } = 100;
+
+  /// <summary>
+  /// 轉型 FieldValue
+  /// </summary>
+  ICodeName? codeValue
+  {
+    get => CodeRepo[FieldValue];
+    set => FieldValue = (value != null) ? value.Code : null!;
+  }
+
+  MudAutocomplete<ICodeName> refElement = default!;
+
+  #region 相依 GroupFor 產生的內部屬性
+  FieldIdentifier _groupField;
+  PropertyInfo? _groupProp;
+
+  /// <summary>
+  /// [控制旗標]壓制輸入 - 就是強制唯讀。
+  /// 當 GroupFor 欄位空值時，不可進行輸入操作。
+  /// </summary>
+  bool _suppressInput = false;
+  #endregion
+
+  public void Dispose()
+  {
+    this.EditContext.OnFieldChanged -= HandleFieldChanged;
+  }
+
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+    this.EditContext.OnFieldChanged += HandleFieldChanged;
+    CodeRepo.LoadedAct = () =>
+    {
+      //# Refersh
+      refElement.SearchFunc(null, new CancellationToken()); // [非正確解]效果同初次填滿下拉項目。否則重置(填值)無作用！
+      refElement.ForceRender(false);
+      //codeValue = CodeNameRepo[FieldValue]; // 重新填入
+      StateHasChanged();
+    };
+
+    //#依 GroupFor 初始取得 GroupBy 值
+    //※ GroupFor 必需一開始就指定有或無。
+    if (GroupFor is not null)
+    {
+      //# 相依 GroupFor 產生的內部屬性 - 初始化
+      _groupField = FieldIdentifier.Create(GroupFor);
+      _groupProp = _groupField.Model.GetType().GetProperty(_groupField.FieldName);
+
+      //# 取 GruopBy 現在值
+      System.Diagnostics.Trace.Assert(_groupProp is not null);
+      string? groupValue = _groupProp.GetValue(_groupField.Model) as string;
+      _suppressInput = String.IsNullOrWhiteSpace(groupValue);
+
+      //# for 刷新UI
+      CodeRepo.GroupBy = groupValue;
+      logger.LogTrace($"ON:AsvtDropdown2Field.OnInitialized → {_groupField.FieldName}:{groupValue} → suppressInput:{_suppressInput}");
+    }
+  }
+
+  void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
+  {
+    //# 未指定 GroupFor 參數，離開。
+    if (GroupFor is null) return;
+
+    //# 非指定的 GroupFor 欄位，離開。
+    bool isTheGroupField = _groupField.Model.Equals(e.FieldIdentifier.Model) && _groupField.FieldName.Equals(e.FieldIdentifier.FieldName);
+    if (!isTheGroupField) return;
+
+    //# 取 GruopBy 新值
+    System.Diagnostics.Trace.Assert(_groupProp is not null);
+    string? groupValue = _groupProp.GetValue(_groupField.Model) as string;
+    _suppressInput = String.IsNullOrWhiteSpace(groupValue);
+    logger.LogTrace($"ON:AsvtDropdown2Field.HandleFieldChanged → {_groupField.FieldName}:{groupValue} → suppressInput:{_suppressInput}");
+
+    //# 刷新UI
+    CodeRepo.GroupBy = groupValue;
+    codeValue = null;
+    refElement.ForceRender(false);
+    StateHasChanged();
+  }
+}

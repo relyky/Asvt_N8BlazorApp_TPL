@@ -1,0 +1,109 @@
+﻿@using Vista.Component.Models
+@using Vista.Component.ReactEx
+@using Microsoft.AspNetCore.Hosting
+@page "/DEMO203"
+@attribute [Page("DEMO203", "產生與掃描 QR Code")]
+@attribute [Authorize("AuthPage")]
+
+<h3>_DEMO203</h3>
+<p>產生與掃描 QR Code</p>
+
+<div class="my-qrcode">
+  <h5>QRCodeCanvas</h5>
+  <web-qrcode value=@asset.QrValue />
+  <web-qrcode value=@asset.QrValue level="Q" fg_color="#8D1485" image_url=@imageUrl2 />
+</div>
+
+<div class="my-qrcode">
+  <h5>QRCodeSVG</h5>
+  <div class="d-inline-block" style="width:54px;">
+    <web-qrcode-svg value=@asset.QrValue />
+  </div>
+  <div class="d-inline-block" style="width:54px;">
+    <web-qrcode-svg value=@asset.QrValue level="Q" fg_color="#8D1485" image_url=@imageUrl />
+  </div>
+</div>
+
+
+@foreach (int i in Enumerable.Range(1, 7))
+{
+  <div class="label-sticker">
+    <div class="d-inline-block" style="width:54px;">
+      <web-qrcode-svg value=@asset.QrValue level="Q" fg_color="#8D1485" image_url=@imageUrl />
+    </div>
+    <div class="d-inline-block ml-2">
+      <p>@asset.AssetCd</p>
+      <p>@asset.UserCd</p>
+    </div>
+  </div>
+}
+
+@foreach (int i in Enumerable.Range(1, 7))
+{
+  <div class="label-sticker">
+    <div class="d-inline-block" style="width:54px;">
+      <web-qrcode-svg value=@asset.AssetCd level="Q" fg_color="#8D1485" image_url=@imageUrl />
+    </div>
+    <div class="d-inline-flex flex-column justify-center ml-2">
+      <p>@asset.AssetCd</p>
+      <p>@asset.UserCd</p>
+    </div>
+  </div>
+}
+
+@foreach (int i in Enumerable.Range(1, 7))
+{
+  <div class="label-sticker">
+    <div class="d-inline-block" style="width:54px;">
+      <web-qrcode-svg value=@asset.AssetCd level="L" fg_color="#8D1485" />
+    </div>
+    <div class="d-inline-flex flex-column justify-center ml-2" style="color:#8D1485;">
+      <p>ASVT</p>
+      <p>@asset.AssetCd</p>
+    </div>
+  </div>
+}
+
+@foreach (int i in Enumerable.Range(1, 7))
+{
+  <div class="label-sticker">
+    <div class="d-inline-block" style="width:54px;">
+      <web-qrcode-svg value=@asset.QrValue level="Q" fg_color="#8D1485" image_url=@imageUrl />
+    </div>
+    <div class="d-inline-flex flex-column justify-center ml-2">
+      <p>@asset.AssetCd</p>
+      <p>@asset.UserCd</p>
+    </div>
+  </div>
+}
+
+@foreach (int i in Enumerable.Range(1, 7))
+{
+  <div class="label-sticker2" style="text-align:center;">
+    <div style="width:54px;">
+      <web-qrcode-svg value=@asset.QrValue level="Q" fg_color="#8D1485" image_url=@imageUrl />
+    </div>
+    <p style="font-size:1.25em">@asset.AssetCd</p>
+  </div>
+}
+
+@code {
+  //const string value = "https://www.asiavista.com.tw/asvtsso/";
+  //string[] qrValues = ["25099", "julia_ming"];
+  AssetInfo asset = new AssetInfo();
+
+  //const string imageUrl = "image/owl-face-silhouettes.png";
+  const string imageUrl2 = "image/icon-192.png";
+  const string imageUrl = "image/icon-32.png";
+  //const string imageUrl = "image/asvt.ico";
+
+
+  record AssetInfo
+  {
+    public string AssetCd { get; init; } = "25099";
+    public string UserCd { get; init; } = "julia_ming";
+    public string UserSname { get; init; } = "julia";
+
+    public string QrValue => $"{AssetCd},{UserCd}";
+  }
+}

@@ -1,0 +1,120 @@
+﻿@using Vista.Biz.DEMO
+@inject DEMO008Biz bizSvc
+
+<MudPaper role="panel">
+
+  <MudText Color=Color.Info Class="py-2">
+    這裡放置明確的前置說明。<br />
+    上傳檔案實作請參考<MudLink Href="https://mudblazor.com/components/fileupload#use-any-type-of-mudbutton" Target="_blank"> File Upload </MudLink>文件。
+    輸入元件<code>MudInput</code>實作請參考<MudLink Href="https://mudblazor.com/components/textfield#input" Target="_blank"> Input </MudLink>文件。
+  </MudText>
+
+  <MudStack Row AlignItems=AlignItems.Center>
+    <MudText Typo=Typo.h6>選取特性：</MudText>
+    <MudCheckBox Color=Color.Primary @bind-Value=uploadArgs.PickMe1>選我選我</MudCheckBox>
+    <MudCheckBox Color=Color.Primary @bind-Value=uploadArgs.PickMe2>選我才對</MudCheckBox>
+  </MudStack>
+
+  <MudRadioGroup @bind-Value=uploadArgs.SelectedOption>
+    <MudRadio Value=@("選項一") Color=Color.Primary>選項一</MudRadio>
+    <MudRadio Value=@("選項二") Color=Color.Primary>選項二</MudRadio>
+    <MudRadio Value=@("選項三") Color=Color.Primary>選項三</MudRadio>
+    <MudRadio Value=@("選項四") Color=Color.Primary>選項四</MudRadio>
+  </MudRadioGroup>
+
+  <MudText Class="py-2">
+    輸入文字 <MudInput @bind-Value=uploadArgs.InputText Variant=Variant.Outlined Margin=Margin.Dense /> 到這裡面。
+  </MudText>
+
+  <FileUploadButton OnPickFile=HandlePickFile Multible=false />
+
+  <MudAlert Severity=Severity.Warning Variant=Variant.Outlined Class="my-2">
+    此範例就算選取多個檔案也只會上傳第一個檔案。<br />
+    這裡放置警告的說明。這裡放置警告的說明。這裡放置警告的說明。因為很重要所以說三次。
+  </MudAlert>
+</MudPaper>
+
+<MudStack Row Justify=Justify.Center Class="my-3">
+  <MudButton Variant=Variant.Filled Color=Color.Primary Size=Size.Large OnClick=HandleUpload Disabled=f_loading >開始上傳</MudButton>
+</MudStack>
+
+@if (f_loading)
+{
+  <MudProgressLinear Color=Color.Info Indeterminate Class="my-3" />
+}
+
+@if (errorList.Count > 0)
+{
+  <MudAlert Severity=Severity.Error>
+    @foreach (var error in errorList)
+    {
+      <p>@error</p>
+    }
+  </MudAlert>
+}
+
+@if (uploadList != null)
+{
+  <MudDataGrid Items=uploadList Dense HeaderClass="custom-secondary">
+    <Columns>
+      <PropertyColumn Property="m => m.IdName" Title="識別名稱" />
+      <PropertyColumn Property="m => m.Amount" Title="數值" />
+    </Columns>
+  </MudDataGrid>
+}
+
+@code {
+  //## Resrouces
+  DEMO008ArgsValidator validator = new();
+
+  //## State
+  bool f_loading = false;
+  DEMO008Args uploadArgs = new();
+  List<string> errorList = new();
+  IBrowserFile? pickedFile = null;
+  List<DEMO008Info>? uploadList = null;
+
+  async Task HandleUpload()
+  {
+    try
+    {
+      f_loading = true;
+      errorList.Clear();
+      uploadList = null; // 清空上次的結果
+
+      //# Validate
+      var result = await validator.ValidateAsync(uploadArgs);
+      if (!result.IsValid)
+        errorList.AddRange(result.Errors.Select(e => e.ErrorMessage));
+
+      if (pickedFile is null)
+        errorList.Add("請選取檔案！");
+
+      if (errorList.Count > 0)
+        return;
+
+      //# Go
+      // 把 file 轉存入MemoryStream再處理，因為ClosedXML尚未支援async模式。
+      const long maxAllowedSize = 1024 * 1024 * 10; // 10MB
+      Stream fs = pickedFile!.OpenReadStream(maxAllowedSize);
+      using MemoryStream ms = new();
+      await fs.CopyToAsync(ms);
+
+      // 解析上傳檔案
+      uploadList = await Task.Run(() => bizSvc.UploadExcelFile(ms, uploadArgs));
+    }
+    catch (Exception ex)
+    {
+      errorList.Add("出現例外！" + ex.Message);
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  void HandlePickFile(InputFileChangeEventArgs e)
+  {
+    pickedFile = e.File;
+  }
+}

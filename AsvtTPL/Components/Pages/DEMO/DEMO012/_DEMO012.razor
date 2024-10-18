@@ -1,0 +1,50 @@
+﻿@using Vista.Biz.DEMO
+@page "/DEMO012"
+@attribute [Page("DEMO012", "ＣＲＵＤ多欄位樣板")]
+@attribute [Authorize("AuthPage")]
+
+<CascadingValue Value=@this>
+
+    @if (mode == DisplayMode.Add)
+    {
+        <AddView />
+        @* Mount/Unmount *@
+    }
+
+    @if (mode == DisplayMode.Edit)
+    {
+        <EditView />
+        @* Mount/Unmount *@
+    }
+
+    <ListView />
+    @* Show/Hide *@
+
+</CascadingValue>
+
+@code {
+  /// <summary>
+  /// 通知去刷新全部頁面。
+  /// </summary>
+  internal void NotifyStateChanged() => StateHasChanged();
+
+  /// <summary>
+  /// 畫面模式
+  /// </summary>
+  internal DisplayMode mode
+  {
+    get => _mode;
+    set
+    {
+      _mode = value;
+      // 當畫面模式切換時，通知去刷新全部頁面。
+      this.StateHasChanged();
+    }
+  }
+  DisplayMode _mode = DisplayMode.List;
+
+  //## State
+  internal List<DEMO012Profile> dataList = new();
+  internal DEMO012Profile? dataAim = null; // 處理資料標的
+  internal DEMO012FormData formData = new();
+}

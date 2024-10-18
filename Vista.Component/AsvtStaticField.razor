@@ -1,0 +1,49 @@
+@typeparam T
+@inherits AsvtFieldBase<T>
+
+@* ※注意：此元件一定是唯讀的。 *@
+
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+
+  <MudField Label=@_label
+            HelperText=@HelperText
+            Variant=@Variant
+            InnerPadding=@InnerPadding
+            Underline=@Underline>
+    @GetChildContent()
+  </MudField>
+
+</MudItem>
+
+@code {
+  [Parameter] public RenderFragment ChildContent { get; set; } = default!;
+  [Parameter] public Variant Variant { get; set; } = Variant.Outlined;
+  [Parameter] public bool InnerPadding { get; set; } = true;
+  [Parameter] public bool Underline { get; set; } = true;
+
+  /// <summary>
+  /// 格式化顯示數值。當 FieldValue 有值時才有效。
+  /// </summary>
+  [Parameter] public string? Format { get; set; } = null;
+
+
+  RenderFragment<T> renderValue = (v) => @<span>@v</span>;
+  RenderFragment<T> renderEmpty = (v) => @<span>&nbsp;</span>;
+  RenderFragment<string> renderFormatedValue = (v) => @<span>@v</span>;
+
+  RenderFragment GetChildContent()
+  {
+    if (ChildContent is not null)
+      return ChildContent;
+    else if (FieldValue is null)
+      return renderEmpty(default(T)!); // null
+    else if (string.Empty.Equals(FieldValue))
+      return renderEmpty(default(T)!); // empty
+    else if (Format is not null)
+      return renderFormatedValue(String.Format($"{{0:{Format}}}", (object)FieldValue));
+    else
+      return renderValue(FieldValue);
+
+    //String.Format("{0:yyyy/MM/dd HH:mm}", DateTime.Now)
+  }
+}

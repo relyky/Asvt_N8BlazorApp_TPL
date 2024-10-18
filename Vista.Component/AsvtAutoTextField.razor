@@ -1,0 +1,68 @@
+@inherits AsvtFieldBase<string>
+
+@* Autocomplete text input *@
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+  <MudAutocomplete T="String" @ref=refElement
+                   @bind-Value=FieldValue
+                   Immediate=@Immediate
+                   Label=@_label
+                   ReadOnly=@_readOnly
+                   HelperText=@HelperText
+                   Required=@Required
+                   Class=@(TextRepo.IsLoaded ? Class : "d-none")
+                   Variant=@(_readOnly ? Variant.Filled : Variant.Text)
+                   Error=@ValidationError
+                   ErrorText=@ValidationErrorText
+                   SearchFunc=@TextRepo.SearchFunc
+                   MaxItems=@MaxItems
+                   MaxHeight="500"
+                   AdornmentIcon=@Icons.Material.Filled.ManageSearch
+                   Clearable=false
+                   ResetValueOnEmptyText=true
+                   CoerceValue=true
+                   CoerceText=false
+                   SelectValueOnTab=true
+                   Strict=false
+                   ShowProgressIndicator=true
+                   ProgressIndicatorColor=Color.Info>
+    <MoreItemsTemplate>
+      <MudText Align="Align.Center" Class="px-4 py-1 mud-theme-dark">
+        @($"只顯示前{MaxItems}/{TextRepo.TextList.Length}筆")
+      </MudText>
+    </MoreItemsTemplate>
+  </MudAutocomplete>
+
+  @if (!TextRepo.IsLoaded)
+  {
+    @* 延遲載入中時，以 Skeleton 呈現。 *@
+    <MudSkeleton Animation=MudBlazor.Animation.Pulse Width="40%" />
+    <MudSkeleton Animation=MudBlazor.Animation.Wave Width="80%" Height="32px" />
+  }
+</MudItem>
+
+@code {
+  /// <summary>
+  /// the CodeName Repository
+  /// </summary>
+  [Parameter, EditorRequired] public TextRepoBase TextRepo { get; init; } = default!;
+
+  /// <summary>
+  /// 呈現下拉項目筆數。null 表示不限制。
+  /// </summary>
+  [Parameter] public int? MaxItems { get; set; } = 100;
+
+  MudAutocomplete<String> refElement = default!;
+
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+    TextRepo.LoadedAct = () =>
+    {
+      //# Refersh
+      refElement.SearchFunc(null, new CancellationToken()); // [非正確解]效果同初次填滿下拉項目。否則重置(填值)無作用！
+      refElement.ForceRender(false);
+      //codeValue = CodeNameRepo[FieldValue]; // 重新填入
+      StateHasChanged();
+    };
+  }
+}

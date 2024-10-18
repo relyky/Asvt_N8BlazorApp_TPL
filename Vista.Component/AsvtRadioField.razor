@@ -1,0 +1,33 @@
+﻿@inherits AsvtFieldBase<string>
+
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+  <MudField Label=@_label
+            HelperText=@HelperText
+            Class=@(Required ? $"mud-input-required {Class}" : Class)
+            Error=@ValidationError
+            ErrorText=@ValidationErrorText
+            InnerPadding=false
+            Underline=false>
+    <MudRadioGroup T="string"     
+                   Value=@FieldValue
+                   ValueChanged=@HandleValueChanged>
+      @foreach (var c in Options)
+      {
+        <MudRadio Value=@c.Code Color=@(_readOnly ? Color.Default : Color)>@c.Name</MudRadio>
+      }
+    </MudRadioGroup>
+  </MudField>
+</MudItem>
+
+@code {
+  [Parameter, EditorRequired] public ICodeName[] Options { get; set; } = Array.Empty<CodeName>();
+  [Parameter] public Color Color { get; set; } = Color.Primary;
+
+  void HandleValueChanged(string v)
+  {
+    if (!_readOnly)
+    {
+      FieldValue = v;
+    }
+  }
+}

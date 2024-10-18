@@ -1,0 +1,31 @@
+@inherits AsvtFieldBase<string>
+
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+  <MudSelect T=string
+             @bind-Value=@FieldValue
+             For=@For
+             Immediate=@Immediate
+             Label=@_label
+             ReadOnly=@_readOnly
+             HelperText=@HelperText
+             Required=@Required
+             Class=@Class
+             Variant=@(_readOnly ? Variant.Filled : Variant.Text)
+             Clearable=@(!_readOnly)
+             AnchorOrigin=Origin.BottomCenter
+             MaxHeight="500">
+    @foreach (var c in Options)
+    {
+      <MudSelectItem Value=@c.Code>@(ShowCode ? $"{c.Code}.{c.Name}" : c.Name)</MudSelectItem>
+    }
+  </MudSelect>
+</MudItem>
+
+@code {
+  [Parameter, EditorRequired] public ICodeName[] Options { get; set; } = Array.Empty<CodeName>();
+
+  /// <summary>
+  /// 選項顯示代碼與名稱。
+  /// </summary>
+  [Parameter] public bool ShowCode { get; set; }
+}

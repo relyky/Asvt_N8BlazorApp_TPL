@@ -1,0 +1,23 @@
+/*html, body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+*/
+
+/* 校正 MudTabs 在垂直方向部局時使得 tabpanel width 過寬問題 */
+.custom-tabpanel {
+  width: calc(100% - 160px);
+}
+
+/* ValidationSummary
+<ul class="validation-errors">
+  <li class="validation-message">'我已閱讀並同意' 必需同意才能繼續。</li>
+  <li class="validation-message">'我已閱讀並同意' 必需同意才能繼續。</li>
+</ul>
+*/
+ul.validation-errors {
+  list-style-type: initial;
+}
+
+  ul.validation-errors > li.validation-message {
+    color: var(--mud-palette-error);
+  }

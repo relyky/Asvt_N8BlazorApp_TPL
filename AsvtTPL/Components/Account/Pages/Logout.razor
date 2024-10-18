@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+
+@page "/Account/Logout"
+@inject NavigationManager navSvc
+@inject ILogger<Logout> logger
+
+<PageTitle>Log out</PageTitle>
+
+<h1>Log out</h1>
+
+@code {
+  [CascadingParameter]
+  private HttpContext HttpContext { get; set; } = default!;
+
+  protected override async Task OnInitializedAsync()
+  {
+    logger.LogTrace($"#BEGIN User [{HttpContext.User.Identity?.Name}] logout.");
+
+    // Clear the existing external cookie to ensure a clean login process
+    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+    logger.LogInformation($"User [{HttpContext.User.Identity?.Name}] logout.");
+    navSvc.NavigateTo("/", true);
+  }
+}

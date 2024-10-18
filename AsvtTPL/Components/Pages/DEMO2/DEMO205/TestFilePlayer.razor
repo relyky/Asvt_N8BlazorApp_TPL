@@ -1,0 +1,37 @@
+﻿<MudPaper Class="pa-4 mb-3">
+  <MudText Typo=Typo.h4 GutterBottom>測試播放 File/MP4/HLS 影片</MudText>
+
+  <MudToolBar>
+    <MudSwitch @bind-Value=f_playing Label="Playing" Color=Color.Info />
+    <MudSwitch @bind-Value=f_loop Label="Loop" Color=Color.Info />
+    <MudSwitch @bind-Value=f_controls Label="Controls (requires player reload)" Color=Color.Info />
+  </MudToolBar>
+
+  <MudSelect Label="File 測試影片" Variant=Variant.Outlined @bind-Value=midiaUrl>
+    <MudSelectItem Value=@("http://192.168.0.166:8080/")>VLC HLS 測試(未成功過)</MudSelectItem>
+    <MudSelectItem Value=@("rtsp://192.168.0.166:8554/")>VLC RTSP 測試(未成功過)</MudSelectItem>
+    <MudSelectItem Value=@("https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8")>m3u8 test1</MudSelectItem>
+    <MudSelectItem Value=@("https://test-streams.mux.dev/test_001/stream.m3u8")>m3u8 test2</MudSelectItem>
+    <MudSelectItem Value=@("https://cdn.jwplayer.com/manifests/pZxWPRg4.m3u8")>m3u8 test3</MudSelectItem>
+    <MudSelectItem Value=@("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4")>mp4</MudSelectItem>
+    <MudSelectItem Value=@("https://test-videos.co.uk/vids/bigbuckbunny/webm/vp8/360/Big_Buck_Bunny_360_10s_1MB.webm")>webm</MudSelectItem>
+    <MudSelectItem Value=@("https://filesamples.com/samples/video/ogv/sample_640x360.ogv")>video/ogg (ogv)</MudSelectItem>
+    <MudSelectItem Value=@("https://storage.googleapis.com/media-session/elephants-dream/the-wires.mp3")>mp3</MudSelectItem>
+    <MudSelectItem Value=@("https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8")>HLS(m3u8)</MudSelectItem>
+    <MudSelectItem Value=@("https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps_640x360_800k.mpd")>DASH (mpd)</MudSelectItem>
+  </MudSelect>
+
+  <web-file-player url="@midiaUrl" playing="@Playing" loop="@Loop" controls="@Controls" />
+
+</MudPaper>
+
+@code {
+  string midiaUrl = "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4"; // mp4
+
+  bool f_playing = false;
+  string Playing => f_playing ? "true" : "false";
+  bool f_loop = false;
+  string Loop => f_loop ? "true" : "false";
+  bool f_controls = true;
+  string Controls => f_controls ? "true" : "false";
+}

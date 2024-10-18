@@ -1,0 +1,44 @@
+﻿@inject ISnackbar snackSvc
+
+<MudButton Disabled=@_processing OnClick=ProcessAsync Variant=@Variant Color=@Color>
+  @if (_processing)
+  {
+    <MudProgressCircular Class="ms-n1" Size=Size.Small Indeterminate />
+    <MudText Class="ms-2">Processing</MudText>
+  }
+  else
+  {
+    <MudText>@Label</MudText>
+
+    @* 顯示 icon 的語法
+    <MudIcon Icon=@Icons.Material.Filled.Login />
+    <MudText Class="ms-2">@Label</MudText> *@
+  }
+</MudButton>
+
+@code {
+  [Parameter, EditorRequired] public string Label { get; set; } = default!;
+  [Parameter] public EventCallback OnClick { get; set; }
+  [Parameter] public Variant Variant { get; set; } = Variant.Filled;
+  [Parameter] public Color Color { get; set; } = Color.Primary;
+
+  bool _processing = false;
+
+  async Task ProcessAsync()
+  {
+    try
+    {
+      _processing = true;
+      await OnClick.InvokeAsync();
+    }
+    catch (Exception ex)
+    {
+      snackSvc.Add("出現例外！" + ex.Message, Severity.Error);
+    }
+    finally
+    {
+      _processing = false;
+    }
+  }
+}
+

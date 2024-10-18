@@ -1,0 +1,77 @@
+.wrapper {
+  display: block;
+  text-align:center;
+}
+
+.hiddenCanvas {
+  visibility: hidden;
+  position: fixed;
+  top: -200vh
+}
+
+.hiddenInput {
+  visibility: hidden;
+  position: fixed;
+  top: -200vh
+}
+
+.errMsg {
+  color: red;
+  font-size: 1.2rem;
+}
+
+
+/* ·Ó¹³ */
+.takePhotoButton {
+  background-color: var(--mud-palette-primary);
+  color: var(--mud-palette-primary-text);
+  padding: 8px 16px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border: 2px solid black;
+  border-radius: 8px;
+  border-color: var(--mud-palette-primary); 
+}
+
+  .takePhotoButton:hover {
+    background-color: var(--mud-palette-primary-text);
+    color: var(--mud-palette-primary);
+  }
+
+/* ====== µô°Å°Ï ====== */
+.cropMobilePannel {
+  /* #centered */ 
+  position: fixed;
+  z-index: var(--mud-zindex-tooltip);
+  top: 0;
+  left: 0;
+  width: 100dvw;
+  height: 100dvh;
+  text-align: center;
+  /* #appearance */
+  background-color: lightgrey; /* rgba(0,0,0,0.5);*/
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* µô°Å */
+.cropButton {
+  background-color: white;
+  color: var(--mud-palette-secondary); /* green */
+  padding: 8px 16px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border: 2px solid black;
+  border-radius: 8px;
+  border-color: var(--mud-palette-secondary); /* #04AA6D */
+}
+
+  .cropButton:hover {
+    background-color: var(--mud-palette-secondary); /* #04AA6D */
+    color: var(--mud-palette-secondary-text); /* white */
+  }

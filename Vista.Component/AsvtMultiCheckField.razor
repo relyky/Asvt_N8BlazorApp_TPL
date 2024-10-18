@@ -1,0 +1,62 @@
+﻿@inherits AsvtFieldBase<List<String>>
+
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+  <MudField Label=@_label
+            HelperText=@HelperText
+            Class=@(Required ? $"mud-input-required {Class}" : Class)
+            Error=@ValidationError
+            ErrorText=@ValidationErrorText
+            InnerPadding=false
+            Underline=false>
+    <div class="d-flex flex-wrap">
+      @foreach (var c in Options)
+      {
+        <MudCheckBox T=bool Color=@(_readOnly ? Color.Default : Color)
+                     Value=@(FieldValue == null ? false : FieldValue.Contains(c.Code))
+                     ValueChanged=@(isChecked => HandleCheck(c.Code, isChecked))>@c.Name</MudCheckBox>
+      }
+    </div>
+  </MudField>
+</MudItem>
+
+@code {
+  [Parameter, EditorRequired] public ICodeName[] Options { get; set; } = Array.Empty<CodeName>();
+  [Parameter] public Color Color { get; set; } = Color.Primary;
+
+  void HandleCheck(string code, bool isChecked)
+  {
+    //EditContext.GetValidationMessages(_fieldIdentifier);
+
+    if (!_readOnly)
+    {
+      if (isChecked)
+      {
+        // 勾選項目
+        if (FieldValue == null) FieldValue = new();
+        FieldValue.Add(code);
+
+        if (Immediate)
+        {
+          //# NotifyFieldChanged
+          OnChange.InvokeAsync(FieldValue);
+          EditContext.NotifyFieldChanged(_fieldIdentifier);
+        }
+      }
+      else
+      {
+        // 反勾選項目
+        if (FieldValue != null)
+        {
+          FieldValue.Remove(code);
+
+          if (Immediate)
+          {
+            //# NotifyFieldChanged
+            OnChange.InvokeAsync(FieldValue);
+            EditContext.NotifyFieldChanged(_fieldIdentifier);
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+﻿@using Vista.Biz.DEMO
+@inject IDialogServiceEx dlgSvc
+@inject DEMO011Biz bizSvc
+
+<style>
+  .selected {
+    background-color: var(--mud-palette-info-lighten) !important;
+    /* background-color: var(--mud-palette-secondary-lighten) !important; */
+  }
+
+    .selected > td {
+      color: var(--mud-palette-info-text) !important;
+      /* color: var(--mud-palette-secondary-text) !important; */
+    }
+
+      .selected > td .mud-input {
+        color: var(--mud-palette-info-text) !important;
+        /* color: var(--mud-palette-secondary-text) !important; */
+      }
+</style>
+
+@* DataList *@
+<MudDataGrid T="DEMO011FormData" Items=dataList Loading=f_loading SortMode=SortMode.None Hover Striped Dense=false
+             SelectOnRowClick RowClass="cursor-pointer" RowClick=HandleRowClick RowClassFunc=SelectedRowClassFunc
+             FixedHeader Height="calc(100vh - 200px)" HeaderClass="custom-secondary">
+  <ToolBarContent>
+    <MudButton StartIcon=@Icons.Material.Filled.Add Variant=Variant.Outlined Color=Color.Primary Class="mr-2" OnClick=HandleAdd>新增</MudButton>
+    <MudChip Color=Color.Info Variant=Variant.Outlined>@($"總共{dataList.Count:N0}筆")</MudChip>
+    <MudSpacer />
+    <MudTextField T="string" Value=@keyword ValueChanged=HandleKeywordChanged
+                  Margin=Margin.Dense Adornment=Adornment.Start AdornmentIcon=@Icons.Material.Rounded.Search
+                  Placeholder="關鍵字查詢: 表單號碼,資料欄位A" />
+  </ToolBarContent>
+  <Columns>
+    <PropertyColumn Property="m => m.formNo" Title="表單號碼" />
+    <PropertyColumn Property="m => m.dataFieldA" Title="資料欄位A" />
+    <PropertyColumn Property="m => m.dataFieldB" Title="資料欄位B" />
+    <PropertyColumn Property="m => m.dataFieldC" Title="資料欄位C" />
+  </Columns>
+</MudDataGrid>
+
+@code {
+  [CascadingParameter] _DEMO011 BizState { get; set; } = default!;
+
+  //## Resource
+
+  //## State
+  List<DEMO011FormData> dataList { get => BizState.dataList; set => BizState.dataList = value; }
+  DEMO011FormData? selectedItem { get => BizState.dataAim; set => BizState.dataAim = value; }
+  bool f_loading = false;
+  string keyword = String.Empty;
+
+  protected override async Task OnInitializedAsync()
+  {
+    await base.OnInitializedAsync();
+    await HandleQuery();
+  }
+
+  async Task HandleKeywordChanged(string v)
+  {
+    keyword = v;
+    await HandleQuery();
+  }
+
+  /// <summary>
+  /// 執行查詢
+  /// </summary>
+  async Task HandleQuery()
+  {
+    try
+    {
+      //# block UI
+      f_loading = true;
+      StateHasChanged();
+
+      //# 資料演算
+      dataList = await Task.Run(() => bizSvc.QryDataList(30, keyword));
+
+      //重設選取項目
+      BizState.dataAim = null;
+      BizState.NotifyStateChanged();
+    }
+    catch (Exception ex)
+    {
+      dlgSvc.ShowAlert(ex.Message, title: "出現例外");
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  void HandleAdd()
+  {
+    BizState.dataAim = null;
+    BizState.NotifyStateChanged();
+  }
+
+  void HandleRowClick(DataGridRowClickEventArgs<DEMO011FormData> e)
+  {
+    BizState.dataAim = e.Item;
+    BizState.NotifyStateChanged();
+  }
+
+  string SelectedRowClassFunc(DEMO011FormData item, int rowNumber)
+  {
+    return BizState.dataAim == item ? "selected" : String.Empty;
+  }
+}

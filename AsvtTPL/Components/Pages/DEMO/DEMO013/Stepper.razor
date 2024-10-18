@@ -1,0 +1,44 @@
+﻿@* StepperWidget *@
+
+<MudToolBar>
+  <StepperStep StepId=DisplayMode.Step1 Label="個人資料" Pos=@Step HasPassed=@Step1_HasPassed OnClick=HndleSetStep />
+
+  <MudDivider Style="width:10px;" />
+
+  <StepperStep StepId=DisplayMode.Step2 Label="申請項目" Pos=@Step HasPassed=@Step2_HasPassed OnClick=HndleSetStep />
+
+  <MudDivider Style="width:10px;" />
+
+  <StepperStep StepId=DisplayMode.Step3 Label="附件上傳" Pos=@Step HasPassed=@Step3_HasPassed OnClick=HndleSetStep />
+
+  <MudDivider Style="width:10px;" />
+
+  <StepperStep StepId=DisplayMode.Step4 Label="提醒事項" Pos=@Step HasPassed=@Step4_HasPassed OnClick=HndleSetStep />
+
+  <MudDivider Style="width:10px;" />
+
+  <MudIconButton Icon=@MapIcon Color=@MapColor Size=@MapSize OnClick="()=> Step = DisplayMode.Step5" />
+  <MudText Typo=Typo.body1>送出案件</MudText>
+</MudToolBar>
+
+@code {
+  [CascadingParameter] _DEMO013 BizState { get; set; } = default!;
+
+  //# properties
+  DisplayMode Step { get => BizState.mode; set => BizState.mode = value; }
+  bool Step1_HasPassed => BizState.formData.Step1.HasPassed;
+  bool Step2_HasPassed => BizState.formData.Step2.HasPassed;
+  bool Step3_HasPassed => BizState.formData.Step3.HasPassed;
+  bool Step4_HasPassed => BizState.formData.Step4.HasPassed;
+  bool IsSubmitedSuccess => BizState.formData.IsSubmitedSuccess;
+
+  void HndleSetStep(DisplayMode step)
+  {
+    Step = step;
+  }
+
+  // for FianlStep 
+  Size MapSize => Step == DisplayMode.Step5 ? Size.Large : Size.Medium;
+  Color MapColor => IsSubmitedSuccess ? Color.Success : Step == DisplayMode.Step5 ? Color.Primary : Color.Default;
+  string MapIcon => IsSubmitedSuccess || Step == DisplayMode.Step5 ? Icons.Material.Filled.Flag : Icons.Material.Filled.StopCircle;
+}

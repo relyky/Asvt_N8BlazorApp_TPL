@@ -1,0 +1,25 @@
+﻿@using Vista.Component.ReactEx
+@page "/DEMO207"
+@attribute [Page("DEMO207", "QR Code Scanner Sample")]
+@attribute [Authorize("AuthPage")]
+
+@* <PageTitle>QR Code Scanner Sample</PageTitle> *@
+@* Description: 必需是行動版 *@
+
+<MudContainer>
+  <QRCodeScanner OnCodeChange=HandleCodeChange />
+
+  <pre>
+    decodedText: @decodedText<br />
+  </pre>
+</MudContainer>
+
+@code {
+  string? decodedText = null;
+
+  async Task HandleCodeChange(string _decodedText)
+  {
+    decodedText = _decodedText;
+    await Task.CompletedTask;
+  }
+}

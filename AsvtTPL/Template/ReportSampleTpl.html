@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <style>
+    /* A4 size: 297mm x 210mm - 用於進階控制分頁，一般不需要。
+        .page {
+          position: relative;
+          width: 190mm;
+          height: 277mm;
+          display: block;
+          box-sizing: border-box;
+          margin-left: auto;
+          margin-right: auto;
+          font-size: 14px;
+          font-family: '微軟正黑體', 'Microsoft JhengHei','Microsoft YaHei', sans-serif;
+        } */
+
+    body {
+      box-sizing: border-box;
+      font-size: 14px;
+      font-family: '微軟正黑體', 'Microsoft JhengHei','Microsoft YaHei', sans-serif;
+    }
+
+      /* 可在開發時在 browser 預算寬度。但無法預算高度。 */
+      body.dev-preview {
+        @media screen {
+          margin-left: auto;
+          margin-right: auto;
+          width: 190mm;
+          outline: dashed pink 1px;
+        }
+      }
+
+    .break-page {
+      page-break-before: always;
+    }
+
+    .watermark {
+      /*background-image: url("https://localhost:7248/image/watermark_draft.png");*/
+      background-image: url("https://placeit-img-1-p.cdn.aws.placeit.net/uploads/stage/stage_image/34341/optimized_product_thumb_simple-watermark-maker-with-custom-text.jpg");
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+
+    .big-font {
+      color: blue;
+      font-size: 20mm;
+    }
+
+    .box {
+      border: dashed 2px red;
+      padding: 2mm;
+    }
+
+
+    .barcode-sticker {
+      display: inline-block;
+      padding: 0 2mm;
+      margin: 2mm;
+      border: solid 2px darkgrey;
+      border-radius: 2mm;
+    }
+
+      .barcode-sticker > img {
+        display: inline-block;
+        line-height: 0;
+        vertical-align: middle;
+        margin: 1px 0;
+      }
+
+      .barcode-sticker > div.label {
+        display: inline-block;
+        vertical-align: middle;
+        color: #8D1485;
+        font-weight: 600;
+      }
+  </style>
+</head>
+<body class="dev-preview watermark">
+  <h1>HTML轉PDF測試：銀行簡介</h1>
+  <div class="big-font" style="font-family:標楷體">唷~ 太神了傑克</div>
+  <p>WatermarkImageUrl: https://localhost:7248/image/watermark_draft.png</p>
+
+  <p>&emsp;&emsp;本行前身為歷史悠久的「台北三信」，創立於民國7年4月，原名「艋舺信用組合」，於民國35年7月艋舺信用組合奉令重新改組，更名為「台北市艋舺信用合作社」。而後因改制關係，台北市艋舺信用合作社於民國36年更名為「有限責任台北市第三信用合作社」。民國55年6月再度因制度更改，變更有限責任組織為保證責任組織，並更名為「保證責任台北市第三信用合作社」，即改制銀行前的「台北三信」。</p>
+  <p>&emsp;&emsp;70年代後期，國內金融環境開始產生顯著的變動，受利率自由化之影響，銀行的業務範圍及營業據點逐漸擴充，進而衝擊到原先信用合作社的市場。財政部於民國84年11月公佈「信合社改制銀行辦法」，本行即著手進行申請改制作業，於民國86年1月改制成為「誠泰商業銀行」，其後為配合政府政策，協助解決金融問題，並為擴大營運規模，分別於民國86年及87年概括承受新竹二信與台中八信，同時受惠於銀行法一年可申設五家分行之規定，將營業區域擴大至台北、桃園、新竹等地區；90年9月初概括承受嘉義二信後，旋即在行政院金融重建基金機制運作下，於月中概括承受岡山信用合作社，迅速擴大服務範圍，一舉將業務拓展至全台灣，分行家數達到80家。</p>
+  <hr style='margin-top:2mm;margin-bottom:2mm;'>
+  <img src='https://www.w3schools.com/html/pic_trulli.jpg' width='500' height='333'>
+  <hr style='margin-top:2mm;margin-bottom:2mm;'>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Contact</th>
+        <th>Country</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Centro comercial Moctezuma</td><td>Francisco Chang</td><td>Mexico</td></tr>
+      <tr><td>Ernst Handel</td><td>Roland Mendel</td><td>Austria</td></tr>
+      <tr><td>Island Trading</td><td>Helen Bennett</td><td>UK</td></tr>
+      <tr><td>Laughing Bacchus Winecellars</td><td>Yoshi Tannamuri</td><td>Canada</td></tr>
+      <tr><td>Magazzini Alimentari Riuniti</td><td>Giovanni Rovelli</td><td>Italy</td></tr>
+      <tr><td>Centro comercial Moctezuma</td><td>Francisco Chang</td><td>Mexico</td></tr>
+      <tr><td>Ernst Handel</td><td>Roland Mendel</td><td>Austria</td></tr>
+      <tr><td>Island Trading</td><td>Helen Bennett</td><td>UK</td></tr>
+      <tr><td>Laughing Bacchus Winecellars</td><td>Yoshi Tannamuri</td><td>Canada</td></tr>
+      <tr><td>Magazzini Alimentari Riuniti</td><td>Giovanni Rovelli</td><td>Italy</td></tr>
+      <tr><td>Centro comercial Moctezuma</td><td>Francisco Chang</td><td>Mexico</td></tr>
+      <tr><td>Ernst Handel</td><td>Roland Mendel</td><td>Austria</td></tr>
+      <tr><td>Island Trading</td><td>Helen Bennett</td><td>UK</td></tr>
+      <tr><td>Laughing Bacchus Winecellars</td><td>Yoshi Tannamuri</td><td>Canada</td></tr>
+      <tr><td>Magazzini Alimentari Riuniti</td><td>Giovanni Rovelli</td><td>Italy</td></tr>
+      <tr><td>Centro comercial Moctezuma</td><td>Francisco Chang</td><td>Mexico</td></tr>
+      <tr><td>Ernst Handel</td><td>Roland Mendel</td><td>Austria</td></tr>
+      <tr><td>Island Trading</td><td>Helen Bennett</td><td>UK</td></tr>
+      <tr><td>Laughing Bacchus Winecellars</td><td>Yoshi Tannamuri</td><td>Canada</td></tr>
+      <tr><td>Magazzini Alimentari Riuniti</td><td>Giovanni Rovelli</td><td>Italy</td></tr>
+      <tr><td>Centro comercial Moctezuma</td><td>Francisco Chang</td><td>Mexico</td></tr>
+      <tr><td>Ernst Handel</td><td>Roland Mendel</td><td>Austria</td></tr>
+      <tr><td>Island Trading</td><td>Helen Bennett</td><td>UK</td></tr>
+      <tr><td>Laughing Bacchus Winecellars</td><td>Yoshi Tannamuri</td><td>Canada</td></tr>
+      <tr><td>Magazzini Alimentari Riuniti</td><td>Giovanni Rovelli</td><td>Italy</td></tr>
+    </tbody>
+  </table>
+
+  <h1 class="break-page">顯示清單 <small style="color:darkorange;">(強制分頁控制)</small></h1>
+  <ol><li>image1.jpg JPEG</li><li>image2.png PNG</li><li>image3.gif GIF</li></ol>
+
+  <h1 class="h3">&#x7B46;&#x8A18;&#x578B;&#x96FB;&#x8166;(5&#x7B46;)</h1>
+  <div class="barcode-sticker">
+    <img alt="A10011" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6AQMAAADbddhrAAAABlBMVEWNFIX///9IEO&#x2B;QAAAAi0lEQVR4nK3RMQoEIQwF0EBawasIaQdydcHWwwi/Xci4GmWcdtfqwSf6g2TzZPoVxDWRPqHIsANJgvALFW9gRQ6Fid/jIJb1lsMsqPdxMFHBgR6iHmhSdIxvSI8&#x2B;BwqbXAfMUh3jG8RXbrOPQ0EhfqONvnKG775gaDPaENUZORQRo/wGcezhE//5wRuPCTh2Hi4G9AAAAABJRU5ErkJggg==" />
+    <div class="label">
+      <div>亞洲志遠</div>
+      <div>A10011</div>
+    </div>
+  </div>
+  <div class="barcode-sticker">
+    <img alt="B10011" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6AQMAAADbddhrAAAABlBMVEWNFIX///9IEO&#x2B;QAAAAi0lEQVR4nK3RMQoEIQwF0EBawasIaQdydcHWwwi/Xci4GmWcdtfqwSf6g2TzZPoVxDWRPqHIsANJgvALFW9gRQ6Fid/jIJb1lsMsqPdxMFHBgR6iHmhSdIxvSI8&#x2B;BwqbXAfMUh3jG8RXbrOPQ0EhfqONvnKG775gaDPaENUZORQRo/wGcezhE//5wRuPCTh2Hi4G9AAAAABJRU5ErkJggg==" />
+    <div class="label">
+      <div>亞洲志遠</div>
+      <div>B10011</div>
+    </div>
+  </div>
+  <div class="barcode-sticker">
+    <img alt="C10011" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6AQMAAADbddhrAAAABlBMVEWNFIX///9IEO&#x2B;QAAAAi0lEQVR4nK3RMQoEIQwF0EBawasIaQdydcHWwwi/Xci4GmWcdtfqwSf6g2TzZPoVxDWRPqHIsANJgvALFW9gRQ6Fid/jIJb1lsMsqPdxMFHBgR6iHmhSdIxvSI8&#x2B;BwqbXAfMUh3jG8RXbrOPQ0EhfqONvnKG775gaDPaENUZORQRo/wGcezhE//5wRuPCTh2Hi4G9AAAAABJRU5ErkJggg==" />
+    <div class="label">
+      <div>亞洲志遠</div>
+      <div>C10011</div>
+    </div>
+  </div>
+  <div class="barcode-sticker">
+    <img alt="D10011" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6AQMAAADbddhrAAAABlBMVEWNFIX///9IEO&#x2B;QAAAAi0lEQVR4nK3RMQoEIQwF0EBawasIaQdydcHWwwi/Xci4GmWcdtfqwSf6g2TzZPoVxDWRPqHIsANJgvALFW9gRQ6Fid/jIJb1lsMsqPdxMFHBgR6iHmhSdIxvSI8&#x2B;BwqbXAfMUh3jG8RXbrOPQ0EhfqONvnKG775gaDPaENUZORQRo/wGcezhE//5wRuPCTh2Hi4G9AAAAABJRU5ErkJggg==" />
+    <div class="label">
+      <div>亞洲志遠</div>
+      <div>D10011</div>
+    </div>
+  </div>
+  <div class="barcode-sticker">
+    <img alt="A19002" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6AQMAAADbddhrAAAABlBMVEWNFIX///9IEO&#x2B;QAAAAjklEQVR4nK3RQQrEMAgFUMFtoVcR3Ba8eqBbDxP4B3AaNGHS7UxWD34wfkKRp9GvIHYh&#x2B;4ahITaIHsovON7AjAqG0JpTINb5ViHisNqnwEQ3dnjAx&#x2B;WF3tVkRAviXKtO3MqqI1qIIPcNxNJ67lMwXMc5ogXRqyF7LQA9o4XTLKOC4clyTuGprFrdE//5wQ&#x2B;PIDbYpkeIRwAAAABJRU5ErkJggg==" />
+    <div class="label">
+      <div>亞洲志遠</div>
+      <div>A19002</div>
+    </div>
+  </div>
+
+  <h1>小表格</h1>
+  <table style="width:60%;margin-left:20%;">
+    <tr>
+      <th>Company</th>
+      <th>Contact</th>
+      <th>Country</th>
+    </tr>
+    <tr><td>Centro comercial Moctezuma</td><td>Francisco Chang</td><td>Mexico</td></tr>
+    <tr><td>Ernst Handel</td><td>Roland Mendel</td><td>Austria</td></tr>
+    <tr><td>Island Trading</td><td>Helen Bennett</td><td>UK</td></tr>
+    <tr><td>Laughing Bacchus Winecellars</td><td>Yoshi Tannamuri</td><td>Canada</td></tr>
+    <tr><td>Magazzini Alimentari Riuniti</td><td>Giovanni Rovelli</td><td>Italy</td></tr>
+  </table>
+</body>
+</html>

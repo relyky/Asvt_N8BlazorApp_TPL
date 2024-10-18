@@ -1,0 +1,14 @@
+@inherits AsvtFieldBase<string>
+
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+  <MudTextField T=string
+                @bind-Value=@FieldValue
+                For=@For
+                Immediate=@Immediate
+                Label=@_label
+                ReadOnly=@_readOnly
+                HelperText=@HelperText
+                Required=@Required
+                Class=@Class
+                Variant=@(_readOnly ? Variant.Filled : Variant.Text) />
+</MudItem>

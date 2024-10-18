@@ -1,0 +1,38 @@
+﻿@implements IDisposable
+@inject BlazorComponentBus.ComponentBus busSvc
+@inject ISnackbar snackSvc
+
+@foreach (var msg in msgList)
+{
+  <p>@($"{msg.Message} at {msg.MsgTime:HH:mm:ss}")</p>
+}
+
+@code {
+  List<NotifyMessage> msgList = new();
+
+  void IDisposable.Dispose()
+  {
+    //# 反訂閱訊息
+    busSvc.UnSubscribe<NotifyMessage>(HanldeNotifyMessageAsync);
+  }
+
+  protected override void OnInitialized()
+  {
+    base.OnInitialized();
+    //# 訂閱訊息
+    busSvc.Subscribe<NotifyMessage>(HanldeNotifyMessageAsync);
+  }
+
+  async Task HanldeNotifyMessageAsync(BlazorComponentBus.MessageArgs args, CancellationToken ct)
+  {
+    // 取出訊息
+    var msg = args.GetMessage<NotifyMessage>();
+
+    // 以 toast/snackbar 呈現訊息
+    snackSvc.Add($"{msg.Message} at {msg.MsgTime:HH:mm:ss}", (Severity)msg.Severity);
+    
+    // 或呈現(反應)到主頁面
+    msgList.Add(msg);
+    await InvokeAsync(() => StateHasChanged());
+  }
+}

@@ -1,0 +1,91 @@
+﻿@using Vista.Biz.DEMO
+@inject IDialogServiceEx dlgSvc
+@inject DEMO012Biz bizSvc
+
+<ScreenOverlay Visible=f_loading />
+<MudContainer>
+  <EditForm Model=formData>
+    <FluentValidationValidator />
+
+    <MudPaper role="panel">
+      <AsvtFormRow>
+        <AsvtTextField For=@(()=>formData.formNo) Required />
+        <AsvtTextField For=@(()=>formData.dataFieldA) Required />
+        <AsvtTextField For=@(()=>formData.dataFieldB) />
+        <AsvtTextField For=@(()=>formData.dataFieldC) />
+        <AsvtTextField For=@(()=>formData.dataFieldD) />
+        <AsvtTextField For=@(()=>formData.dataFieldE) />
+        <AsvtTextField For=@(()=>formData.dataFieldF) />
+      </AsvtFormRow>
+    </MudPaper>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=@(()=>HandleSubmit(context))>存檔</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary OnClick=HandleCancel>取消</MudButton>
+    </MudStack>
+
+    <DialogValidationSummary />
+  </EditForm>
+</MudContainer>
+
+@code {
+  [CascadingParameter] _DEMO012 BizState { get; set; } = default!;
+
+  //## State
+  bool f_loading = false;
+  DEMO012FormData formData { get => BizState.formData; set => BizState.formData = value; }
+
+  protected override void OnInitialized()
+  {
+    formData = new()
+      {
+        formNo = "TEST001",
+        dataFieldA = "測試新增"
+      };
+  }
+
+  async Task HandleSubmit(EditContext ctx)
+  {
+    try
+    {
+      //# 基本檢查
+      if (!ctx.Validate()) return;
+
+      //# 進階檢查
+      //if (!ValidateMore())
+      //{
+      //    dlgSvc.ShowAlert("未通過進階檢查！");
+      //    return;
+      //}
+
+      //# block UI
+      f_loading = true;
+
+      //# 資料演算
+      (formData, string message) = await Task.Run(() => bizSvc.AddFormData(formData));
+      if (message != "SUCCESS")
+      {
+        dlgSvc.ShowAlert(message);
+        return;
+      }
+
+      //# 同步到畫面
+      BizState.dataList.Insert(0,new DEMO012Profile(formData)); // 放在第一筆才容易看到已新增了。
+      BizState.mode = DisplayMode.List;
+    }
+    catch (Exception ex)
+    {
+      dlgSvc.ShowAlert(ex.Message, title: "出現例外！");
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  void HandleCancel()
+  {
+    BizState.mode = DisplayMode.List;
+  }
+
+}

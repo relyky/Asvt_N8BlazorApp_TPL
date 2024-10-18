@@ -1,0 +1,21 @@
+﻿@inject IJSRuntime jsr
+@inject ExampleJsInterop jsExample
+
+<div class="my-component">
+  此元件定義於<strong>Vista.Component</strong>函式庫。<br />
+  This component is defined in the <strong>Vista.Component</strong> library.
+
+  <hr/>
+  <button class="my-button" @onclick=HandleClick>測試呼叫 JS </button>
+  <p>@respMsg</p>
+</div>
+
+@code {
+  string respMsg = string.Empty;
+
+  async Task HandleClick()
+  {
+    respMsg = await jsExample.PromptAsync("我是天才？");
+  }
+
+}

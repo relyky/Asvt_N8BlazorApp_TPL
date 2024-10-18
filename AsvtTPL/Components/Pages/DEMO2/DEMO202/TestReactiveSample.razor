@@ -1,0 +1,20 @@
+﻿@using Vista.Component.ReactEx
+
+<div class="pa-2 my-2" style="border: solid 2px blue; border-radius: 8px">
+  <h3>TestReactiveSample</h3>
+
+  <MudTextField Label="輸入些文字" @bind-Value=outsideValue />
+  @* 輸入文字在 ValueChange 後，將以 props down 行為往 react 元件傳遞。 *@
+  <RxReactiveSample Value=@outsideValue OnChange=HandleChange />
+
+</div>
+
+@code {
+  string outsideValue = "從外面給值。";
+
+  void HandleChange(string newValue)
+  {
+    outsideValue = newValue; // 來自 React 端，刷新元件狀態。
+    StateHasChanged();
+  }
+}

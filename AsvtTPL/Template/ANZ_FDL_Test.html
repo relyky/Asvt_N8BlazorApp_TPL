@@ -1,0 +1,210 @@
+<head>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0px 0px 20px 0px;
+      border: 1px solid;
+      font-family: Microsoft JhengHei;
+    }
+
+      table td, table th {
+        border: 1px solid black;
+        border-color: black;
+      }
+
+    th {
+      border-top: 0;
+      border-color: black;
+      background-color: #b6b6b6;
+    }
+
+    td img {
+      width: 10%;
+    }
+
+    table tr:last-child td {
+      border-bottom: 0;
+      border-color: black;
+    }
+
+    table tr td:first-child,
+    table tr th:first-child {
+      border-left: 0;
+      border-color: black;
+    }
+
+    table tr td:last-child,
+    table tr th:last-child {
+      border-right: 0;
+      border-color: black;
+    }
+
+    table td, table th {
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 14px;
+      color: white;
+      background-color: #276eaa;
+      min-height: 24px;
+      width: 100.5%;
+    }
+
+      .title span {
+        margin-top: 0.5%;
+        position: absolute;
+        left: 20px;
+      }
+
+    p.legend-txt {
+      width: 100%;
+      /*height: 180px;*/
+      border-bottom: 1px solid #dcdcdc;
+      letter-spacing: .5px;
+      color: #29d136;
+      font-size: 18px;
+      height: 10mm;
+      margin: 0;
+      padding-top: 24mm;
+    }
+
+    .legend-img {
+      /*width: 40%;*/
+      height: 18mm;
+      width: 14mm;
+      float: left;
+    }
+
+    .legend-img2 {
+      /*width: 57%;*/
+      height: 12mm;
+      width: 20mm;
+      float: right;
+      padding-top: 4mm;
+    }
+
+    .customerTable td {
+      width: 50%;
+      height: 22px;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    .underline {
+      height: 1.5pt;
+      background-color: #3778c1;
+    }
+
+    td.checkbox {
+      text-align: left;
+    }
+
+      td.checkbox > img {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 35%;
+      }
+
+      td.checkbox > div {
+        display: inline-block;
+        vertical-align: middle;
+      }
+  </style>
+</head>
+<body>
+  <img class='legend-img' src='https://localhost:7248/HTMLTest/Img/Logo1.png' />
+  <img class='legend-img2' src='https://localhost:7248/HTMLTest/Img/Logo2.png' />
+  <p class='legend-txt'>
+    <span>保險財務需求分析表(iFNA) </span>
+  </p>
+  <div class='title'>
+    <span>
+      Section A 個人資料
+    </span>
+  </div>
+  <table class='customerTable'>
+    <tr>
+      <td>客戶姓名</td>
+      <td><img alt="" src="https://localhost:7248/HTMLTest/Img/0d03af86-ae5b-4beb-88c4-9dce5efede7a.jpg" style='width:14mm' /></td>
+    </tr>
+    <tr>
+      <td>客戶身分證字號</td>
+      <td>A123456789</td>
+    </tr>
+    <tr>
+      <td>客戶區隔</td>
+      <td>Premium</td>
+    </tr>
+    <tr>
+      <td>生日</td>
+      <td>1999/05/13</td>
+    </tr>
+    <tr>
+      <td>保險年齡</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <td>最高學歷</td>
+      <td>大專(含)以上</td>
+    </tr>
+    <tr>
+      <td>職業</td>
+      <td>受薪階級</td>
+    </tr>
+    <tr>
+      <td> 您目前是依賴在渣打銀行的存款或投資支付基本的生活開銷? </td>
+      <td>否</td>
+    </tr>
+  </table>
+  <div class='title'><span>Section B 確認並選擇您的需求</span></div>
+  <div class='title'><span> B2 投資加保障</span></div>
+  <table>
+    <tr><th>需求類型</th><th>繳費期限<br />(年)</th><th>滿期日<br />(年)</th><th>目標保額<br />(TWD)</th><th>既有保額(<br />TWD)</th><th>保障缺口<br />(TWD)</th></tr>
+    <tr>
+      <td>子女教育等</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>1</td>
+      <td>0</td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td style='width:50%; font-size:12px;'>由於保障的層面很多，您主要的目的是在於保障還是投資收益 ? </td>
+      <td style='width: 25%; font-size: 16px;' class="checkbox"><img src='https://localhost:7248/HTMLTest/Img/CheckBoxFalse.png' /><div>  投資</div></td>
+      <td style='width: 25%; font-size: 16px;' class="checkbox"><img src='https://localhost:7248/HTMLTest/Img/CheckBoxTrue.png ' /><div>  保障</div></td>
+    </tr>
+    <tr>
+      <td style='width:50%; font-size:12px;'>維持本金是主要目的，因此收益較低是可以接受的? </td>
+      <td style='width: 25%; font-size: 16px;' class="checkbox"><img src='https://localhost:7248/HTMLTest/Img/CheckBoxTrue.png ' /><div>  是</div></td>
+      <td style='width: 25%; font-size: 16px;' class="checkbox"><img src='https://localhost:7248/HTMLTest/Img/CheckBoxFalse.png' /><div>  否</div></td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <td style='width:50%; font-size:12px;'>請問您有任何關於共同基金的知識嗎?(協助您挑選適合的商品) </td>
+      <td style='width: 25%; font-size: 16px;' class="checkbox"><img src='https://localhost:7248/HTMLTest/Img/CheckBoxTrue.png ' /><div>  是</div></td>
+      <td style='width: 25%; font-size: 16px;' class="checkbox"><img src='https://localhost:7248/HTMLTest/Img/CheckBoxFalse.png' /><div>  否</div></td>
+    </tr>
+    <tr>
+      <td>根據您上述揭露的保險年齡,您最長的保費支付期限為幾年?</td>
+      <td colspan='2'>40</td>
+    </tr>
+  </table>
+  <div class='footer ' style='/* padding-top: 2000px; border-top: 1px solid #ddd; */ font-size: 10px; color: #276eaa; text-align: center;'>
+    <div class='underline'></div>
+    <div style='height:3mm'>&nbsp;</div>
+    <span style="float:left;">渣打銀行</span>
+    <span>列印於 :  2024  年   09  月  05  日</span>
+    <span style="float:right;padding-right:20mm;">第1頁</span>
+  </div>
+</body>

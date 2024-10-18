@@ -1,0 +1,81 @@
+﻿@using Vista.Biz.DEMO
+@inject ISnackbar snackSvc
+@inject DEMO012Biz bizSvc
+
+@* DataList 改用 DataGrid 實作 | 可排序 | header 上底色 | striped,hover,dense | fixed-header | 關鍵字過濾 | 切換編輯 *@
+<MudDataGrid Items=dataList Loading=f_loading SortMode=SortMode.Single Hover Striped Dense
+             FixedHeader Height="calc(100vh - 260px)" HeaderClass="custom-secondary"
+             QuickFilter=FilterFunc>
+  <ToolBarContent>
+    <MudButton StartIcon=@Icons.Material.Rounded.Search Variant=Variant.Filled Color=Color.Primary Class="mr-2" OnClick=HandleQuery>查詢條件</MudButton>
+    @* <MudButton StartIcon=@Icons.Material.Filled.Add Variant=Variant.Outlined Color=Color.Primary Class="mr-2">新增</MudButton> *@
+
+    <MudChip Color=Color.Info Variant=Variant.Outlined>@($"總共{dataList.Count:N0}筆")</MudChip>
+    <MudSpacer />
+    <MudTextField @bind-Value=filterString Placeholder="關鍵字過濾: 表單號碼,資料欄位A"
+                  Margin=Margin.Dense Adornment=Adornment.Start AdornmentIcon=@Icons.Material.Filled.FilterAlt />
+  </ToolBarContent>
+  <Columns>
+    <PropertyColumn Property="m => m.formNo" Title="表單號碼" />
+    <PropertyColumn Property="m => m.dataFieldA" Title="資料欄位A" />
+    <PropertyColumn Property="m => m.dataFieldB" Title="資料欄位B" />
+    <PropertyColumn Property="m => m.dataFieldC" Title="資料欄位C" />
+    <PropertyColumn Property="m => m.dataFieldD" Title="資料欄位D" />
+    <PropertyColumn Property="m => m.dataFieldE" Title="資料欄位E" />
+    <PropertyColumn Property="m => m.dataFieldF" Title="資料欄位F" />
+    <TemplateColumn>
+      <CellTemplate>
+        @* <MudLink Underline=Underline.None OnClick="_=>HandleEdit(context.Item)">編輯</MudLink> *@
+        <MudButton Variant=Variant.Text Color=Color.Primary Size=Size.Small OnClick="_=>HandleEdit(context.Item)">編輯</MudButton>
+      </CellTemplate>
+    </TemplateColumn>
+  </Columns>
+</MudDataGrid>
+
+@code {
+  List<DEMO012Profile> dataList = new();
+  string filterString = "";
+  bool f_loading = false;
+
+  protected override async Task OnInitializedAsync()
+  {
+    await HandleQuery();
+  }
+
+  /// <summary>
+  /// 執行查詢
+  /// </summary>
+  async Task HandleQuery()
+  {
+    try
+    {
+      //# block UI
+      f_loading = true;
+      //StateHasChanged();
+
+      //# 資料演算
+      DEMO012QryArgs queryArgs = new()
+        {
+          dataFieldA = "測試"
+        };
+      dataList = await Task.Run(() => bizSvc.QryDataList(300, queryArgs));
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  bool FilterFunc(DEMO012Profile item)
+  {
+    return (item.formNo != null && item.formNo.Contains(filterString))
+        || (item.dataFieldA != null && item.dataFieldA.Contains(filterString));
+  }
+
+  void HandleEdit(DEMO012Profile item)
+  {
+    snackSvc.Add($"未實作。可用於進入編輯頁面。[{item.formNo}]", Severity.Info);
+    //BizState.dataAim = item;
+    //BizState.mode = DisplayMode.Edit;
+  }
+}

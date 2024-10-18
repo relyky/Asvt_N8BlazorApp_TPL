@@ -1,0 +1,22 @@
+﻿@* 專屬於 Stepper 的子元件 *@
+
+<MudIconButton Icon=@MapIcon Color=@MapColor Size=@MapSize
+               Variant=@(HasPassed && Pos == StepId ? Variant.Outlined : Variant.Text)
+               Class=@(HasPassed ? "rounded-pill" : null)
+               OnClick="()=> OnClick.InvokeAsync(StepId)" />
+@if (Label is not null)
+{
+  <MudText Typo=Typo.body1>@Label</MudText>
+}
+
+@code {
+  [Parameter, EditorRequired] public DisplayMode StepId { get; set; }
+  [Parameter, EditorRequired] public DisplayMode Pos { get; set; }
+  [Parameter, EditorRequired] public EventCallback<DisplayMode> OnClick { get; set; }
+  [Parameter] public bool HasPassed { get; set; }
+  [Parameter] public string? Label { get; set; }
+
+  Size MapSize => Pos == StepId ? Size.Large : Size.Medium;
+  Color MapColor => HasPassed ? Color.Success : Pos == StepId ? Color.Primary : Color.Default;
+  string MapIcon => HasPassed ? Icons.Material.Filled.Check : Pos == StepId ? Icons.Material.Filled.DirectionsWalk : Icons.Material.Filled.StopCircle;
+}

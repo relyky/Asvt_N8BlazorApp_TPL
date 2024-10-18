@@ -1,0 +1,39 @@
+﻿<MudText Typo=Typo.h3>雜七雜八</MudText>
+
+<MudToolBar Class="gap-2">
+  <MudTextField @bind-Value=keyword Variant=Variant.Outlined Label="關鍵字" Margin=Margin.Dense />
+  <MudDateRangePicker @bind-Text=dateRange Variant=Variant.Outlined Label="日期範圍" Margin=Margin.Dense />
+  <MudButton Variant=Variant.Filled>查詢</MudButton>
+</MudToolBar>
+
+<MudToolBar Class="gap-2">
+  <MudTextField @bind-Value=keyword Variant=Variant.Outlined Label="關鍵字" Margin=Margin.Dense />
+  <MudDatePicker @bind-Date=date1 Variant=Variant.Outlined Label="起日" Margin=Margin.Dense />
+  <MudDatePicker @bind-Date=date2 Variant=Variant.Outlined Label="訖日" Margin=Margin.Dense />
+  <MudButton Variant=Variant.Filled>查詢</MudButton>
+</MudToolBar>
+  
+<MudPaper role="panel" Class="mt-2">
+  xxxxxxx xxxxxxxx xxxxxxxxx
+</MudPaper>
+
+<div class="d-flex flex-wrap gap-2">
+  <MudTextField @bind-Value=keyword Variant=Variant.Outlined Label="關鍵字" Margin=Margin.Dense />
+  <MudDateRangePicker @bind-Text=dateRange Variant=Variant.Outlined Label="日期範圍" Margin=Margin.Dense />
+  <MudButton Variant=Variant.Filled>查詢</MudButton>
+</div>
+
+<MudPaper role="panel" Class="mt-2">
+  xxxxxxx xxxxxxxx xxxxxxxxx
+</MudPaper>
+
+<pre>
+  @keyword | @dateRange
+</pre>
+
+@code {
+  string keyword;
+  string dateRange;
+  DateTime? date1;
+  DateTime? date2;
+}

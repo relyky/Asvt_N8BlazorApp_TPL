@@ -1,0 +1,45 @@
+﻿@using Vista.Component.ReactEx
+@inject JSInterOpService jsTool
+
+<MudPaper role="panel" Outlined MaxWidth="600px">
+  @if (f_input)
+  {
+    <MudTextField T="string" Label="帳卡編號" ValueChanged=HandleScanSuccess Variant=Variant.Outlined
+                  Adornment=Adornment.End AdornmentIcon=@Icons.Material.Filled.Search />
+  }
+  else
+  {
+    <RxQRCodeScanner OnScanSuccess=HandleScanSuccess OnScanFailure=HandleScanFailure />
+  }
+</MudPaper>
+<MudToolBar Class="gap-3">
+  <MudSwitch @bind-Value=f_input Label="手動輸入" Color=Color.Primary />
+  <MudText Typo=Typo.body2 Color=Color.Info>掃描次數: @scanFailCount</MudText>
+</MudToolBar>
+
+@* for debug *@
+<pre>
+  lastErrMsg: @lastErrMsg
+</pre>
+
+@code {
+  [Parameter] public EventCallback<string> OnCodeChange { get; set; }
+
+  bool f_input = false;
+  int scanFailCount = 0;
+  string? lastErrMsg = null;
+
+  async Task HandleScanSuccess(string decodedText)
+  {
+    scanFailCount = 0;
+    await jsTool.BeepAsync();
+    await OnCodeChange.InvokeAsync(decodedText);
+  }
+
+  Task HandleScanFailure(string errMsg)
+  {
+    lastErrMsg = $"{DateTime.Now:HH:mm:ss} => {errMsg}";
+    scanFailCount++;
+    return Task.CompletedTask;
+  }
+}

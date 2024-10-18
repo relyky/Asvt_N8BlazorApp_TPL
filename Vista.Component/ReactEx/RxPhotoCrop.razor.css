@@ -1,0 +1,7 @@
+.wrapper {
+  padding: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  border: dashed 2px darkgrey;
+  border-radius: 8px;
+}

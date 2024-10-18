@@ -1,0 +1,111 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Authentication
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Mvc
+@using System.Net
+@using Vista.Models
+@using Vista.Services
+
+@page "/Account/SignIn"
+@inject ILogger<SignIn> logger
+@inject AccountService accSvc
+
+<PageTitle>SignIn</PageTitle>
+@*
+  登入畫面為 SSG，不支援 interactive 操作行為。
+  也不能啟用 StreamRender 屬性，會無法寫入 cookie。
+  故需以最速跑完。
+*@
+
+<AuthorizeView Context="auth">
+  <Authorized>
+    <MudText Typo=Typo.h2>
+      @($"{auth.User.Identity?.Name} 已登入系統。")
+    </MudText>
+  </Authorized>
+  <Authorizing>
+    <MudText Typo=Typo.h2>登入中…</MudText>
+  </Authorizing>
+  <NotAuthorized>
+    <MudText Typo=Typo.h2>登入處理中或已失敗。</MudText>
+  </NotAuthorized>
+</AuthorizeView>
+
+@code {
+  [CascadingParameter]
+  private HttpContext HttpContext { get; set; } = default!;
+
+  [SupplyParameterFromQuery(Name = "tid")]
+  private string? TicketToken { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+    // 取登入者來源IP
+    ThisProjectHelper.GetLoginClientIp(HttpContext, out string clientIp, out string hostName);
+
+    try
+    {
+      logger.LogTrace($"#BEGIN User sign in.");
+
+      // Clear the existing external cookie to ensure a clean login process
+      await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+      if (String.IsNullOrWhiteSpace(TicketToken))
+        return;
+
+      //# 自 JWT 解開  ticketId
+      Guid ticketId = Utils.JwtHostingDecode<Guid>(TicketToken);
+      //Guid ticketId = Guid.Parse(TicketToken);
+
+      // 取得 AuthTicket
+      var ticket = accSvc.TakeOutTicket(ticketId);
+      if (ticket == null) return;
+
+      // 取得 AuthUser
+      var auth = accSvc.GetAuthDataFromPool(ticket.userId);
+      if (auth == null) return;
+
+      // 使用者聲明
+      var userClaims = new List<Claim>
+      {
+        new Claim(ClaimTypes.Name, auth.UserId), // 使用者識別碼
+        new Claim(ClaimTypes.Sid, auth.AuthGuid.ToString()), // 登入識別序號
+        new Claim(ClaimTypes.GivenName, auth.UserName), // 顯示名稱
+      };
+
+      // 使用者聲明－角色
+      foreach (var role in auth.Roles)
+        userClaims.Add(new Claim(ClaimTypes.Role, role));
+
+      var userIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+      string redirectUri = String.IsNullOrEmpty(ticket.returnUrl) ? "/" : ticket.returnUrl;
+
+      var authProperties = new AuthenticationProperties
+        {
+          IsPersistent = auth.RememberMe,
+          IssuedUtc = auth.IssuedUtc,
+          ExpiresUtc = auth.ExpiresUtc,
+          //RedirectUri = $"/redirect/{System.Web.HttpUtility.UrlEncode(redirectUri)}",
+          RedirectUri = redirectUri,
+          AllowRefresh = false, // 有 Web Session 才有效。
+        };
+
+      //# 執行 Cookie-Base Auth 註冊，並依 RedirectUri 進行轉址。
+      ///※ 經測試：轉址過程直接由 non-interactive (Signin) => interactive page (SSR page)不會經過 AuthenticationStateProvider 加值授權。
+      /// 這會讓 SSR page 授權不足而轉到４０４的怪現象。解決方式先中轉 redirect page 再轉到目的地。
+      /// 此 redirect page 放置 AuthorizeView 元件將觸發 AuthenticationStateProvider 進行加值授權，就能成功轉向 interactive page。
+      await HttpContext.SignInAsync(
+          CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(userIdentity),
+            authProperties);
+
+      logger.LogDebug($"User [{auth.UserId}] sign in SUCCESS, from {hostName}({clientIp}).");
+    }
+    catch (Exception ex)
+    {
+      //※ 正常來說 HttpContext.SignInAsync 不會失敗！
+      logger.LogError($"User sign in EXCEPTION! {ex.Message}, from {hostName}({clientIp}). ");
+    }
+  }
+}

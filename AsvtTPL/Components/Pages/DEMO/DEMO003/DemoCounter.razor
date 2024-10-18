@@ -1,0 +1,31 @@
+﻿
+<button class="my-button" @onclick="HandleClick">累加</button>
+
+@code {
+  [Parameter] public int Interval { get; set; }
+  [Parameter] public EventCallback<int> OnCountChange { get; set; }
+  [Parameter] public int InitValue { get; set; } = 0;
+
+  //## State
+  int count = 0;
+
+  protected override async Task OnInitializedAsync()
+  {
+    await base.OnInitializedAsync();
+    count = InitValue;
+
+    // 通知父層
+    await OnCountChange.InvokeAsync(count);
+  }
+
+  /// <summary>
+  /// 範例：非同步 Event Handler。
+  /// </summary>
+  async Task HandleClick()
+  {
+    count += Interval;
+
+    // 通知父層
+    await OnCountChange.InvokeAsync(count);
+  }
+}

@@ -1,0 +1,22 @@
+﻿@using Vista.Component.ReactEx
+
+<h3>TestWebCamera</h3>
+<RxWebCamera Format="image/webp" OnCapture=HandleCapturePhoto />
+<p>photo: @photo</p>
+
+@if (photo != string.Empty)
+{
+  <MudImage Src=@photo />
+}
+
+@code {
+
+  //for RxWebCamera
+  string photo = string.Empty;
+
+  Task HandleCapturePhoto(string photo)
+  {
+    this.photo = photo;
+    return Task.CompletedTask;
+  }
+}

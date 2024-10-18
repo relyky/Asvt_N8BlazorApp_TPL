@@ -1,0 +1,257 @@
+﻿@using FluentValidation
+@using System.ComponentModel.DataAnnotations
+@page "/DEMO005"
+@attribute [Page("DEMO005", "表單部局")]
+@attribute [Authorize("AuthPage")]
+@inject IDialogServiceEx dlgSvc
+@inject JSInterOpService jsTool
+
+<MudContainer>
+  <EditForm Model=formData>
+    <FluentValidationValidator />
+
+    <div @ref=refTop></div>
+    <MudPaper role="panel">
+      <MudToolBar>
+        <MudText Typo=Typo.h5>基本表單部局</MudText>
+        <MudChip T="string" Color=Color.Info>資訊標籤</MudChip>
+        <MudChip T="string" Color=Color.Warning>注意標籤</MudChip>
+        <MudSpacer />
+        <MudToggleIconButton Icon=@Icons.Material.Filled.Edit Color=Color.Info ToggledIcon=@Icons.Material.Outlined.EditOff @bind-Toggled=f_readOnly />
+        <MudIconButton Icon=@Icons.Material.Outlined.MoreVert Color=Color.Inherit />
+      </MudToolBar>
+
+      <AsvtFormRow>
+        <AsvtTextField For="()=>formData.Foo" />
+        <AsvtTextField For="()=>formData.Bar" />
+        <AsvtTextField For="()=>formData.Foo" />
+        <AsvtTextField For="()=>formData.Bar" />
+        <AsvtTextField For="()=>formData.Foo" />
+        <AsvtTextField For="()=>formData.Bar" />
+      </AsvtFormRow>
+    </MudPaper>
+
+    <MudPaper role="panel">
+      <AsvtFormRow>
+        <AsvtTextField For="()=>formData.Foo" />
+        <AsvtTextField For="()=>formData.Bar" />
+        <AsvtTextField For="()=>formData.Foo" />
+        <AsvtTextField For="()=>formData.Bar" />
+        <AsvtTextField For="()=>formData.Foo" />
+        <AsvtTextField For="()=>formData.Bar" />
+      </AsvtFormRow>
+    </MudPaper>
+
+    <MudPaper role="panel">
+      <AsvtFormRow>
+        <AsvtTextField For="()=>formData.Foo" />
+        <AsvtTextField For="()=>formData.Bar" />
+        <AsvtTextField For="()=>formData.Foo" />
+        <AsvtTextField For="()=>formData.Bar" />
+        <AsvtTextField For="()=>formData.Foo" />
+        <AsvtTextField For="()=>formData.Bar" />
+      </AsvtFormRow>
+      <MudStack Row Justify=Justify.Center Class="my-3">
+        <MudButton Variant=Variant.Filled Color=Color.Primary>命令</MudButton>
+        <MudButton Variant=Variant.Outlined Color=Color.Primary>命令</MudButton>
+        <MudButton Variant=Variant.Outlined Color=Color.Primary>命令</MudButton>
+        <MudButton Variant=Variant.Filled Color=Color.Default OnClick="()=> jsTool.ScrollIntoViewAsync(refBottom)">捲到下面</MudButton>
+      </MudStack>
+    </MudPaper>
+
+    <MyDataGrid Class="mb-3" />
+
+    <MudTabs Elevation=1 Position=Position.Left ApplyEffectsToContainer Rounded Border
+             PanelClass="custom-tabpanel" TabPanelClass="asvt-custom-secondary" Class="mb-3">
+      <MudTabPanel Text="資料區段Ａ">
+        <div style="width:100%;">
+          @* custom-tabpanel: 若在 tab-panel 放置 DataTable 或 DataGrid 均需再校正寬度。 *@
+          <MyDataTable2 />
+        </div>
+      </MudTabPanel>
+      <MudTabPanel Text="資料區段１">
+        <div class="pa-3">
+          <AsvtFormRow>
+            <AsvtTextField For="()=>formData.Foo" />
+            <AsvtTextField For="()=>formData.Bar" />
+            <AsvtTextField For="()=>formData.Foo" />
+            <AsvtTextField For="()=>formData.Bar" />
+            <AsvtTextField For="()=>formData.Foo" />
+            <AsvtTextField For="()=>formData.Bar" />
+            <AsvtTextField For="()=>formData.Foo" />
+            <AsvtTextField For="()=>formData.Bar" />
+            <AsvtTextField For="()=>formData.Foo" />
+            <AsvtTextField For="()=>formData.Bar" />
+          </AsvtFormRow>
+        </div>
+      </MudTabPanel>
+      <MudTabPanel Text="資料區段Ｘ"></MudTabPanel>
+      <MudTabPanel Text="資料區段Ｘ"></MudTabPanel>
+      <MudTabPanel Text="資料區段Ｘ"></MudTabPanel>
+    </MudTabs>
+
+    <MudTabs Elevation=1 Position=Position.Left Rounded
+             PanelClass="custom-tabpanel ml-2" TabPanelClass="asvt-custom-secondary" Class="mb-3">
+      <MudTabPanel Text="資料區段Ａ">
+        <div style="width:100%;">
+          @* custom-tabpanel: 若在 tab-panel 放置 DataTable 或 DataGrid 均需再校正寬度。 *@
+          <MyDataTable />
+        </div>
+      </MudTabPanel>
+      <MudTabPanel Text="資料區段１">
+        <MudPaper Class="pa-3">
+          <AsvtFormRow>
+            <AsvtTextField For="()=>formData.Foo" />
+            <AsvtTextField For="()=>formData.Bar" />
+            <AsvtTextField For="()=>formData.Foo" />
+            <AsvtTextField For="()=>formData.Bar" />
+            <AsvtTextField For="()=>formData.Foo" />
+            <AsvtTextField For="()=>formData.Bar" />
+            <AsvtTextField For="()=>formData.Foo" />
+            <AsvtTextField For="()=>formData.Bar" />
+            <AsvtTextField For="()=>formData.Foo" />
+            <AsvtTextField For="()=>formData.Bar" />
+          </AsvtFormRow>
+        </MudPaper>
+      </MudTabPanel>
+      <MudTabPanel Text="資料區段Ｘ"></MudTabPanel>
+      <MudTabPanel Text="資料區段Ｘ"></MudTabPanel>
+      <MudTabPanel Text="資料區段Ｘ"></MudTabPanel>
+
+    </MudTabs>
+
+    <MudExpansionPanels MultiExpansion>
+
+      <MudExpansionPanel Text="資料區段１預設四欄" Class="asvt-custom-secondary" Expanded>
+        <AsvtFormRow>
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+        </AsvtFormRow>
+      </MudExpansionPanel>
+
+      <MudExpansionPanel Class="asvt-custom-secondary" Expanded>
+        <TitleContent>
+          <div class="d-flex align-center gap-3">
+            <MudText Typo=Typo.h6>資料區段１ DataTable3</MudText>
+            <MudSpacer />
+            <MudIconButton Size=Size.Small Icon=@Icons.Material.Outlined.Add Color=Color.Inherit />
+            <MudIconButton Size=Size.Small Icon=@Icons.Material.Outlined.Edit Color=Color.Inherit />
+            <MudIconButton Size=Size.Small Icon=@Icons.Material.Outlined.Remove Color=Color.Inherit />
+            <MudIconButton Size=Size.Small Icon=@Icons.Material.Outlined.Settings Color=Color.Inherit />
+          </div>
+        </TitleContent>
+        <ChildContent>
+          <MyDataTable2 />
+        </ChildContent>
+      </MudExpansionPanel>
+
+      <MudExpansionPanel Text="料區段２三欄" Class="asvt-custom-primary">
+        <AsvtFormRow Grid=@([12,6,4])>
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+        </AsvtFormRow>
+      </MudExpansionPanel>
+
+      <MudExpansionPanel Text="資料區段３二欄" Class="asvt-custom-tertiary">
+        <AsvtFormRow Grid=@([12,6])>
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+          <AsvtTextField For="()=>formData.Foo" />
+          <AsvtTextField For="()=>formData.Bar" />
+        </AsvtFormRow>
+      </MudExpansionPanel>
+
+      <MudExpansionPanel Text="資料區段４四欄－細調" Class="asvt-custom-dark">
+        <AsvtFormRow>
+          <AsvtTextField For="()=>formData.Foo" Grid=@([12,6,4,3]) />
+          <AsvtTextField For="()=>formData.Bar" Grid=@([12,6,4,3]) />
+          <AsvtTextField For="()=>formData.Foo" Grid=@([12,6,4,3]) />
+          <AsvtTextField For="()=>formData.Bar" Grid=@([12,6,3,3]) />
+          <AsvtTextField For="()=>formData.Foo" Grid=@([6, 4,3,3]) />
+          <AsvtTextField For="()=>formData.Bar" Grid=@([6, 4,3,3]) />
+          <AsvtTextField For="()=>formData.Foo" Grid=@([6, 4,3,3]) />
+          <AsvtTextField For="()=>formData.Bar" Grid=@([6 ,6,4,3]) />
+          <AsvtTextField For="()=>formData.Foo" Grid=@([12,6,4,3]) />
+          <AsvtTextField For="()=>formData.Bar" Grid=@([12,6,4,3]) />
+        </AsvtFormRow>
+      </MudExpansionPanel>
+
+    </MudExpansionPanels>
+
+    <div @ref=refBottom></div>
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=@(()=>HandleSubmit(context))>送出</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary OnClick=HandleReset>重置</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Default OnClick=@(()=> jsTool.ScrollIntoViewAsync(refTop, "center"))>捲到上面</MudButton>
+    </MudStack>
+
+    <DialogValidationSummary />
+  </EditForm>
+
+  @* for debug *@
+  <pre>
+    @Utils.JsonSerialize(formData)
+  </pre>
+</MudContainer>
+
+@code {
+  FooModel formData = new();
+  bool f_readOnly = false;
+  ElementReference refTop, refBottom;
+
+  void HandleSubmit(EditContext ctx)
+  {
+    if (!ctx.Validate())
+    {
+      // 未通過基本表單驗證！將觸發 CustomValidationSummary。
+      return;
+    }
+
+    dlgSvc.ShowAlert("已通過基本表單驗證。", Color.Success);
+  }
+
+  void HandleReset()
+  {
+    formData = new();
+  }
+
+  public record FooModel
+  {
+    [Display(Name = "孫悟空")]
+    public string Foo { get; set; } = "foo";
+    [Display(Name = "翻筋斗")]
+    public string Bar { get; set; } = "這是中文字";
+  }
+
+  public class FooModelValidator : AbstractValidator<FooModel>
+  {
+    public FooModelValidator()
+    {
+      RuleFor(m => m.Foo).NotEmpty();
+      RuleFor(m => m.Bar).NotEmpty();
+    }
+
+  }
+}

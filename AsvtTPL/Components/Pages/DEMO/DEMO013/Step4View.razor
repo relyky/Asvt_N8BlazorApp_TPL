@@ -1,0 +1,63 @@
+﻿@using Vista.Biz.DEMO
+
+<MudPaper role="panel" Class=@(BizState.mode != DisplayMode.Step4 ? "d-none" : null)>
+  <MudText Typo=Typo.h4 GutterBottom>Step 4</MudText>
+
+  <MudAlert NoIcon Variant=Variant.Outlined>
+    遙遠的沼澤裡住著一個被人稱為怪物且力大無比的史瑞克，他喜歡獨居生活，雖然脾氣暴躁但卻心地善良。為了趕走被邪惡且身材矮小的法克大人驅離到他家附近森林裡的一大堆童話故事人物而前往杜洛城找法克大人談判，並挑選了喋喋不休、不肯閉嘴的驢子成為夥伴。其後法克表示史瑞克說將一座塔裡的美麗的費歐娜公主救出來以後，法克就還他寧靜的沼澤，而娶到費歐娜公主的法克就能當上國王。<br /><br />
+    史瑞克來到位於火山口的城堡後救出了公主並打敗了火龍，而火龍與驢子互相產生了情愫。在救出公主回來的途中，他和費歐娜產生情愫。但驢子首先發現了美麗公主的秘密：原來費歐娜公主在她小的時候曾被一個恐怖的咒語所詛咒，每到晚上咒語生效，她會變成一個怪物的模樣，直到天亮才能恢復原樣。國王和王后知道後向神仙教母求助，被教母告知需要把公主鎖在高塔上，等待一位勇敢的白馬王子來救她並給她一吻，她才能破除咒語永遠恢復原樣。<br /><br />
+    就在驢子知道這個秘密的晚上，史瑞克決定向費歐娜表白愛意，不料由於偷聽到二人之間的談話，使他誤會認為費歐娜嫌棄他的怪樣，於是放棄了表白。<br /><br />
+    當史瑞克把費歐娜交給法克後，他回到了寧靜的沼澤老家，而驢子把真相告知他後，他決定奪回公主。在小龍女（火龍）的幫助下，史瑞克最終戰勝法克，重新奪回了費歐娜公主的芳心。但是當他親吻費歐娜後，費歐娜並沒有變回原來的美麗長相，而是永遠停留在怪物的樣子狀態（因為那正是咒語所說的「真愛的樣貌」），但這並不影響史瑞克對她的愛。從此兩人幸福地生活在了一起，故事結束。
+  </MudAlert>
+
+  <EditForm Model=formStep4 OnSubmit=NextStep>
+    <FluentValidationValidator />
+
+    <AsvtFormRow>
+      <AsvtCheckField For="()=>formStep4.ReadAndAgree" OnChange=ResetPassed />
+    </AsvtFormRow>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton OnClick=PrevtStep Variant=Variant.Filled Color=Color.Primary StartIcon=@Icons.Material.Filled.ArrowBackIos>上一步</MudButton>
+      <MudButton ButtonType=ButtonType.Submit Variant=Variant.Filled Color=Color.Primary EndIcon=@Icons.Material.Filled.ArrowForwardIos>下一步</MudButton>
+    </MudStack>
+
+    @* <DialogValidationSummary /> *@
+    <ValidationSummary />
+  </EditForm>
+
+
+
+</MudPaper>
+
+@code {
+  [CascadingParameter] _DEMO013 BizState { get; set; } = default!;
+
+  //## State
+  DEMO013FormStep4 formStep4 { get => BizState.formData.Step4; set => BizState.formData.Step4 = value; }
+
+  async Task PrevtStep()
+  {
+    await Task.Yield();
+    BizState.mode = DisplayMode.Step3;
+  }
+
+  async Task NextStep(EditContext context)
+  {
+    //# 基本檢查
+    if (!context.Validate())
+    {
+      formStep4.HasPassed = false;
+      return;
+    }
+
+    //# logical
+    await Task.Yield(); //<--- 正式版請移除
+
+    //# success & next step
+    formStep4.HasPassed = true;
+    BizState.mode = DisplayMode.Step5;
+  }
+
+  void ResetPassed() => formStep4.HasPassed = false;
+}

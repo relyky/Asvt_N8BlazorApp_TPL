@@ -1,0 +1,75 @@
+﻿@using Vista.Biz.DEMO
+@inject IDialogServiceEx dlgSvc
+@inject DEMO014Biz bizSvc
+
+<MudPaper role="panel">
+  <EditForm Model=@qryArgs>
+    <FluentValidationValidator />
+    <AsvtFormRow>
+      <AsvtTextField For="()=>qryArgs.CreditNo" />
+      <AsvtTextField For="()=>qryArgs.IsSkiProject" />
+      <AsvtDateField For="()=>qryArgs.SpentDateBgn" />
+      <AsvtDateField For="()=>qryArgs.SpentDateEnd" />
+    </AsvtFormRow>
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary OnClick="() => HandleQuery(context)">查詢</MudButton>
+      <MudButton Variant=Variant.Outlined Color=Color.Primary OnClick=HandleReset>重置</MudButton>
+    </MudStack>
+    <DialogValidationSummary />
+  </EditForm>
+</MudPaper>
+
+@if (f_loading)
+{
+  <MudProgressLinear Color=Color.Info Indeterminate Class="my-6" />
+}
+
+@code {
+  [CascadingParameter] _DEMO014 BizState { get; set; } = default!;
+
+  //## State
+  bool f_loading = false;
+  DEMO014QryArgs qryArgs { get => BizState.qryArgs; set => BizState.qryArgs = value; }
+
+  /// <summary>
+  /// 執行查詢
+  /// </summary>
+  async Task HandleQuery(EditContext ctx)
+  {
+    try
+    {
+      //# 查詢條件檢查
+      if (!ctx.Validate())
+      {
+        // 未通過基本表單驗證！將觸發 CustomValidationSummary。
+        return;
+      }
+
+      //# GO
+      f_loading = true;
+      BizState.mode = DisplayMode.Step1;
+
+      //# 資料演算
+      BizState.dataList = await Task.Run(() => bizSvc.QryDataList(5, qryArgs));
+
+      // succes
+      BizState.mode = DisplayMode.Step2;
+    }
+    catch (Exception ex)
+    {
+      dlgSvc.ShowAlert(ex.Message, title: "出現例外");
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  /// <summary>
+  /// 重置查詢條件
+  /// </summary>
+  void HandleReset()
+  {
+    qryArgs = new();
+  }
+}

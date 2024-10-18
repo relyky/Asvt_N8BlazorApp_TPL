@@ -1,0 +1,36 @@
+﻿@inject ISnackbar snackSvc
+
+@* Contnet Layout *@
+<MudContainer>
+  <MudTabs Rounded ApplyEffectsToContainer HeaderPosition=TabHeaderPosition.Before>
+    <Header>
+      <MudTooltip Text="返回">
+        <MudIconButton Icon=@Icons.Material.Filled.ArrowBack Size=Size.Large Color=Color.Primary OnClick=GoBack />
+      </MudTooltip>
+    </Header>
+    <ChildContent>
+      <MudTabPanel Text="DataGrid">
+        <DataGridLab />
+      </MudTabPanel>
+      <MudTabPanel Text="Table">
+        <TableLab />
+      </MudTabPanel>
+      <MudTabPanel Text="雜項">
+        <MicsLab />
+      </MudTabPanel>
+      <MudTabPanel Text="其他零件">
+        <p>其他零件</p>
+      </MudTabPanel>
+    </ChildContent>
+  </MudTabs>
+</MudContainer>
+
+@code {
+  [CascadingParameter] _DEMO004 BizState { get; set; } = default!;
+
+  void GoBack()
+  {
+    snackSvc.Add("未實作。可用於返回進入頁面。", Severity.Info);
+    //BizState.mode = DisplayMode.List;
+  }
+}

@@ -1,0 +1,41 @@
+﻿@inherits AsvtFieldBase<string>
+
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+  <MudField Label=@_label
+            HelperText=@HelperText
+            Class=@(Required ? $"mud-input-required {Class}" : Class)
+            Error=@ValidationError
+            ErrorText=@ValidationErrorText
+            InnerPadding=false
+            Underline=false>
+
+    <MudChipSet T="string" CheckMark SelectionMode=@SelectionMode.ToggleSelection Variant=Variant.Text ReadOnly=@_readOnly
+                SelectedValue=@FieldValue SelectedValueChanged=HandleValueChanged>
+      <MudChip Value=@TrueValue Text=@TrueText Color=@(_readOnly ? Color.Default : Color.Primary) />
+      <MudChip Value=@FuzyValue Text=@FuzyText Color=@(_readOnly ? Color.Default : Color.Secondary) />
+    </MudChipSet>
+
+  </MudField>
+</MudItem>
+
+@code {
+  [Parameter] public string[] TrueSign { get; set; } = ["Y", "True"];   // [value,label] 必預成對。
+  [Parameter] public string[] FalseSign { get; set; } = ["N", "False"]; // [value,label] 必預成對。
+  [Parameter] public string[] FuzySign { get; set; } = ["X", "Fuzy"];   // [value,label] 必預成對。
+
+  //# Property
+  string TrueValue => TrueSign[0];
+  string TrueText => TrueSign[1];
+  string FalseValue => FalseSign[0];
+  string FalseText => FalseSign[1];
+  string FuzyValue => FuzySign[0];
+  string FuzyText => FuzySign[1];
+
+  void HandleValueChanged(string? v)
+  {
+    if (!_readOnly)
+    {
+      FieldValue = v ?? FalseValue;
+    }
+  }
+}

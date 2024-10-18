@@ -1,0 +1,84 @@
+﻿@using Vista.Biz.DEMO
+@inject IDialogServiceEx dlgSvc
+@inject DEMO014Biz bizSvc
+
+<style>
+  .selected {
+      background-color: var(--mud-palette-info) !important;
+  }
+
+      .selected > td {
+          color: white !important;
+      }
+
+          .selected > td .mud-input {
+              color: white !important;
+          }
+</style>
+
+<MudDataGrid T="DEMO014Profile" Items=dataList SortMode=SortMode.None Hover Striped Dense
+             SelectOnRowClick RowClass="cursor-pointer" RowClick=HandleRowClick RowClassFunc=SelectedRowClassFunc
+             HeaderClass="custom-secondary" Class="mb-3" >
+  <ToolBarContent>
+    <MudText Typo=Typo.h5>申請案件</MudText>
+  </ToolBarContent>
+  <Columns>
+    <PropertyColumn Property="m => m.FormNo" Title="表單號碼" />
+    <PropertyColumn Property="m => m.SpentAmount" Title="消費金額" />
+    <PropertyColumn Property="m => m.Field1" Title="資料欄位１" />
+    <PropertyColumn Property="m => m.Field2" Title="資料欄位２" />
+    <PropertyColumn Property="m => m.Field3" Title="資料欄位３" />
+    <PropertyColumn Property="m => m.Field4" Title="資料欄位４" />
+    <PropertyColumn Property="m => m.Field5" Title="資料欄位５" />
+    <PropertyColumn Property="m => m.Field6" Title="資料欄位６" />
+  </Columns>
+</MudDataGrid>
+
+@if (f_loading)
+{
+  <MudProgressLinear Color=Color.Info Indeterminate Class="my-6" />
+}
+
+@code {
+  [CascadingParameter] _DEMO014 BizState { get; set; } = default!;
+
+  //## State
+  List<DEMO014Profile> dataList => BizState.dataList;
+  DEMO014Profile? dataAim { get => BizState.dataAim; set => BizState.dataAim = value; }
+  bool f_loading = false;
+
+  async Task HandleRowClick(DataGridRowClickEventArgs<DEMO014Profile> e)
+  {
+    dataAim = e.Item;
+    await LoadDataContent(e.Item);
+  }
+
+  async Task LoadDataContent(DEMO014Profile dataAim)
+  {
+    try
+    {
+      // GO
+      f_loading = true;
+      BizState.mode = DisplayMode.Step2;
+
+      // query form data
+      BizState.formData = await Task.Run(() => bizSvc.GetFormData(dataAim));
+
+      // succes
+      BizState.mode = DisplayMode.Step3;
+    }
+    catch (Exception ex)
+    {
+      dlgSvc.ShowAlert(ex.Message, title: "出現例外！");
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  string SelectedRowClassFunc(DEMO014Profile item, int rowNumber)
+  {
+    return dataAim == item ? "selected" : String.Empty;
+  }
+}

@@ -1,0 +1,104 @@
+﻿@using System.Timers
+@implements IDisposable
+@inject NavigationManager navSvc
+
+<span class="mx-1">@displayString</span>
+
+@code {
+  [Parameter] public string LogoutUri { get; set; } = @"/Account/Logout";
+  /// <summary>
+  /// 本地到期時間
+  /// </summary>
+  [Parameter, EditorRequired] public DateTime Expired { get; set; }
+
+  //## Resource
+  Timer? timer1 = null; // 以分計數
+  Timer? timer2 = null; // 最後一分鐘以秒計數
+  readonly TimeSpan LAST_ONE_MINUTE = TimeSpan.FromMinutes(1); // 常數資源：最後一分鐘
+
+  //## State
+  string displayString = String.Empty;
+
+  protected override void OnAfterRender(bool firstRender)
+  {
+    /// ※ timer 的初始化在 firstRender 執行
+    if (firstRender)
+    {
+      timer1 = new Timer();
+      timer1.Interval = 60 * 1000; // 以分計數
+      timer1.Elapsed += OnTimerInterval;
+      timer1.AutoReset = true;
+      // Start the timer
+      timer1.Enabled = true;
+      // 送出初始倒數訊息
+      OnTimerInterval(this, null);
+    }
+  }
+
+  public void Dispose()
+  {
+    /// ※ 別忘記要釋放 timer 否則會變成無人管理的流浪資源。
+    timer1?.Dispose();
+    timer2?.Dispose();
+  }
+
+  /// <summary>
+  /// for timer1 以分鐘倒數
+  /// </summary>
+  void OnTimerInterval(object? sender, ElapsedEventArgs e)
+  {
+    TimeSpan remain = Expired.Subtract(DateTime.Now);
+    if (remain <= LAST_ONE_MINUTE)
+    {
+      //## 改啟動timer2以秒倒數
+      timer2 = new Timer();
+      timer2.Interval = 1000; // 以秒計數
+      timer2.Elapsed += OnTimerInterval2;
+      timer2.AutoReset = true;
+      // Start the timer
+      timer2.Enabled = true;
+
+      //## 釋放timer1資源。
+      timer1.Enabled = false;
+      timer1.Dispose();
+      timer1 = null;
+      return;
+    }
+
+    // 計算新的顯示字串
+    string tempString = $"{(int)remain.TotalHours}h{remain.Minutes}m";
+
+    // refresh UI,顯示字串不同才刷新
+    if (tempString != displayString)
+    {
+      displayString = tempString;
+      InvokeAsync(StateHasChanged);
+    }
+  }
+
+  /// <summary>
+  /// for timer2 最後一分鐘以秒鐘倒數
+  /// </summary>
+  void OnTimerInterval2(object? sender, ElapsedEventArgs e)
+  {
+    TimeSpan remain = Expired.Subtract(DateTime.Now);
+    if (remain <= TimeSpan.Zero)
+      remain = TimeSpan.Zero;
+
+    // 計算新的顯示字串
+    string tempString = $"{remain.Minutes}m{remain.Seconds}s";
+
+    // refresh UI,顯示字串不同才刷新
+    if (tempString != displayString)
+    {
+      displayString = tempString;
+      InvokeAsync(StateHasChanged);
+    }
+
+    if (remain <= TimeSpan.Zero)
+    {
+      navSvc.NavigateTo(LogoutUri, true);
+      //※ forceLoad 模式能轉址非 Blazor Page。
+    }
+  }
+}

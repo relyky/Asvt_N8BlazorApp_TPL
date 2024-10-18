@@ -1,0 +1,139 @@
+﻿@using Vista.Biz.DEMO
+@inject IDialogServiceEx dlgSvc
+@inject DEMO012Biz bizSvc
+
+@* Show/Hide DataList *@
+<ScreenOverlay Visible=f_loading />
+<MudContainer Class=@(BizState.mode != DisplayMode.List ? "d-none" : null)>
+
+  @* DataList *@
+  <MudDataGrid Items=dataList Loading=f_loading SortMode=SortMode.Single Hover Striped Dense
+               FixedHeader Height="calc(100vh - 200px)" HeaderClass="custom-secondary"
+               QuickFilter=FilterFunc>
+    <ToolBarContent>
+      <MudButton StartIcon=@Icons.Material.Rounded.Search Variant=Variant.Filled Color=Color.Primary Class="mr-2" OnClick="_=> f_query = true">查詢條件</MudButton>
+      <MudButton StartIcon=@Icons.Material.Filled.Add Variant=Variant.Outlined Color=Color.Primary Class="mr-2" OnClick=HandleAdd>新增</MudButton>
+      <MudChip Color=Color.Info Variant=Variant.Outlined>@($"總共{dataList.Count:N0}筆")</MudChip>
+      <MudSpacer />
+      <MudTextField @bind-Value=keyword Margin=Margin.Dense Adornment=Adornment.Start AdornmentIcon=@Icons.Material.Filled.FilterAlt
+                    Placeholder="關鍵字過濾: 表單號碼,資料欄位A" />
+    </ToolBarContent>
+    <Columns>
+      <TemplateColumn>
+        <CellTemplate>
+          <MudButton Variant=Variant.Text Color=Color.Primary Size=Size.Small OnClick="_=>HandleEdit(context.Item)">編輯</MudButton>
+        </CellTemplate>
+      </TemplateColumn>
+      <PropertyColumn Property="m => m.formNo" Title="表單號碼" />
+      <PropertyColumn Property="m => m.dataFieldA" Title="資料欄位A" />
+      <PropertyColumn Property="m => m.dataFieldB" Title="資料欄位B" />
+      <PropertyColumn Property="m => m.dataFieldC" Title="資料欄位C" />
+      <PropertyColumn Property="m => m.dataFieldD" Title="資料欄位D" />
+      <PropertyColumn Property="m => m.dataFieldE" Title="資料欄位E" />
+      <PropertyColumn Property="m => m.dataFieldF" Title="資料欄位F" />
+    </Columns>
+  </MudDataGrid>
+</MudContainer>
+
+@* QueryArgs : Inline Dialog *@
+<MudDialog @bind-Visible=@f_query Options=@dlgOption>
+  <TitleContent>
+    <MudToolBar Gutters=false>
+      <MudIcon Icon=@Icons.Material.Filled.Search Class="mr-3" />
+      <MudText Typo=Typo.h6>查詢條件</MudText>
+      <MudSpacer />
+      <MudIconButton Icon=@Icons.Material.Filled.Close OnClick=@(_=>f_query=false) />
+    </MudToolBar>
+  </TitleContent>
+  <DialogContent>
+    <EditForm Model=@queryArgs>
+      <FluentValidationValidator />
+      <AsvtFormRow Grid=@([12,6])>
+        <AsvtTextField For=@(()=>queryArgs.formNo) />
+        <AsvtTextField For=@(()=>queryArgs.dataFieldA) />
+        <AsvtDateField For=@(()=>queryArgs.dateBgn) />
+        <AsvtDateField For=@(()=>queryArgs.dateEnd) />
+      </AsvtFormRow>
+      <MudStack Row Justify=Justify.Center Class="my-3">
+        <MudButton Variant=Variant.Filled Color=Color.Primary OnClick="() => HandleQuery(context)">查詢</MudButton>
+        <MudButton Variant=Variant.Outlined Color=Color.Primary OnClick=HandleReset>重置</MudButton>
+      </MudStack>
+    </EditForm>
+  </DialogContent>
+</MudDialog>
+
+@code {
+  [CascadingParameter] _DEMO012 BizState { get; set; } = default!;
+
+  //## Resource
+  DialogOptions dlgOption = new() { Position = DialogPosition.TopCenter };
+
+  //## State
+  List<DEMO012Profile> dataList { get => BizState.dataList; set => BizState.dataList = value; }
+  DEMO012QryArgs queryArgs = new();
+  string keyword = "";
+  bool f_query = false;
+  bool f_loading = false;
+
+  protected override async Task OnInitializedAsync()
+  {
+    await HandleQuery(null);
+  }
+
+  /// <summary>
+  /// 執行查詢
+  /// </summary>
+  async Task HandleQuery(EditContext? ctx)
+  {
+    try
+    {
+      //# 查詢條件檢查
+      if (ctx != null && !ctx.Validate())
+      {
+        //dlgSvc.ShowAlert("未通過查詢條件檢查！");
+        return;
+      }
+
+      //# block UI
+      f_loading = true;
+      f_query = false;
+      StateHasChanged();
+
+      //# 資料演算
+      dataList = await Task.Run(() => bizSvc.QryDataList(300, queryArgs));
+    }
+    catch (Exception ex)
+    {
+      dlgSvc.ShowAlert(ex.Message, title: "出現例外");
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+
+  /// <summary>
+  /// 重置查詢條件
+  /// </summary>
+  void HandleReset()
+  {
+    queryArgs = new();
+  }
+
+  bool FilterFunc(DEMO012Profile item)
+  {
+    return (item.formNo != null && item.formNo.Contains(keyword))
+        || (item.dataFieldA != null && item.dataFieldA.Contains(keyword));
+  }
+
+  void HandleAdd()
+  {
+    BizState.mode = DisplayMode.Add;
+  }
+
+  void HandleEdit(DEMO012Profile item)
+  {
+    BizState.dataAim = item;
+    BizState.mode = DisplayMode.Edit;
+  }
+}

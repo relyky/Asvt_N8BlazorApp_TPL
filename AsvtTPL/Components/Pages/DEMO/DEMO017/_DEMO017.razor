@@ -1,0 +1,46 @@
+﻿@using Vista.Component
+@using Vista.Component.Shared
+@page "/DEMO017"
+@attribute [Page("DEMO017", "基本表單驗證Ｙ")]
+@attribute [Authorize("AuthPage")]
+
+<MudContainer>
+  <MudText Typo=Typo.h3>基本表單驗證Ｙ(mobile預備)</MudText>
+
+  <StepperWidget @bind-Step=step />
+  <pre>step: @step</pre>
+
+  @*   <MudForm Model=@formData Validation=@orderValidator.Validation>
+  <A2TextField For="()=>formData.Name" />
+  <A2TextField For="()=>formData.Email" />
+  </MudForm> *@
+
+  <ExampleComponent />
+
+  <MudPaper role="panel">
+    <MudText Typo=Typo.h6>測試 MudCleaveDateField &amp; MudCleaveMonthField </MudText>
+    <MudGrid>
+      <MudItem>
+        <MudCleaveDateField @bind-Date=date1></MudCleaveDateField>
+      </MudItem>
+      <MudItem>
+        <MudCleaveDateField @bind-Date=date2></MudCleaveDateField>
+      </MudItem>
+      <MudItem>
+        <MudCleaveMonthField @bind-Date=month1></MudCleaveMonthField>
+      </MudItem>
+      <MudItem>
+        <MudCleaveMonthField @bind-Date=month2></MudCleaveMonthField>
+      </MudItem>
+    </MudGrid>
+    <pre class="ma-2">@($"d1:{date1}, d2:{date2}, m1:{month1}, m2:{month2}")</pre>
+  </MudPaper>
+
+</MudContainer>
+
+@code {
+  //## test
+  DateTime? date1, date2, month1, month2;
+  int step;
+
+}

@@ -1,0 +1,14 @@
+.wall {
+  padding: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  border: solid 2px red;
+  border-radius: 8px;
+}
+
+.button {
+  padding: 4px;
+  margin-left: 4px;
+  margin-right: 4px;
+  background-color: lightgray;
+}

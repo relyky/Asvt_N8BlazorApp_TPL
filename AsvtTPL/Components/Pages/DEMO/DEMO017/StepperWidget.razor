@@ -1,0 +1,30 @@
+﻿@* StepperWidget *@
+
+<MudToolBar>
+  <MudIconButton Icon=@IconMap(1) Color=@ColorMap(1) Size=@SizeMap(1) OnClick="()=> StepChanged.InvokeAsync(1)" />
+
+  <MudDivider Style="width:10px;" />
+
+  <MudIconButton Icon=@IconMap(2) Color=@ColorMap(2) Size=@SizeMap(2) OnClick="()=> StepChanged.InvokeAsync(2)" />
+
+  <MudDivider Style="width:10px;" />
+
+  <MudIconButton Icon=@IconMap(3) Color=@ColorMap(3) Size=@SizeMap(3) OnClick="()=> StepChanged.InvokeAsync(3)" />
+
+  <MudDivider Style="width:10px;" />
+
+  <MudIconButton Icon=@IconMap(4) Color=@ColorMap(4) Size=@SizeMap(4) OnClick="()=> StepChanged.InvokeAsync(4)" />
+
+  <MudDivider Style="width:10px;" />
+
+  <MudIconButton Icon=@IconMap(5) Color=@ColorMap(5) Size=@SizeMap(5) OnClick="()=> StepChanged.InvokeAsync(5)" />
+</MudToolBar>
+
+@code {
+  [Parameter] public int Step { get; set; } = 1;
+  [Parameter] public EventCallback<int> StepChanged { get; set; }
+
+  string IconMap(int pos) => pos == Step ? Step == 5 ? Icons.Material.Filled.Flag : Icons.Material.Filled.DirectionsWalk : Icons.Material.Filled.StopCircle;
+  Color ColorMap(int pos) => pos == Step ? Color.Primary : Color.Default;
+  Size SizeMap(int pos) => pos == Step ? Size.Large : Size.Medium;
+}

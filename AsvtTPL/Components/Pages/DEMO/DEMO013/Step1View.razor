@@ -1,0 +1,47 @@
+﻿@using Vista.Biz.DEMO
+
+<MudPaper role="panel" Class=@(BizState.mode != DisplayMode.Step1 ? "d-none" : null)>
+  <MudText Typo=Typo.h4 GutterBottom>Step 1</MudText>
+
+  <EditForm Model=formStep1 OnSubmit=NextStep>
+    <FluentValidationValidator />
+
+    <AsvtFormRow>
+      <AsvtTextField For="()=>formStep1.ClientName" OnChange=ResetPassed />
+      <AsvtTextField For="()=>formStep1.ContactPhone" OnChange=ResetPassed />
+    </AsvtFormRow>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton ButtonType=ButtonType.Submit Variant=Variant.Filled Color=Color.Primary EndIcon=@Icons.Material.Filled.ArrowForwardIos>下一步</MudButton>
+    </MudStack>
+
+    @* <DialogValidationSummary /> *@
+    <ValidationSummary />
+  </EditForm>
+</MudPaper>
+
+@code {
+  [CascadingParameter] _DEMO013 BizState { get; set; } = default!;
+
+  //## State
+  DEMO013FormStep1 formStep1 { get => BizState.formData.Step1; set => BizState.formData.Step1 = value; }
+
+  async Task NextStep(EditContext context)
+  {
+    //# 基本檢查
+    if (!context.Validate())
+    {
+      formStep1.HasPassed = false;
+      return;
+    }
+
+    //# logical
+    await Task.Yield(); //<--- 正式版請移除
+
+    //# success & next step
+    formStep1.HasPassed = true;
+    BizState.mode = DisplayMode.Step2;
+  }
+
+  void ResetPassed() => formStep1.HasPassed = false;
+}

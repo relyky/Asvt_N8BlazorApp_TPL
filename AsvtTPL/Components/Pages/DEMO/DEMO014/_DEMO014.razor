@@ -1,0 +1,48 @@
+﻿@using Vista.Biz.DEMO
+@page "/DEMO014"
+@attribute [Page("DEMO014", "案件審查樣板")]
+@attribute [Authorize("AuthPage")]
+
+<CascadingValue Value="this">
+  <MudContainer>
+    <Step1Query />
+
+    @if (_mode > DisplayMode.Step1)
+    {
+      <Step2Picking />
+    }
+
+    @if (_mode > DisplayMode.Step2)
+    {
+      <Step3Content />
+    }
+  </MudContainer>
+</CascadingValue>
+
+@code {
+  /// <summary>
+  /// 通知去刷新全部頁面。
+  /// </summary>
+  internal void NotifyStateChanged() => StateHasChanged();
+
+  /// <summary>
+  /// 畫面模式
+  /// </summary>
+  internal DisplayMode mode
+  {
+    get => _mode;
+    set
+    {
+      _mode = value;
+      // 當畫面模式切換時，通知去刷新全部頁面。
+      this.StateHasChanged();
+    }
+  }
+  DisplayMode _mode = DisplayMode.Step1;
+
+  //## State
+  internal DEMO014QryArgs qryArgs = new();
+  internal List<DEMO014Profile> dataList = [];
+  internal DEMO014Profile? dataAim = null; // 處理資料標的
+  internal DEMO014FormData? formData = null;
+}

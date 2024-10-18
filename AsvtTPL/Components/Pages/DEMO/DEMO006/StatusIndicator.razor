@@ -1,0 +1,19 @@
+﻿
+<MudStack Row Spacing=1 AlignItems=AlignItems.Center Justify=Justify.Center>
+  <MudIcon Size=@Size Icon=@Icons.Material.Filled.Favorite Title="Favorite" Color=Color.Success />
+  <MudDivider Style="flex-grow:0; width: .5em; border-color:var(--mud-palette-black);" />
+  <MudIcon Size=@Size Icon=@Icons.Material.Filled.Api Title="API" Color=Color.Error />
+  <MudDivider Style="flex-grow:0; width: .5em; border-color:var(--mud-palette-black);" />
+  <MudIcon Size=@Size Icon=@Icons.Material.Filled.AddCircle Title="Add" Color=Color.Info />
+  <MudDivider Style="flex-grow:0; width: .5em; border-color:var(--mud-palette-black);" />
+  <MudIcon Size=@Size Icon=@Icons.Custom.Brands.GitHub Title="GitHub" Color=Color.Warning />
+  <MudDivider Style="flex-grow:0; width: .5em; border-color:var(--mud-palette-black);" />
+  <MudIcon Size=@Size Icon=@Icons.Custom.Brands.Google Title="Google" />
+  <MudDivider Style="flex-grow:0; width: .5em; border-color:var(--mud-palette-black);" />
+  <MudIcon Size=@Size Icon=@Icons.Custom.Brands.Reddit Title="Reddit" />
+</MudStack>
+
+@code {
+  [Parameter] public Size Size { get; set; } = Size.Medium;
+
+}

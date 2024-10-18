@@ -1,0 +1,15 @@
+﻿@page "/DEMO205"
+@attribute [Page("DEMO205", "播放影片測試")]
+@attribute [Authorize("AuthPage")]
+
+<MudContainer>
+  <MudText Typo=Typo.h3 GutterBottom>播放影片測試</MudText>
+  <MudText>此頁元件使用 react + r2wc 實作成 web-component。</MudText>
+
+  <TestWebSample />
+
+  <TestYouTubePlayer />
+
+  <TestFilePlayer />
+
+</MudContainer>

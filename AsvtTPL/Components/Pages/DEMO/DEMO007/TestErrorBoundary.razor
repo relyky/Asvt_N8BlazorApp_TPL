@@ -1,0 +1,35 @@
+﻿<MudPaper Class="pa-4" Style=>
+  <MudText Typo=Typo.h6>ErrorBoundary </MudText>
+  <ErrorBoundary @ref=refErrorBoundary Context="except">
+    <ChildContent>
+      <MudButton Variant=Variant.Filled Color=Color.Error OnClick=@(()=>{
+                 throw new ApplicationException("測試元件內丟例外處理！");
+                 })>測試元件內丟例外處理！</MudButton>
+
+      <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=HandleProcess>測試元件外丟例外處理！</MudButton>
+    </ChildContent>
+    <ErrorContent>
+      <MudAlert Severity=Severity.Error>
+        @except.Message
+      </MudAlert>
+      <MudButton Variant=Variant.Outlined OnClick=HandleRecover>試著復原</MudButton>
+    </ErrorContent>
+  </ErrorBoundary>
+  <MudButton Variant=Variant.Outlined OnClick=HandleProcess>從 ErrorBoundary 外面丟</MudButton>
+</MudPaper>
+
+@code {
+  //## Resource
+  ErrorBoundary refErrorBoundary = default!;
+
+  void HandleRecover()
+  {
+    refErrorBoundary.Recover();
+  }
+
+  async Task HandleProcess()
+  {
+    await Task.Yield();
+    throw new ApplicationException("測試元件外丟例外處理！");
+  }
+}

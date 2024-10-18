@@ -1,0 +1,96 @@
+﻿@using Vista.Biz.DEMO
+@inject IDialogServiceEx dlgSvc
+
+<MudPaper role="panel" Class=@(BizState.mode != DisplayMode.Step5 ? "d-none" : null)>
+  <MudText Typo=Typo.h4 GutterBottom>Final Step</MudText>
+
+  <MudList T="string">
+    <MudListItem Text="Step 1"
+                 Icon=@(Step1_HasPassed ? Icons.Material.Filled.Check : Icons.Material.Filled.Close)
+                 IconColor=@(Step1_HasPassed ? Color.Success : Color.Error)
+                 OnClick="()=>Step = DisplayMode.Step1" />
+    <MudListItem Text="Step 2"
+                 Icon=@(Step2_HasPassed ? Icons.Material.Filled.Check : Icons.Material.Filled.Close)
+                 IconColor=@(Step2_HasPassed ? Color.Success : Color.Error)
+                 OnClick="()=>Step = DisplayMode.Step2" />
+    <MudListItem Text="Step 3"
+                 Icon=@(Step3_HasPassed ? Icons.Material.Filled.Check : Icons.Material.Filled.Close)
+                 IconColor=@(Step3_HasPassed ? Color.Success : Color.Error)
+                 OnClick="()=>Step = DisplayMode.Step3" />
+    <MudListItem Text="Step 4"
+                 Icon=@(Step4_HasPassed ? Icons.Material.Filled.Check : Icons.Material.Filled.Close)
+                 IconColor=@(Step4_HasPassed ? Color.Success : Color.Error)
+                 OnClick="()=>Step = DisplayMode.Step4" />
+  </MudList>
+
+  <MudStack Row Justify=Justify.Center Class="my-3">
+    <MudButton OnClick=HandleSubmit Variant=Variant.Filled Color=Color.Primary Size=Size.Large StartIcon=@Icons.Material.Filled.Send
+               Disabled=submitDisabled>送出申請</MudButton>
+  </MudStack>
+
+  @if (f_loading)
+  {
+    <MudProgressLinear Color=Color.Info Indeterminate />
+  }
+
+  @if (IsSubmitedSuccess)
+  {
+    <MudAlert Severity=Severity.Success>
+      <MudText Typo=Typo.h2>
+        恭禧發財紅包拿來
+      </MudText>
+    </MudAlert>
+  }
+</MudPaper>
+
+@code {
+  [CascadingParameter] _DEMO013 BizState { get; set; } = default!;
+
+  //# properties
+  DEMO013FormData formData { get => BizState.formData; set => BizState.formData = value; }
+  DisplayMode Step { get => BizState.mode; set => BizState.mode = value; }
+  bool Step1_HasPassed => BizState.formData.Step1.HasPassed;
+  bool Step2_HasPassed => BizState.formData.Step2.HasPassed;
+  bool Step3_HasPassed => BizState.formData.Step3.HasPassed;
+  bool Step4_HasPassed => BizState.formData.Step4.HasPassed;
+  bool IsSubmitedSuccess => BizState.formData.IsSubmitedSuccess;
+
+  //# state
+  bool f_loading = false;
+
+  // 判斷能否送件
+  bool submitDisabled => IsSubmitedSuccess || !Step1_HasPassed || !Step2_HasPassed || !Step3_HasPassed || !Step4_HasPassed;
+
+  async Task HandleSubmit()
+  {
+    try
+    {
+      f_loading = true;
+
+      //# 基本檢查
+      DEMO013FormDataValidator validator = new();
+      var result = await validator.ValidateAsync(formData);
+      if (!result.IsValid) {
+        dlgSvc.ShowAlert($"未通過基本檢查！");
+        return;
+      }
+
+      //# logical
+      // 模擬運算時間
+      await Task.Delay(2000);
+
+      //# Success
+      BizState.formData.IsSubmitedSuccess = true;
+      f_loading = false;
+      BizState.NotifyStateChanged();
+    }
+    catch(Exception ex)
+    {
+      dlgSvc.ShowAlert($"出現例外！{ex.Message}");
+    }
+    finally
+    {
+      f_loading = false;
+    }
+  }
+}

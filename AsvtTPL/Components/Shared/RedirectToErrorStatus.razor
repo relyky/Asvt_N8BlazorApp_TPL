@@ -1,0 +1,10 @@
+﻿@inject NavigationManager navSvc
+
+@code {
+  [Parameter] public int StatusCode { get; set; }
+
+  protected override void OnInitialized()
+  {
+    navSvc.NavigateTo($"/ErrorStatus/{StatusCode}", forceLoad: false);
+  }
+}

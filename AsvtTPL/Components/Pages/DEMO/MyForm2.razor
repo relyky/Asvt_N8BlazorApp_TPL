@@ -1,0 +1,104 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using FluentValidation
+@using System.Text.RegularExpressions
+@page "/myform2"
+@attribute [Page("myform2", "我的表單２")]
+
+<MudContainer>
+  <MudText Typo=Typo.h3>EditForm with FluentValidation</MudText>
+
+  <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <FluentValidationValidator />
+
+    <MudGrid>
+      <MudItem xs="12" sm="7">
+        <MudCard>
+          <MudCardContent>
+            <MudTextField Label="用戶名稱" HelperText="最多8碼"
+                          @bind-Value="model.Username" For="() => model.Username" />
+            <MudTextField Label="電郵地址" Class="mt-3"
+                          @bind-Value="model.Email" For="() => model.Email" />
+            <MudTextField Label="密碼" HelperText="需有英文與數字" Class="mt-3"
+                          @bind-Value="model.Password" For="() => model.Password" InputType="InputType.Password" />
+            <MudTextField Label="確認密碼" HelperText="重複輸入密碼" Class="mt-3"
+                          @bind-Value="model.Password2" For="() => model.Password2" InputType="InputType.Password" />
+          </MudCardContent>
+          <MudCardActions>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+          </MudCardActions>
+        </MudCard>
+      </MudItem>
+      <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+          <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+          @if (success)
+          {
+            <MudText Color="Color.Success">Success</MudText>
+          }
+          else
+          {
+            <MudText Color="@Color.Error">
+              <ValidationSummary />
+            </MudText>
+          }
+        </MudPaper>
+      </MudItem>
+      <MudItem xs="12">
+        <MudText Typo="Typo.body2" Align="Align.Center">
+          Fill out the form correctly to see the success message.
+        </MudText>
+      </MudItem>
+    </MudGrid>
+  </EditForm>
+
+</MudContainer>
+
+@code {
+  RegisterAccountForm model = new RegisterAccountForm();
+  bool success;
+
+  public class RegisterAccountForm
+  {
+    [Display(Name = "用戶名稱")]
+    public string? Username { get; set; } = "user01";
+
+    [Display(Name = "電郵地址")]
+    public string? Email { get; set; } = "nobody@mail.server";
+
+    [Display(Name = "密碼")]
+    public string? Password { get; set; } = "1qaz@WSX";
+
+    [Display(Name = "確認密碼")]
+    public string? Password2 { get; set; } = "1qaz@WSX";
+  }
+
+  public class RegisterAccountFormValidator : AbstractValidator<RegisterAccountForm>
+  {
+    public RegisterAccountFormValidator()
+    {
+      RuleFor(m => m.Username).NotEmpty().MaximumLength(8);
+
+      RuleFor(m => m.Email).NotEmpty().EmailAddress();
+
+      RuleFor(m => m.Password).NotEmpty().Length(8, 30)
+        .Must(IsStrongPassword).WithMessage("'密碼' 強度不符。");
+
+      RuleFor(m => m.Password2).NotEmpty()
+        .Equal(m => m.Password).WithMessage("'確認密碼' 不一致！");
+    }
+
+    bool IsStrongPassword(string pwd)
+    {
+      if (!Regex.IsMatch(pwd, @"\w+")) return false;  // 只能填英數字
+      if (!Regex.IsMatch(pwd, @"\d")) return false; // 需有數字
+      if (!Regex.IsMatch(pwd, @"[A-Za-z]")) return false; // 需有英文
+      return true;
+    }
+  }
+
+  private void OnValidSubmit(EditContext context)
+  {
+    success = true;
+    StateHasChanged();
+  }
+}

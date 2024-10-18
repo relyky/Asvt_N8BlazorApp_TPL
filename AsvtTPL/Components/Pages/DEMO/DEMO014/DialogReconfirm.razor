@@ -1,0 +1,33 @@
+﻿@using Vista.Biz.DEMO
+
+<MudDialog ActionsClass="justify-center">
+  <TitleContent>
+    <MudText Typo=Typo.h5>【申請分期付款】作業</MudText>
+  </TitleContent>
+  <DialogContent>
+    <MudText Typo=Typo.h6>檢核結果</MudText>
+    <MudAlert Severity=Severity.Normal NoIcon>
+      <MudText Typo=Typo.subtitle1 Color=Color.Success>檢核通過</MudText>
+      <MudText Typo=Typo.body1 Color=Color.Info>表單單號：@FormData.FormNo</MudText>
+      <MudText Typo=Typo.body2 Color=Color.Warning>請確認申請分期專案【US01:109分秒必爭活動６期０％】</MudText>
+    </MudAlert>
+    <MudText Typo=Typo.h6>備註</MudText>
+    <MudAlert Severity=Severity.Normal NoIcon>
+      商務卡及VISA金融卡不可參加
+    </MudAlert>
+  </DialogContent>
+  <DialogActions>
+    <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=@(()=>HandleReconfirm("Yes"))>確認申請</MudButton>
+    <MudButton Variant=Variant.Outlined Color=Color.Primary OnClick=@(()=>HandleReconfirm("No"))>取消申請</MudButton>
+  </DialogActions>
+</MudDialog>
+
+@code {
+  [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+  [Parameter, EditorRequired] public DEMO014FormData FormData { get; set; } = default!;
+
+  void HandleReconfirm(string ans)
+  {
+    MudDialog.Close(DialogResult.Ok(ans));
+  }
+}

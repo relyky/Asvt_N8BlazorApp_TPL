@@ -1,0 +1,142 @@
+﻿@page "/login"
+@layout AsvtTPL.Components.Layout.NoLayout
+@attribute [AllowAnonymous]
+@inject AccountService accSvc
+@inject NavigationManager navSvc
+@inject IDialogServiceEx dlgSvc
+
+@* <PageTitle>登入</PageTitle> *@
+
+<AuthorizeView Context="auth">
+  <Authorized>
+    <MudText Typo=Typo.h1>
+      @($"{auth.User.Identity?.Name} 已登入系統")
+    </MudText>
+  </Authorized>
+  <Authorizing>
+    <MudText Typo=Typo.h2>登入中</MudText>
+  </Authorizing>
+  <NotAuthorized>
+
+    <EditForm Model=@loginModel OnValidSubmit=@HandleValidSubmit Context="loginModelContext">
+      <FluentValidationValidator />
+      @*<DataAnnotationsValidator />*@
+      <MudCard Class="ma-16 pa-4 mx-auto" Style="max-width:400px;background:var(--mud-palette-background-gray);">
+        <MudCardHeader>
+          <CardHeaderContent>
+            <MudText Typo=Typo.h6>登入</MudText>
+          </CardHeaderContent>
+          <CardHeaderActions>
+            <MudIconButton Icon=@Icons.Material.Filled.Settings Color=Color.Default />
+          </CardHeaderActions>
+        </MudCardHeader>
+        <MudCardContent>
+          <MudTextField T=string Label="帳號" Value=@loginModel.userId ValueChanged=@HandleUserId For="()=>loginModel.userId" Required
+                        Immediate TextUpdateSuppression=false
+                        Variant=Variant.Outlined Class="mb-4" Style="background:var(--mud-palette-background);" />
+          <MudTextField Label="通關密語" @bind-Value=@loginModel.credential For="()=>loginModel.credential" InputType=@PasswordInput Required
+                        Variant=Variant.Outlined Class="mb-4" Style="background:var(--mud-palette-background);" Adornment=Adornment.End AdornmentIcon=@PasswordInputIcon OnAdornmentClick=@HandleIconClick />
+          <MudCheckBox Label="記住我" @bind-Value=@loginModel.rememberMe For="()=>loginModel.rememberMe" Color=Color.Primary ></MudCheckBox>
+        </MudCardContent>
+
+        <MudCardActions Class="justify-center">
+          <MudButton Variant=Variant.Filled Color=Color.Primary ButtonType=ButtonType.Submit Disabled=@f_Authing Class="px-6 py-3">
+            @if (f_Authing)
+            {
+              <MudProgressCircular Size=Size.Small Indeterminate />
+              <MudText Class="ms-2">登入中…</MudText>
+            }
+            else
+            {
+              <MudIcon Icon=@Icons.Material.Filled.Login />
+              <MudText Class="ms-2">登入</MudText>
+            }
+          </MudButton>
+        </MudCardActions>
+      </MudCard>
+    </EditForm>
+
+  </NotAuthorized>
+</AuthorizeView>
+
+@code {
+  [SupplyParameterFromQuery(Name = "returnUrl")]
+  private string? ReturnUrl { get; set; }
+
+  //## State
+  LoginArgs loginModel = new() { userId = "smart", credential = "asvt", vcode = "0222210505", rememberMe = true };
+  bool f_Authing = false;
+
+  async Task HandleValidSubmit(EditContext context)
+  {
+    // 基本檢查
+    if (!context.Validate()) return;
+
+    f_Authing = true; // 表示執行登入中，可以用來鎖住【登入】按鈕避免亂按。
+    StateHasChanged();
+
+    loginModel.returnUrl = ReturnUrl ?? "/";
+    var ticket = await Task.Run(() => accSvc.Authenticate(loginModel));
+    if (ticket == null)
+    {
+      dlgSvc.ShowAlert("登入認證失敗！");
+      f_Authing = false;
+      return;
+    }
+
+    var ticketToken = await Task.Run(() => accSvc.Authorize(ticket));
+    if (ticketToken == null)
+    {
+      dlgSvc.ShowAlert("登入認證失敗！");
+      f_Authing = false;
+      return;
+    }
+
+    // 前端轉址 SignIn
+    navSvc.NavigateTo($"/Account/SignIn?tid={encode(ticketToken)}",true);
+  }
+
+  string encode(string param)
+  {
+    return System.Web.HttpUtility.UrlEncode(param);
+  }
+
+  /// 帳號輸入處理
+  void HandleUserId(string v)
+  {
+    string buf = v.Trim();
+
+    //if (buf.Length > 0)
+    //{
+    //  // 若帳號開頭是數字，則自動加入"M"。
+    //  if (Char.IsNumber(buf[0]))
+    //    buf = "M" + buf;
+    //  else if (buf.Length == 1)
+    //    buf = buf.ToUpper(); // 字首轉大寫。
+    //  else
+    //    buf = Char.ToUpper(buf[0]) + buf.Substring(1); // 字首轉大寫。
+    //}
+
+    loginModel.userId = buf;
+    StateHasChanged();
+  }
+
+  #region Password UI 控制
+  InputType PasswordInput = InputType.Password;
+  string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+  void HandleIconClick()
+  {
+    if (PasswordInputIcon == Icons.Material.Filled.Visibility)
+    {
+      PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+      PasswordInput = InputType.Password;
+    }
+    else
+    {
+      PasswordInputIcon = Icons.Material.Filled.Visibility;
+      PasswordInput = InputType.Text;
+    }
+  }
+  #endregion
+
+}

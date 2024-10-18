@@ -1,0 +1,34 @@
+﻿@page "/redirect/{RedirectUri?}"
+@attribute [Page("redirect", "自動轉址")]
+@attribute [Authorize]
+@inject NavigationManager navSvc
+
+<MudContainer Style="text-align:center">
+  <MudText Typo=Typo.h3>自動轉址</MudText>
+  <AuthorizeView Context="auth">
+    <Authorized>
+      <MudProgressCircular Color=Color.Info Style="height:70px;width:70px;" Indeterminate />
+      <MudText>自動轉址: @RedirectUri</MudText>
+    </Authorized>
+    <Authorizing>
+      <MudText Typo=Typo.h4>Authorizing</MudText>
+    </Authorizing>
+    <NotAuthorized>
+      <MudText Typo=Typo.h4>Not Authorized</MudText>
+    </NotAuthorized>
+  </AuthorizeView>
+</MudContainer>
+
+@code {
+  [Parameter]
+  public string? RedirectUri { get; set; }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      await Task.Delay(500); // 讓子彈飛一下
+      navSvc.NavigateTo(RedirectUri ?? "/");
+    }
+  }
+}

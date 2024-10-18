@@ -1,0 +1,91 @@
+﻿@using System.Reflection;
+@inherits LayoutComponentBase
+@inject IConfiguration config
+@inject IAuthUser authSvc
+
+<MudThemeProvider @bind-IsDarkMode=@_isDarkMode Theme=currentTheme />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<CascadingValue Value=currentTheme Name="CurrentTheme">
+  <MudLayout>
+    <MudAppBar Elevation=1>
+      <MudIconButton Icon=@Icons.Material.Filled.Menu Color=Color.Inherit Edge=Edge.Start OnClick=DrawerToggle />
+      <MudText Typo=Typo.h5 Class="ml-3">
+        @(pageAttr != null ? $"{pageAttr.FuncId} {pageAttr.FuncName}" : config["SystemName"])
+      </MudText>
+      <MudSpacer />
+
+      <AuthorizeView Context="auth">
+        <web-idle-widget timeout="100" signout="/Account/Logout" />
+        <SessionDownCounter Expired=expired />
+        <MudChip T="string" Icon=@Icons.Material.Filled.Person Color=Color.Secondary IconColor=Color.Inherit>@(loginUser?.UserName)</MudChip>
+      </AuthorizeView>
+
+      <MudToggleIconButton @bind-Toggled=@_isDarkMode
+                           Icon=@Icons.Material.Filled.LightMode Color=Color.Inherit
+                           ToggledIcon=@Icons.Material.Filled.DarkMode />
+
+      @* <MudIconButton Icon=@Icons.Material.Filled.MoreVert Color=Color.Inherit Edge=Edge.End /> *@
+    </MudAppBar>
+    <MudDrawer @bind-Open=_drawerOpen ClipMode=DrawerClipMode.Always Elevation=2>
+      <div class="mud-height-full">
+        <NavMenu />
+      </div>
+    </MudDrawer>
+    <MudMainContent>
+      @Body
+      <MudDivider DividerType=DividerType.Middle Class="my-3" />
+      <footer style="text-align:center">
+        <MudText Typo=Typo.caption>
+          Copyright &copy; 2024 亞洲志遠科技 @(sysVersion)<br />最佳瀏覽器 Chrome, Edge, Safari。
+        </MudText>
+      </footer>
+    </MudMainContent>
+  </MudLayout>
+</CascadingValue>
+
+<div id="blazor-error-ui">
+  An unhandled error has occurred.
+  <a href="" class="reload">Reload</a>
+  <a class="dismiss">🗙</a>
+</div>
+
+@code {
+  //## Resource
+  MudTheme currentTheme = CustomThemeResource.DefaultTheme;
+  string sysVersion = String.Empty;
+  PageAttribute? pageAttr = null;
+  DateTime expired = DateTime.MinValue;
+
+  //## State
+  bool _drawerOpen = true;
+  bool _isDarkMode = false;
+  AuthUser? loginUser = null;
+
+  protected override async Task OnInitializedAsync()
+  {
+    //# 取完整的登入者資料
+    loginUser = await authSvc.GetCurrentUserAsync();
+
+    // 取得版號
+    var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+    var fileVersionInfo = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+    sysVersion = $"Version {fileVersionInfo.ProductVersion}";
+  }
+
+  protected override async Task OnParametersSetAsync()
+  {
+    // 取得現在功能作業 Page 與 PageAttribute
+    Type? pageType = (this?.Body?.Target as RouteView)?.RouteData.PageType;
+    pageAttr = pageType?.GetCustomAttribute<PageAttribute>(false);
+
+    // 登入到期時間
+    var loginUser = await authSvc.GetCurrentUserAsync();
+    expired = loginUser?.ExpiresUtc.LocalDateTime ?? DateTime.MinValue;
+  }
+
+  void DrawerToggle() => _drawerOpen = !_drawerOpen;
+  void ThemeToggle() => _isDarkMode = !_isDarkMode;
+}

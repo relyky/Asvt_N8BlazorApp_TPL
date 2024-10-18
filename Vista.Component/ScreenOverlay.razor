@@ -1,0 +1,8 @@
+
+<MudOverlay Visible=@Visible ZIndex=9999 DarkBackground>
+  <MudProgressCircular Color=Color.Primary Indeterminate Style="height:70px;width:70px;" />
+</MudOverlay>
+
+@code {
+  [Parameter] public bool Visible { get; set; }
+}

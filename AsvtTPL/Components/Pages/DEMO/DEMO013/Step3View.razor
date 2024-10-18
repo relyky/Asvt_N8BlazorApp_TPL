@@ -1,0 +1,55 @@
+﻿@using Vista.Biz.DEMO
+
+<MudPaper role="panel" Class=@(BizState.mode != DisplayMode.Step3 ? "d-none" : null)>
+  <MudText Typo=Typo.h4 GutterBottom>Step 3</MudText>
+
+  <EditForm Model=formStep3 OnSubmit=NextStep>
+    <FluentValidationValidator />
+
+    <AsvtFormRow>
+      <AsvtTextField For="()=>formStep3.UploadFile" OnChange=ResetPassed />
+    </AsvtFormRow>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton OnClick=PrevtStep Variant=Variant.Filled Color=Color.Primary StartIcon=@Icons.Material.Filled.ArrowBackIos>上一步</MudButton>
+      <MudButton ButtonType=ButtonType.Submit Variant=Variant.Filled Color=Color.Primary EndIcon=@Icons.Material.Filled.ArrowForwardIos>下一步</MudButton>
+    </MudStack>
+
+    @* <DialogValidationSummary /> *@
+    <ValidationSummary />
+  </EditForm>
+
+
+</MudPaper>
+
+@code {
+  [CascadingParameter] _DEMO013 BizState { get; set; } = default!;
+
+    //## State
+  DEMO013FormStep3 formStep3 { get => BizState.formData.Step3; set => BizState.formData.Step3 = value; }
+
+  async Task PrevtStep()
+  {
+    await Task.Yield();
+    BizState.mode = DisplayMode.Step2;
+  }
+
+  async Task NextStep(EditContext context)
+  {
+    //# 基本檢查
+    if (!context.Validate())
+    {
+      formStep3.HasPassed = false;
+      return;
+    }
+
+    //# logical
+    await Task.Yield(); //<--- 正式版請移除
+
+    //# success & next step
+    formStep3.HasPassed = true;
+    BizState.mode = DisplayMode.Step4;
+  }
+
+  void ResetPassed() => formStep3.HasPassed = false;
+}

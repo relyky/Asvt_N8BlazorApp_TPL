@@ -1,0 +1,459 @@
+<!-- 描述：此文件是一个HTML文件，用於測試HTML文件的橫印排版功能。 -->
+<!-- 排版一：加入頁首與頁尾，送印後在多頁狀況下，每頁都可看到頁首與頁尾。 -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Audit Confirmation</title>
+  <style>
+    @page {
+      margin: 10mm; /* 紙張邊界 */
+      size: A4 landscape; /* A4 大小，直式 */
+    }
+
+    * {
+      font-family: '微軟正黑體', sans-serif;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 3mm;
+    }
+
+      table th,
+      table td {
+        text-align: left;
+      }
+
+      table > caption {
+        background-color: lightgray;
+        text-align: left;
+      }
+  </style>
+</head>
+<body style="font-family: Calibri; font-size: 10pt;">
+  <Table id="CustomerInfo">
+    <tr id="CSAE_ID">
+      <td id="CSAE_ID_Title" colspan="5">Case ID</td>
+      <td id="" colspan="1" style="text-align: center;">:</td>
+      <td id="CSAE_ID_Value" colspan="30">230004</td>
+    </tr>
+    <tr id="TAX_ID">
+      <td id="TAX_ID_Title" colspan="5">Customer National ID</td>
+      <td id="" colspan="1" style="text-align: center;">:</td>
+      <td id="TAX_ID_Value" colspan="30">23000089</td>
+    </tr>
+    <tr id="CUSTOMER_NAME">
+      <td id="CUSTOMER_NAME_Title" colspan="5">Customer Name(EN)</td>
+      <td id="" colspan="1" style="text-align: center;">:</td>
+      <td id="CUSTOMER_NAME_Value" colspan="30">Mxx Lxx LEI CO LTD.</td>
+    </tr>
+    <tr id="CUSTOMER_NAME_CN">
+      <td id="CUSTOMER_NAME_CN_Title" colspan="5">Customer Name(CN)</td>
+      <td id="" colspan="1" style="text-align: center;">:</td>
+      <td id="CUSTOMER_NAME_CN_Value" colspan="30" style="font-family: MingLiU; font-size: 10px;">中文名Mxx Lxx LEI CO LTD.</td>
+    </tr>
+    <!--<tr id='CIF_NO'>
+            <td id='CIF_NO_Title' colspan='5'>Customer CIF</td>
+            <td id='' colspan='1' style='text-align: center;'>:</td>
+            <td id='CIF_NO_Value' colspan='30'></td>
+        </tr>-->
+  </Table>
+  <br />
+  <Table id="">
+    <tr>
+      <td colspan="6"></td>
+      <td colspan="30">This certifies that as of 2023/07/20 End-of-Day, the above client has the following accounts and/or deals: </td>
+    </tr>
+  </Table>
+  <br />
+  <div id="CurrentAccount">
+    <table id="">
+      <tr>
+        <td colspan="8" bgcolor="#D3D3D3">
+          CURRENT ACCOUNTS
+        </td>
+        <td colspan="30"></td>
+      </tr>
+    </table>
+    <Table id="CurrentAccount" width="100%">
+      <tr id="">
+        <th colspan="7">Account Number</th>
+        <th colspan="11">Account Type</th>
+        <th colspan="2">CCY</th>
+        <th colspan="7" style="text-align: right;">Balance</th>
+        <th colspan="23"></th>
+      </tr>
+      <tr id="Value">
+        <td colspan="7" id="ACCOUNT_NO">AA1234567890</td>
+        <td colspan="11" id="ACCOUNT_TYPE">Deposit</td>
+        <td colspan="2" id="CCY">TWD</td>
+        <td colspan="7" id="BALANCE" style="text-align: right;">1,234.00</td>
+        <td colspan="23"></td>
+      </tr>
+      <tr id="Value">
+        <td colspan="7" id="ACCOUNT_NO">AA1234567890</td>
+        <td colspan="11" id="ACCOUNT_TYPE">Deposit</td>
+        <td colspan="2" id="CCY">USD</td>
+        <td colspan="7" id="BALANCE" style="text-align: right;">25,000.12</td>
+        <td colspan="23"></td>
+      </tr>
+    </Table>
+    <br />
+  </div>
+  <div id="DepositAccount">
+    <table id="">
+      <tr>
+        <td colspan="8" bgcolor="#D3D3D3">
+          DEPOSIT ACCOUNTS
+        </td>
+        <td colspan="30"></td>
+      </tr>
+    </table>
+    <Table id="DepositAccount" width="100%">
+      <tr id="">
+        <th colspan="7">Account Number</th>
+        <th colspan="11">Account Type</th>
+        <th colspan="2">CCY</th>
+        <th colspan="7" style="text-align: right;">Balance</th>
+        <th colspan="7" style="text-align: center;">Int Rate(%)</th>
+        <th colspan="7">Start Date</th>
+        <th colspan="9">Maturity Date</th>
+      </tr>
+      <tr id="Value">
+        <td colspan="7" id="ACCOUNT_NO">AA0987654321</td>
+        <td colspan="11" id="ACCOUNT_TYPE">Int at Maturity</td>
+        <td colspan="2" id="CCY">TWD</td>
+        <td colspan="7" id="BALANCE" style="text-align: right;">43,521.95</td>
+        <td colspan="7" id="INT_RATE" style="text-align: center;">12.53%</td>
+        <td colspan="7" id="START_DATE">2023/06/02</td>
+        <td colspan="9" id="MAT_DATE">2023/07/31</td>
+      </tr>
+    </Table>
+    <br />
+  </div>
+  <div id="LoanAccount">
+    <table id="">
+      <tr>
+        <td colspan="8" bgcolor="#D3D3D3">
+          LOAN ACCOUNTS
+        </td>
+        <td colspan="30"></td>
+      </tr>
+    </table>
+    <Table id="LoanAccount" width="100%">
+      <tr id="">
+        <th colspan="7">Account Number</th>
+        <th colspan="11">Account Type</th>
+        <th colspan="2">CCY</th>
+        <th colspan="7" style="text-align: right;">Balance</th>
+        <th colspan="7" style="text-align: center;">Int Rate(%)</th>
+        <th colspan="7">Start Date</th>
+        <th colspan="9">Mat Date</th>
+      </tr>
+      <tr id="Value">
+        <td colspan="7" id="ACCOUNT_NO">BB1234567890</td>
+        <td colspan="11" id="ACCOUNT_TYPE">MEDIUM-TERM SECURED LOANS</td>
+        <td colspan="2" id="CCY">EUR</td>
+        <td colspan="7" id="BALANCE" style="text-align: right;">3,915.50</td>
+        <td colspan="7" id="INT_RATE" style="text-align: center;">5.44%</td>
+        <td colspan="7" id="START_DATE">2023/07/01</td>
+        <td colspan="9" id="MAT_DATE">2023/08/01</td>
+      </tr>
+    </Table>
+    <br />
+  </div>
+  <div id="TradeDeals">
+    <table id="">
+      <tr>
+        <td colspan="8" bgcolor="#D3D3D3">
+          TRADE DEALS
+        </td>
+        <td colspan="30"></td>
+      </tr>
+    </table>
+    <Table id="TradeDeals" width="100%">
+      <tr id="">
+        <th colspan="7">Deal Number</th>
+        <th colspan="11">Deal Type</th>
+        <th colspan="2">CCY</th>
+        <th colspan="7" style="text-align: right;">Balance</th>
+        <th colspan="7" style="text-align: center;">Int Rate</th>
+        <th colspan="7">Start Date</th>
+        <th colspan="9">Maturity Date</th>
+      </tr>
+      <tr id="Value">
+        <td colspan="7" id="DEAL_NO">BC1234567890</td>
+        <td colspan="11" id="DEAL_TYPE">FIN</td>
+        <td colspan="2" id="CCY">USD</td>
+        <td colspan="7" id="BALANCE" style="text-align: right;">21,285.85</td>
+        <td colspan="7" id="INT_RATE" style="text-align: center;">1.43%</td>
+        <td colspan="7" id="START_DATE">2023/07/01</td>
+        <td colspan="9" id="MAT_DATE">2023/08/01</td>
+      </tr>
+    </Table>
+    <br />
+  </div>
+  <div id="RFSF">
+    <table id="">
+      <tr>
+        <td colspan="8" bgcolor="#D3D3D3">
+          TRADE DEALS-SF/RF
+        </td>
+        <td colspan="30"></td>
+      </tr>
+    </table>
+    <Table id="RFSF" width="100%">
+      <tr id="">
+        <th colspan="6">Currency</th>
+        <th colspan="6" style="text-align: right; ">With/<br />Without<br />Recourse</th>
+        <th colspan="12" style="text-align: right;">Outstanding<br />payment amount</th>
+        <th colspan="12" style="text-align: right;">Original assigned<br />amoount(Invoice)</th>
+        <th colspan="10" style="text-align: right;">Financing amount paid</th>
+        <th colspan="12" style="text-align: right;">AR amount not yet<br />returned to Seller</th>
+        <th colspan="10" style="text-align: right; ">With/Without<br />Promissory<br />Note</th>
+        <th colspan="10" style="text-align: right; ">Promissory Note Amount</th>
+        <th colspan="8" style="text-align: right; ">Collected/<br />Uncollected<br />Interest</th>
+        <th colspan="1" id=""></th>
+        <th colspan="13">Other conditions</th>
+      </tr>
+      <tr id="Value">
+        <td colspan="6" id="CCY">CAD</td>
+        <td colspan="6" id="RECOURSE_FLAG" style="text-align: center;">No</td>
+        <td colspan="12" id="OUTSTANDING_AMT" style="text-align: right;">4,321.00</td>
+        <td colspan="12" id="ORIGINAL_AMT" style="text-align: right;">2,222.00</td>
+        <td colspan="10" id="FINANCING_AMT" style="text-align: right;">66,666.00</td>
+        <td colspan="12" id="AR_AMT" style="text-align: right;">765.00</td>
+        <td colspan="10" id="PROMISSORY_FLAG" style="text-align: center;">Yes</td>
+        <td colspan="10" id="PROMISSORY_AMT" style="text-align: right;">456.00</td>
+        <td colspan="8" id="COLLECTED_FLAG" style="text-align: center;">No</td>
+        <td colspan="1" id=""></td>
+        <td colspan="13" id="OTHER">測試中ing</td>
+      </tr>
+    </Table>
+    <br />
+  </div>
+  <div id="MM">
+    <table id="">
+      <tr>
+        <td colspan="8" bgcolor="#D3D3D3">
+          MM DEALS
+        </td>
+        <td colspan="30"></td>
+      </tr>
+    </table>
+    <Table id="MM" width="100%">
+      <tr id="">
+        <th colspan="7">Deal Number</th>
+        <th colspan="10">Deal Type</th>
+        <th colspan="5">Start Date</th>
+        <th colspan="5">Maturity Date</th>
+        <th colspan="1" id=""></th>
+        <th colspan="2">CCY</th>
+        <th colspan="7" style="text-align: right;">Balance</th>
+        <th colspan="7" style="text-align: center;">Int Rate(%)</th>
+        <th colspan="6" id=""></th>
+      </tr>
+      <tr id="Value">
+        <td colspan="7" id="DEAL_NO">RF23456521</td>
+        <td colspan="10" id="DEAL_TYPE">FIN</td>
+        <td colspan="5" id="START_DATE">2023/07/02</td>
+        <td colspan="5" id="MAT_DATE">2023/08/15</td>
+        <td colspan="1" id=""></td>
+        <td colspan="2" id="CCY">USD</td>
+        <td colspan="7" id="BALANCE" style="text-align: right;">213,474.05</td>
+        <td colspan="7" id="INT_RATE" style="text-align: center;">2.43%</td>
+        <th colspan="6" id=""></th>
+      </tr>
+    </Table>
+    <span style="line-height: 12px; font-size: 12px; font-weight:bold;">Total Records : 1</span>
+    <br />
+    <br />
+  </div>
+  <div id="FX">
+    <table id="">
+      <tr>
+        <td colspan="8" bgcolor="#D3D3D3">
+          FX DEALS
+        </td>
+        <td colspan="30"></td>
+      </tr>
+    </table>
+    <Table id="FX" width="100%">
+      <tr id="">
+        <th colspan="7">Deal Number</th>
+        <th colspan="8">Deal Type</th>
+        <th colspan="6" style="text-align: center;">Rate</th>
+        <th colspan="5">Start Date</th>
+        <th colspan="5">Maturity Date</th>
+        <th colspan="2">CCY</th>
+        <th colspan="6" style="text-align: right;">Bank Sell Amt</th>
+        <th colspan="1" id=""></th>
+        <th colspan="2">CCY</th>
+        <th colspan="6" style="text-align: right;">Bank Buy Amt</th>
+        <th colspan="2"></th>
+      </tr>
+      <tr id="Value">
+        <td colspan="7" id="DEAL_NO">HF34564323</td>
+        <td colspan="8" id="DEAL_TYPE">FIN</td>
+        <td colspan="6" id="RATE" style="text-align: center;">3.456543%</td>
+        <td colspan="5" id="START_DATE">2023/07/01</td>
+        <td colspan="5" id="MAT_DATE">2023/08/12</td>
+        <td colspan="2" id="CCY_SELL">TWD</td>
+        <td colspan="6" id="BANK_SELL_AMT" style="text-align: right;">123,456.00</td>
+        <td colspan="1" id=""></td>
+        <td colspan="2" id="CCY_BUY">USD</td>
+        <td colspan="6" id="BANK_BUY_AMT" style="text-align: right;">234,567.00</td>
+        <td colspan="2" id=""></td>
+      </tr>
+    </Table>
+    <span style="line-height: 12px; font-size: 12px; font-weight:bold;">Total Records : 1</span>
+    <br />
+    <br />
+  </div>
+  <div id="DerOption">
+    <table id="">
+      <tr>
+        <td colspan="8" bgcolor="#D3D3D3">
+          DERIVATIVE-OPT/NDF DEALS
+        </td>
+        <td colspan="30"></td>
+      </tr>
+    </table>
+    <Table id="DerOption" width="100%">
+      <tr id="">
+        <th colspan="7">Deal Number</th>
+        <th colspan="9">Deal Type</th>
+        <th colspan="5">Start Date</th>
+        <th colspan="5">Maturity Date</th>
+        <th colspan="1" id=""></th>
+        <th colspan="2">CCY1</th>
+        <th colspan="7" style="text-align: right;">Amount1</th>
+        <th colspan="1" id=""></th>
+        <th colspan="2">CCY2</th>
+        <th colspan="7" style="text-align: right;">Amount2</th>
+        <th colspan="4" id=""></th>
+      </tr>
+      <tr id="Value">
+        <td colspan="7" id="DEAL_NO">KK34657364</td>
+        <td colspan="9" id="DEAL_TYPE">USD/KRI-Sell</td>
+        <td colspan="5" id="START_DATE">2023/06/01</td>
+        <td colspan="5" id="MAT_DATE">2023/07/31</td>
+        <td colspan="1" id=""></td>
+        <td colspan="2" id="CCY1">TWD</td>
+        <td colspan="7" id="AMOUNT1" style="text-align: right;">282,832.44</td>
+        <td colspan="1" id=""></td>
+        <td colspan="2" id="CCY2">USD</td>
+        <td colspan="7" id="AMOUNT2" style="text-align: right;">5,555.44</td>
+        <td colspan="4" id=""></td>
+      </tr>
+    </Table>
+    <span style="line-height: 12px; font-size: 12px; font-weight:bold;">Total Records : 1</span>
+    <br />
+    <br />
+  </div>
+  <div id="DerRate">
+    <table id="">
+      <tr>
+        <td colspan="8" bgcolor="#D3D3D3">
+          DERIVATIVE-RATE SWAP DEALS
+        </td>
+        <td colspan="30"></td>
+      </tr>
+    </table>
+    <Table id="DerRate" width="100%">
+      <tr id="">
+        <th colspan="7">Deal Number</th>
+        <th colspan="4">Deal Type</th>
+        <th colspan="5" style="text-align: center;">Rate</th>
+        <th colspan="5">Start Date</th>
+        <th colspan="5">Value Date</th>
+        <th colspan="5">Maturity Date</th>
+        <th colspan="2">CCY1</th>
+        <th colspan="6" style="text-align: right;">Curr.Capital1</th>
+        <th colspan="1" id=""></th>
+        <th colspan="2">CCY2</th>
+        <th colspan="6" style="text-align: right;">Curr.Capital2</th>
+        <th colspan="2" id=""></th>
+      </tr>
+      <tr id="Value">
+        <td colspan="7" id="DEAL_NO">RR34567832</td>
+        <td colspan="4" id="DEAL_TYPE">IRS-Buy</td>
+        <td colspan="5" id="RATE" style="text-align: center;">2.55%</td>
+        <td colspan="5" id="START_DATE">2023/06/01</td>
+        <td colspan="5" id="VALUE_DATE">2023/07/01</td>
+        <td colspan="5" id="MAT_DATE">2023/07/01</td>
+        <td colspan="2" id="CCY1">TWD</td>
+        <td colspan="6" id="CURRENT_CAPITAL1" style="text-align: right;">33,333.33</td>
+        <td colspan="1" id=""></td>
+        <td colspan="2" id="CCY2">USD</td>
+        <td colspan="6" id="CURRENT_CAPITAL2" style="text-align: right;">14,444.44</td>
+        <td colspan="2" id=""></td>
+      </tr>
+      <tr id="Value">
+        <td colspan="7" id="DEAL_NO">25579603</td>
+        <td colspan="4" id="DEAL_TYPE">Sell</td>
+        <td colspan="5" id="RATE" style="text-align: center;">0.8500</td>
+        <td colspan="5" id="START_DATE">2022/01/06</td>
+        <td colspan="5" id="VALUE_DATE">2022/01/10</td>
+        <td colspan="5" id="MAT_DATE">2027/01/11</td>
+        <td colspan="2" id="CCY1">TWD</td>
+        <td colspan="6" id="CURRENT_CAPITAL1" style="text-align: right;">3,000,000.00</td>
+        <td colspan="1" id=""></td>
+        <td colspan="2" id="CCY2">TWD</td>
+        <td colspan="6" id="CURRENT_CAPITAL2" style="text-align: right;">3,000,000.00</td>
+        <td colspan="2" id=""></td>
+      </tr>
+    </Table>
+    <span style="line-height: 12px; font-size: 12px; font-weight:bold;">Total Records : 2</span>
+    <br />
+    <br />
+  </div>
+  <div id="OTHER_CONTENT">
+    <table id="">
+      <tr>
+        <td colspan="8" bgcolor="#D3D3D3">
+          OTHER
+        </td>
+        <td colspan="30"></td>
+      </tr>
+    </table>
+    <Table border="1">
+      <tr>
+        <td>
+          <span style="font-family: MingLiU; font-size: 10px; line-height: 12px;">標題1 標題2 標題3 標題4 標題5<br /><br />123  555  555  444  321<br /><br />123456789<br />$GG%<br />abcdefg=?<br /><br /><br /><br /><br />Test</span>
+        </td>
+      </tr>
+    </Table>
+    <br />
+  </div>
+  <Table id="">
+    <tr>
+      <td colspan="6"></td>
+      <td colspan="30">This certification is computer generated. No signature is required. For inquiries, please contact +886-2-6639-5330.</td>
+    </tr>
+  </Table>
+  <br />
+  <div id="Signature">
+    <Table>
+      <tr>
+        <td colspan="20">
+          <img src="C:\HTMLTest\Img\b0cfff1a-59cb-484b-bf3b-eaff9f708169.png" align="right" width="100" height="100" />
+        </td>
+        <td colspan="1"></td>
+      </tr>
+      <tr>
+        <td colspan="20" style="text-align: right">
+          <u style="border-bottom: 1px solid red;">Admin/IamChecker (Maker/Checker)</u>
+        </td>
+        <td colspan="1"></td>
+      </tr>
+      <tr>
+        <td colspan="20" style="text-align: right">Authorised signatory of the Bank</td>
+        <td colspan="1"></td>
+      </tr>
+    </Table>
+    <br />
+  </div>
+</body>
+</html>

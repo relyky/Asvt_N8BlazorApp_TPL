@@ -1,0 +1,59 @@
+﻿@implements IAsyncDisposable
+@inject IJSRuntime jsr
+
+<div @ref=refRoot></div>
+
+@code {
+  [Parameter] public EventCallback<string> OnScanSuccess { get; set; }
+  [Parameter] public EventCallback<string> OnScanFailure { get; set; }
+
+  //# Resource
+  Lazy<Task<IJSObjectReference>> moduleTask = default!;
+  IDisposable? dotNetObject = null;
+  ElementReference refRoot;
+
+  public async ValueTask DisposeAsync()
+  {
+    dotNetObject?.Dispose();
+    dotNetObject = null;
+
+    if (moduleTask.IsValueCreated)
+    {
+      var module = await moduleTask.Value;
+      await module.DisposeAsync();
+    }
+  }
+
+  protected override void OnInitialized()
+  {
+    moduleTask = new(() => jsr.InvokeAsync<IJSObjectReference>("import", "./_content/Vista.Component/rxqrcodescanner.bundle.js").AsTask());
+    dotNetObject = DotNetObjectReference.Create(this);
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      var module = await moduleTask.Value;
+      await jsr.InvokeVoidAsync("renderRxQRCodeScanner", dotNetObject, refRoot);
+    }
+  }
+
+  /// <summary>
+  /// 當 React 元件有訊息送上來時觸發。
+  /// </summary>
+  [JSInvokable]
+  public async Task JsInvokeScanSuccess(string decodedText)
+  {
+    await OnScanSuccess.InvokeAsync(decodedText);
+  }
+
+  /// <summary>
+  /// 當 React 元件有訊息送上來時觸發。
+  /// </summary>
+  [JSInvokable]
+  public async Task JsInvokeScanFailure(string errMsg)
+  {
+    await OnScanFailure.InvokeAsync(errMsg);
+  }
+}

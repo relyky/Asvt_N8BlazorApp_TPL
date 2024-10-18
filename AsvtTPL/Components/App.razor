@@ -1,0 +1,72 @@
+﻿@using Microsoft.AspNetCore.Components.Sections
+@inject IConfiguration config
+<!DOCTYPE html>
+<html lang="zh-hant">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <base href="/" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+  <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+  <link href="_content/Vista.Component/mudblazor-custom.css" rel="stylesheet" />
+  <link href="lib/print-js/print.min.css" />
+  <link rel="stylesheet" href="app.css" />
+  <link rel="stylesheet" href="AsvtTPL.styles.css" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link href="manifest.json" rel="manifest" />
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+  <HeadOutlet @rendermode="@RenderModeForPage" />
+  <SectionOutlet @rendermode="@RenderModeForPage" SectionName="myHeadScript" />
+</head>
+
+<body>
+  <Routes @rendermode="@RenderModeForPage" />
+
+  @* 同一時間相同系統介面只有最新的有效。 *@
+  <web-black-screen idname="@(config["SystemID"])-loadtime" />
+
+  @* 客製化：SignalR 失去連線處置，參考：[在 UI 中反映伺服器端連線狀態](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/fundamentals/signalr?view=aspnetcore-8.0#reflect-the-server-side-connection-state-in-the-ui) *@
+  <div id="components-reconnect-modal">
+    <p>與伺服器連線出現問題！(嘗試連線：<span id="components-reconnect-current-attempt"></span> / <span id="components-reconnect-max-retries"></span>)</p>
+    <button onclick="location.reload()">直接刷新頁面</button>
+  </div>
+
+  <script src="_framework/blazor.web.js"></script>
+  <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+  <script src="_content/Vista.Component/reactPlayerPreview.bundle.js"></script>
+  <script src="_content/Vista.Component/runtime.bundle.js"></script>
+  <script src="_content/Vista.Component/shared.bundle.js"></script>
+  <script src="_content/Vista.Component/main.bundle.js"></script>
+  <script src="lib/print-js/print.min.js" ></script>
+
+  @* <!-- To setup: js-event-bus --> *@
+  <script src="_content/Vista.Component/js-event-bus.min.js"></script>
+  <script>
+    window.eventBus = new EventBus();
+  </script>
+
+  @* <!-- To register dotNetObject for web-components. --> *@
+  <script>
+    function assignDotNetObject(theWebComponent /* element */, dotNetObject /* object */) {
+      theWebComponent.dot_net_object = dotNetObject;
+    }
+  </script>
+
+  <SectionOutlet @rendermode="@RenderModeForPage" SectionName="myBodyScript" />
+</body>
+
+</html>
+
+@code {
+  [CascadingParameter]
+  private HttpContext HttpContext { get; set; } = default!;
+
+  private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path switch
+  {
+    var x when x.StartsWithSegments("/Account") => null,
+    var x when x.StartsWithSegments("/Blog") => null,
+    _ => InteractiveServer
+  };
+}

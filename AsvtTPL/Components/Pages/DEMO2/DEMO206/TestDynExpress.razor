@@ -1,0 +1,36 @@
+﻿@using DynamicExpresso
+
+<MudPaper role="panel">
+  <MudText Typo=Typo.h6>Eval</MudText>
+  <MudNumericField T="decimal" Label="foo" @bind-Value=foo />
+  <MudNumericField T="decimal" Label="bar" @bind-Value=bar />
+  <MudTextField Label="expression" @bind-Value=expression />
+  <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=HandleEval>Eval</MudButton>
+  <MudText>message: @message</MudText>
+</MudPaper>
+
+@code {
+  string message = string.Empty;
+  decimal foo = 987654321m;
+  decimal bar = 7654321m;
+  string expression = "foo - bar";
+
+  async Task HandleEval()
+  {
+    try
+    {
+      message = "計算中...";
+      await Task.Yield();
+
+      var result = new Interpreter().Eval(expression,
+         new Parameter("foo", foo),
+         new Parameter("bar", bar));
+
+      message = $"{result}";
+    }
+    catch (Exception ex)
+    {
+      message = $"出現例外: " + ex.GetType().Name + ", " + ex.Message;
+    }
+  }
+}

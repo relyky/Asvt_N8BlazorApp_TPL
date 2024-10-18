@@ -1,0 +1,80 @@
+﻿@using Vista.Component.Models
+@using Vista.Component.ReactEx
+@using Microsoft.AspNetCore.Hosting
+@inject IWebHostEnvironment env
+
+<MudText Typo=Typo.h3 Color=Color.Info>TestPhotoCrop</MudText>
+<MudNumericField T="int" @bind-Value=maxSize Label="最大尺寸" />
+
+<RxPhotoCrop OnFileUpload=HandleFileUpload
+             OnImageCropBefore=HandleImageCropBefore
+             OnImageCrop=HandleImageCrop
+             MaxHeight=maxSize
+             MaxWidth=maxSize />
+
+<p>message: @message</p>
+<p>photoInfo: @photoInfo</p>
+
+@if (f_loading || f_uploading)
+{
+  <MudProgressCircular Indeterminate />
+}
+else
+{
+  <MudImage Fluid Src=@($"{imageMetaFilepath}?dummy={DateTime.Now.Ticks}") />
+}
+
+@code {
+  //## State
+  ImageCropInfo? photoInfo = null;
+  string message = string.Empty;
+  bool f_loading = false;
+  bool f_uploading = false;
+  string imageMetaFilepath = "imageCropMeta.png";
+  int maxSize = 1280;
+
+  void HandleImageCropBefore()
+  {
+    f_loading = true;
+  }
+
+  void HandleImageCrop(ImageCropInfo info)
+  {
+    photoInfo = info;
+    f_loading = false;
+  }
+
+  async Task HandleFileUpload(InputFileChangeEventArgs e)
+  {
+    try
+    {
+      f_uploading = true;
+
+      IBrowserFile browserFile = e.File;
+      if (browserFile is null)
+      {
+        message = "無上傳檔案";
+        return;
+      }
+
+      message = $"{browserFile.Name} | {browserFile.ContentType} | {browserFile.Size} | {browserFile.LastModified:yyyy-MM-dd HH:mm:ss.fff}";
+
+      var imgFile = new FileInfo(Path.Combine(env.WebRootPath, imageMetaFilepath));
+      if (imgFile.Exists) imgFile.Delete();
+
+      using var fs = imgFile.Create();
+      using var file = browserFile.OpenReadStream();
+      await file.CopyToAsync(fs);
+      //※ 注意 IBrowserFile 只支援非同步讀寫檔案。
+      fs.Close();
+    }
+    catch(Exception ex)
+    {
+      message = "出現例外！" + ex.Message;
+    }
+    finally
+    {
+      f_uploading = false;
+    }
+  }
+}

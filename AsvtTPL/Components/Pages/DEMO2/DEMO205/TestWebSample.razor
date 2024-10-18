@@ -1,0 +1,52 @@
+﻿@implements IDisposable
+@inject IJSRuntime jsr
+
+<div class="pa-2 my-2" style="border: solid 2px blue; border-radius: 8px">
+  <h3>TestWebSample</h3>
+  <p>測試 R2WC 通訊能力</p>
+
+  <MudTextField Label="輸入些文字" @bind-Value=foo />
+
+  <web-sample @ref=refWebSample foo=@foo />
+  @* ※若沒有透過 dotNetObject 通訊需求的話，直接使用 web-componnet 即可不用再包裝一層。 *@
+
+  <p>來自<code>web-sample</code>送上來的訊息, barMessage: @barMessage</p>
+</div>
+
+@code {
+  //## Resource
+  ElementReference refWebSample;
+  IDisposable? dotNetObject = null;
+
+  //## State
+  string foo = "從外面給值";
+  string barMessage = string.Empty;
+
+  public void Dispose()
+  {
+    dotNetObject?.Dispose();
+    dotNetObject = null;
+  }
+
+  protected override void OnInitialized()
+  {
+    dotNetObject = DotNetObjectReference.Create(this);
+  }
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    //※ web-component 初始化 - 指定 dotNetObject。
+    if (firstRender)
+      await jsr.InvokeVoidAsync("assignDotNetObject", refWebSample, dotNetObject);
+  }
+
+  /// <summary>
+  /// 當 React 元件有訊息送上來時觸發。
+  /// </summary>
+  [JSInvokable]
+  public async Task JsInvokeBarEvent(string message)
+  {
+    barMessage = message;
+    await InvokeAsync(StateHasChanged);
+  }
+}

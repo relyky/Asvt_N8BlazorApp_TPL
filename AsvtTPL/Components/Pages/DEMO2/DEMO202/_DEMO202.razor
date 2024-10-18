@@ -1,0 +1,45 @@
+﻿@using Vista.Component.Models
+@using Vista.Component.ReactEx
+@using Microsoft.AspNetCore.Hosting
+@page "/DEMO202"
+@attribute [Page("DEMO202", "Render React Component")]
+@attribute [Authorize("AuthPage")]
+
+<MudContainer>
+  <MudText Typo=Typo.h3>DEMO202: Render React Component</MudText>
+  <MudText>此頁元件使用 react 為底實作。</MudText>
+
+  <RxTitle Title=@($"我是新的抬頭 at {DateTime.Now:HH:mm:ss.fff}") />
+
+  <div class="pa-2 my-2" style="border: solid 2px blue; border-radius: 8px">
+    <RxCounter @ref=refCounter InitCount=88 OnChange=HandleCountChange />
+    <MudText>此處在 React 元件外面 @count</MudText>
+    <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=HandleResetCount>Reset Counter</MudButton>
+  </div>
+
+  <TestReactiveSample />
+
+  <TestWebCamera /> 
+
+  <TestPhotoCrop />
+
+</MudContainer>
+
+@code {
+  // for RxCounter
+  int count = -1;
+  RxCounter refCounter = default!;
+
+  Task HandleCountChange(int cnt)
+  {
+    count = cnt;
+    return Task.CompletedTask;
+  }
+
+  async Task HandleResetCount()
+  {
+    // 重置計數器
+    await refCounter.ResetAsync();
+  }
+
+}

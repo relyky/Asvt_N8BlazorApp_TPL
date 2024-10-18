@@ -1,0 +1,44 @@
+﻿@using Vista.Biz.DEMO
+@page "/DEMO013"
+@attribute [Page("DEMO013", "步步申請樣板")]
+@attribute [Authorize("AuthPage")]
+
+<MudContainer>
+  <CascadingValue Value=@this>
+    <Stepper />
+    <Step1View />
+    <Step2View />
+    <Step3View />
+    <Step4View />
+    <StepFinalView />
+  </CascadingValue>
+</MudContainer>
+
+<pre>
+  formData: @Utils.JsonSerialize(formData)
+</pre>
+
+@code {
+  /// <summary>
+  /// 通知去刷新全部頁面。
+  /// </summary>
+  internal void NotifyStateChanged() => StateHasChanged();
+
+  /// <summary>
+  /// 畫面模式
+  /// </summary>
+  internal DisplayMode mode
+  {
+    get => _mode;
+    set
+    {
+      _mode = value;
+      // 當畫面模式切換時，通知去刷新全部頁面。
+      this.StateHasChanged();
+    }
+  }
+  DisplayMode _mode = DisplayMode.Step1;
+
+  //## State
+  internal DEMO013FormData formData = new();
+}

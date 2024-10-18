@@ -1,0 +1,70 @@
+﻿@* 參考文件：https://mudblazor.com/components/fileupload#multiple-and-accept *@
+
+@if (Multible)
+{
+  <MudFileUpload T="IReadOnlyList<IBrowserFile>" OnFilesChanged=OnPickFile MaximumFileCount=@MaximumFileCount Accept=@Accept Class=@Class>
+    <ActivatorContent>
+      <MudButton Variant=Variant.Filled
+                 Color=@Color
+                 StartIcon=@Icons.Material.Filled.CloudUpload
+                 Disabled=@Disabled>
+        @Label
+      </MudButton>
+    </ActivatorContent>
+    <SelectedTemplate>
+      @if (context is null)
+      {
+        <MudText>No File</MudText>
+      }
+      else
+      {
+        <MudList T="string">
+          @foreach (var file in context)
+          {
+            <MudListItem Icon=@Icons.Material.Filled.AttachFile @key=@file>
+              @file.Name <code>@file.Size bytes</code>
+            </MudListItem>
+          }
+        </MudList>
+      }
+    </SelectedTemplate>
+  </MudFileUpload>
+}
+else
+{
+  <MudFileUpload T="IBrowserFile" OnFilesChanged=OnPickFile Accept=@Accept Class=@Class>
+    <ActivatorContent>
+      <MudButton Variant=Variant.Filled
+                 Color=@Color
+                 StartIcon=@Icons.Material.Filled.CloudUpload
+                 Disabled=@Disabled>
+        @Label
+      </MudButton>
+    </ActivatorContent>
+    <SelectedTemplate>
+      @if (context is null)
+      {
+        <MudText>No File</MudText>
+      }
+      else
+      {
+        <MudList T="string">
+          <MudListItem Icon=@Icons.Material.Filled.AttachFile>
+            @context.Name <code>@context.Size bytes</code>
+          </MudListItem>
+        </MudList>
+      }
+    </SelectedTemplate>
+  </MudFileUpload>
+}
+
+@code {
+  [Parameter, EditorRequired] public EventCallback<InputFileChangeEventArgs> OnPickFile { get; set; }
+  [Parameter] public String Label { get; set; } = "選取上傳檔案";
+  [Parameter] public Color Color { get; set; } = Color.Secondary;
+  [Parameter] public string? Accept { get; set; }
+  [Parameter] public string? Class { get; set; }
+  [Parameter] public bool Multible { get; set; } = false;
+  [Parameter] public int MaximumFileCount { get; set; } = 10;
+  [Parameter] public bool Disabled { get; set; } = false;
+}

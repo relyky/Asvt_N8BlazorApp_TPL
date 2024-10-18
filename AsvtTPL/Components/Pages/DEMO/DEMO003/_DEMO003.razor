@@ -1,0 +1,23 @@
+﻿@page "/DEMO003"
+@attribute [Page("DEMO003", "基本操作")]
+@attribute [Authorize("AuthPage")]
+
+<div class="demo-box">
+  <input type="number" class="form-input" @bind-value=interval />
+  <DemoCounter Interval=interval OnCountChange=HandleCountChange InitValue=33 />
+  <p class="big-text">@count</p>
+</div>
+
+@code {
+  int interval = 3;
+  int count;
+
+  /// <summary>
+  /// 範例：同步 Event Handler
+  /// </summary>
+  void HandleCountChange(int count)
+  {
+    this.count = count;
+    StateHasChanged();
+  }
+}

@@ -1,0 +1,109 @@
+﻿
+<MudToolBar>
+  <MudSwitch Color=Color.Info @bind-Value=f_loading Label="Loading" />
+  <MudSwitch Color=Color.Primary @bind-Value=f_hover Label="Hover" />
+  <MudSwitch Color=Color.Secondary @bind-Value=f_dense Label="Dense" />
+  <MudSwitch Color=Color.Tertiary @bind-Value=f_striped Label="Striped" />
+  <MudSwitch Color=Color.Dark @bind-Value=f_fordered Label="Bordered" />
+
+  <MudSelect T="string" @bind-Value=headerClass Variant=Variant.Outlined Margin=Margin.Dense>
+    <MudSelectItem Value=@("")>選取底色</MudSelectItem>
+    <MudSelectItem Value=@("custom-primary") />
+    <MudSelectItem Value=@("custom-secondary") />
+    <MudSelectItem Value=@("custom-tertiary") />
+    <MudSelectItem Value=@("custom-dark") />
+  </MudSelect>
+</MudToolBar>
+
+<MudSimpleTable Hover=f_hover Dense=f_dense Striped=f_striped Bordered=f_fordered Class="mb-3">
+  <thead class="@headerClass">
+    <tr>
+      <th>Nr</th>
+      <th>Sign</th>
+      <th>Name</th>
+      <th>Position</th>
+      <th>Molar mass</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in elementList)
+    {
+      <tr>
+        <td>@item.Number</td>
+        <td>@item.Sign</td>
+        <td>@item.Name</td>
+        <td>@item.Position</td>
+        <td>@item.Molar</td>
+      </tr>
+    }
+  </tbody>
+</MudSimpleTable>
+
+<MudTable Items=elementList Loading=f_loading Hover=f_hover Dense=f_dense Striped=f_striped Bordered=f_fordered
+          Class="mb-3" HeaderClass=@headerClass>
+  <ToolBarContent>
+    <MudText Typo=Typo.h6>MudTable</MudText>
+  </ToolBarContent>
+  <HeaderContent>
+    <MudTh><MudTableSortLabel SortBy="new Func<ElementInfo, object>(x=>x.Number)">Nr</MudTableSortLabel></MudTh>
+    <MudTh><MudTableSortLabel SortBy="new Func<ElementInfo, string?>(x=>x.Sign)">Sign</MudTableSortLabel></MudTh>
+    <MudTh>Name</MudTh>
+    <MudTh>Position</MudTh>
+    <MudTh>Molar mass</MudTh>
+  </HeaderContent>
+  <RowTemplate>
+    <MudTd DataLabel="Nr">@context.Number</MudTd>
+    <MudTd DataLabel="Sign">@context.Sign</MudTd>
+    <MudTd DataLabel="Name">@context.Name</MudTd>
+    <MudTd DataLabel="Position">@context.Position</MudTd>
+    <MudTd DataLabel="Molar mass">@context.Molar</MudTd>
+  </RowTemplate>
+</MudTable>
+
+<MudDataGrid Items=elementList Loading=f_loading Hover=f_hover Dense=f_dense Striped=f_striped Bordered=f_fordered
+             Class="mb-3" HeaderClass=@headerClass>
+  <ToolBarContent>
+    <MudText Typo=Typo.h6>MudDataGrid</MudText>
+  </ToolBarContent>
+  <Columns>
+    <PropertyColumn Property="m => m.Number" Title="Nr" />
+    <PropertyColumn Property="m => m.Sign" Title="Sign" />
+    <PropertyColumn Property="m => m.Name" Title="Name" />
+    <PropertyColumn Property="m => m.Position" Title="Position" />
+    <PropertyColumn Property="m => m.Molar" Title="Molar mass" />
+  </Columns>
+</MudDataGrid>
+
+@* <MudSimpleTable>
+  <
+</MudSimpleTable> *@
+
+@code {
+  bool f_loading = false;
+  bool f_hover = true;
+  bool f_dense = true;
+  bool f_striped = true;
+  bool f_fordered = false;
+  string headerClass = "custom-primary";
+
+  private IEnumerable<ElementInfo> elementList = new List<ElementInfo>()
+    {
+        new ElementInfo() { Number = 1, Sign = "H", Name = "Hydrogen", Position = 0, Molar = 1.00794 },
+        new ElementInfo() { Number = 2, Sign = "He", Name = "Helium", Position = 17, Molar = 4.002602 },
+        new ElementInfo() { Number = 3, Sign = "Li", Name = "Lithium", Position = 0, Molar = 6.941 },
+        new ElementInfo() { Number = 4, Sign = "Be", Name = "Beryllium", Position = 1, Molar = 9.012182 },
+        new ElementInfo() { Number = 5, Sign = "B", Name = "Boron", Position = 12, Molar = 10.811 },
+        new ElementInfo() { Number = 6, Sign = "C", Name = "Carbon", Position = 13, Molar = 12.0107 },
+        new ElementInfo() { Number = 7, Sign = "N", Name = "Nitrogen", Position = 14, Molar = 14.0067 },
+    };
+
+  record ElementInfo
+  {
+    public int Number { get; set; }
+    public string? Sign { get; set; }
+    public string? Name { get; set; }
+    public int Position { get; set; }
+    public double Molar { get; set; }
+  }
+
+}

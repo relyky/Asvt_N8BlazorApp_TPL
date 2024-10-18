@@ -1,0 +1,238 @@
+﻿
+/****** Zoom in when hover ******/
+.zoom-hover {
+  transition-duration: 1s;
+}
+
+  .zoom-hover:hover {
+    transform: scale(1.15); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+  }
+
+/************ MudBlazor - MudDataGrid.Dense 調校 *****************************/
+/* 當 MudDataGrid.Dense => 其下的 ToolBar 也是 Dense。 /> */
+.mud-table.mud-data-grid.mud-table-dense > .mud-toolbar.mud-table-toolbar {
+  --mud-internal-toolbar-height: 48px;
+}
+
+/************ 用 CSS Role 調校畫面 *******************************************/
+/* MudPaper[panel] := <MudPaper Class="pa-4 mb-2" /> */
+div[role=panel].mud-paper {
+  padding: 8px 16px;
+  margin-bottom: 12px;
+}
+
+/************ Custom MudExpansionPanel ***************************************/
+/* MudExpansionPanel - TitleContent */
+.mud-expand-panel.asvt-custom-tertiary > .mud-expand-panel-header {
+  color: var(--mud-palette-tertiary-text);
+  background-color: var(--mud-palette-tertiary);
+  padding: 8px 16px;
+}
+
+.mud-expand-panel.asvt-custom-secondary > .mud-expand-panel-header {
+  color: var(--mud-palette-secondary-text);
+  background-color: var(--mud-palette-secondary);
+  padding: 8px 16px;
+}
+
+.mud-expand-panel.asvt-custom-primary > .mud-expand-panel-header {
+  color: var(--mud-palette-primary-text);
+  background-color: var(--mud-palette-primary);
+  padding: 8px 16px;
+}
+
+.mud-expand-panel.asvt-custom-dark > .mud-expand-panel-header {
+  color: var(--mud-palette-dark-text);
+  background-color: var(--mud-palette-dark);
+  padding: 8px 16px;
+}
+
+.mud-expand-panel.asvt-custom-primary > .mud-expand-panel-header,
+.mud-expand-panel.asvt-custom-secondary > .mud-expand-panel-header,
+.mud-expand-panel.asvt-custom-tertiary > .mud-expand-panel-header,
+.mud-expand-panel.asvt-custom-dark > .mud-expand-panel-header {
+  /* h6 */
+  font-size: var(--mud-typography-h6-size);
+  font-family: var(--mud-typography-h6-family);
+  font-weight: var(--mud-typography-h6-weight);
+  line-height: var(--mud-typography-h6-lineheight);
+  letter-spacing: var(--mud-typography-h6-letterspacing);
+  text-transform: var(--mud-typography-h6-text-transform);
+}
+
+.mud-expand-panel.mud-panel-expanded.asvt-custom-primary,
+.mud-expand-panel.mud-panel-expanded.asvt-custom-secondary,
+.mud-expand-panel.mud-panel-expanded.asvt-custom-tertiary,
+.mud-expand-panel.mud-panel-expanded.asvt-custom-dark {
+  margin: 12px 0; /* 16px 0 */
+}
+
+
+/****** Custom MudTabs *******************************************************/
+/* 使用範例：
+<MudTabs TabPanelClass="custom-primary">...</MudTabs>
+*/
+.mud-tab.mud-tab-active.mud-ripple.asvt-custom-primary,
+.mud-tab.mud-tab-active.asvt-custom-primary {
+  color: var(--mud-palette-primary-text);
+  background-color: var(--mud-palette-primary);
+  transition-delay: .2s;
+}
+
+.mud-tab.mud-tab-active.mud-ripple.asvt-custom-secondary,
+.mud-tab.mud-tab-active.asvt-custom-secondary {
+  color: var(--mud-palette-secondary-text);
+  background-color: var(--mud-palette-secondary);
+  transition-delay: .2s;
+}
+
+.mud-tab.mud-tab-active.mud-ripple.asvt-custom-tertiary,
+.mud-tab.mud-tab-active.asvt-custom-tertiary {
+  color: var(--mud-palette-tertiary-text);
+  background-color: var(--mud-palette-tertiary);
+  transition-delay: .2s;
+}
+
+.mud-tab.mud-tab-active.mud-ripple.asvt-custom-dark,
+.mud-tab.mud-tab-active.asvt-custom-dark {
+  color: var(--mud-palette-dark-text);
+  background-color: var(--mud-palette-dark);
+  transition-delay: .2s;
+}
+
+/****** Custom MudDataGrid & MudTable & MudSimpleTable 上底色。  **********************************
+* 幫 header cells 上底色
+* 範例：<MudDataGrid HeaderClass="custom-dark">...</MudDataGrid>
+* 範例：<MudTable HeaderClass="custom-dark">...</MudDataGrid>
+* 範例：<MudSimpleTable><thead class="custom-dark">...</MudDataGrid>
+*/
+.mud-table-head.custom-primary .mud-table-cell,
+.mud-table.mud-simple-table thead.custom-primary th {
+  background-color: var(--mud-palette-primary) !important;
+  color: var(--mud-palette-primary-text) !important;
+}
+
+  .mud-table-head.custom-primary .mud-table-cell .mud-icon-button-label {
+    color: var(--mud-palette-primary-text) !important;
+  }
+
+.mud-table-head.custom-secondary .mud-table-cell,
+.mud-table.mud-simple-table thead.custom-secondary th {
+  background-color: var(--mud-palette-secondary) !important;
+  color: var(--mud-palette-secondary-text) !important;
+}
+
+  .mud-table-head.custom-secondary .mud-table-cell .mud-icon-button-label {
+    color: var(--mud-palette-secondary-text) !important;
+  }
+
+.mud-table-head.custom-tertiary .mud-table-cell,
+.mud-table.mud-simple-table thead.custom-tertiary th {
+  background-color: var(--mud-palette-tertiary) !important;
+  color: var(--mud-palette-tertiary-text) !important;
+}
+
+  .mud-table-head.custom-tertiary .mud-table-cell .mud-icon-button-label {
+    color: var(--mud-palette-tertiary-text) !important;
+  }
+
+.mud-table-head.custom-dark .mud-table-cell,
+.mud-table.mud-simple-table thead.custom-dark th {
+  background-color: var(--mud-palette-dark) !important;
+  color: var(--mud-palette-dark-text) !important;
+}
+
+  .mud-table-head.custom-dark .mud-table-cell .mud-icon-button-label {
+    color: var(--mud-palette-dark-text) !important;
+  }
+
+/****** 客製化：SignalR 失去連線處置 ****************************************************
+* Could not reconnect to the server. Reload the page to restore functionality.
+*/
+#components-reconnect-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1050;
+  overflow: hidden;
+  background-color: #fff;
+  opacity: 0.8;
+  font-weight: bold;
+}
+
+  /* 顯示在營幕中間 */
+  #components-reconnect-modal.components-reconnect-show,
+  #components-reconnect-modal.components-reconnect-failed,
+  #components-reconnect-modal.components-reconnect-rejected {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Wait until a 'reload' button appears */
+  #components-reconnect-modal p {
+    font-size: 1.25rem;
+  }
+
+  /* Wait until a 'reload' button appears */
+  #components-reconnect-modal a {
+    font-size: 1.25rem;
+    padding: 4px 8px;
+    color: var(--mud-palette-primary);
+    text-decoration: underline
+  }
+
+  /* Wait until a 'reset' button appears */
+  #components-reconnect-modal button {
+    font-size: 1.25rem;
+    padding: 8px 16px;
+    color: var(--mud-palette-primary-text);
+    background-color: var(--mud-palette-primary);
+    border: 2px solid var(--mud-palette-primary-darken);
+    border-radius: 8px;
+  }
+
+    #components-reconnect-modal button:hover {
+      color: var(--mud-palette-primary);
+      background-color: var(--mud-palette-primary-text);
+    }
+
+/****** override: mud-list-item-hilight ***************************************
+ * 用於 AsvtSearchBoxField: hilight 選擇中項目 
+*/
+.mud-list-item-hilight-extended {
+  /* background-color: var(--mud-palette-background-gray); */
+  background-color: var(--mud-palette-secondary-hover);
+}
+
+/****** override: mud-input 讓唯讀顯示高度由 56px 變成 48px，與非唯讀顯示高度一致 **********
+ * 用於 AsvtXxxFeild 顯示高度一致 
+*/
+.mud-input > input.mud-input-root.mud-input-root-filled, div.mud-input-slot.mud-input-root.mud-input-root-filled {
+  /*padding: 27px 12px 10px;*/
+  padding: 22px 12px 7px;
+}
+
+.mud-input > input.mud-input-root-outlined, div.mud-input-slot.mud-input-root-outlined {
+  /*padding: 18.5px 14px;*/
+  padding: 14px 14px;
+}
+
+/****** override: mud-input-filled 讓唯讀時不要那麼暗 ****************************************
+ * 用於 AsvtXxxFeild 唯讀背景色
+*/
+.mud-input.mud-input-filled {
+  /*background-color: rgba(0, 0, 0, .09);*/
+  background-color: #f0f0f0;
+}
+
+/****** override: mud-dialog **************************************************
+ * 縮減 Dialog 顯示最高高度，不然手機可能按不到下方《指令》。 
+*/
+.mud-dialog {
+  max-height: calc(88vh - var(--mud-appbar-height)); /* default: calc(100vh - var(--mud-appbar-height)); */
+}
