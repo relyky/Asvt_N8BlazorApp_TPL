@@ -43,9 +43,8 @@ try
   //Vista.DB.DBHelper.MyLabDB = new Vista.DB.ConnProxy(conns["MyLabDB"]);
 
   //※ 或用本機保護模組解開
-  //bool enablePlainText = "EnablePlainText".Equals(config["ConnStringParser"]);
-  //Vista.DB.DBHelper.CHB_EXTEND = new Vista.DbPanda.ConnProxy(Utils.UnprotectText(config.GetConnectionString("CHB_EXTEND")!, enablePlainText));
-  //Vista.DB.DBHelper.CHB_MPIS = new Vista.DbPanda.ConnProxy(Utils.UnprotectText(config.GetConnectionString("CHB_MPIS")!, enablePlainText));
+  Vista.DB.DBHelper.CHB_EXTEND = new Vista.DbPanda.ConnProxy("CHB_EXTEND", config);
+  Vista.DB.DBHelper.CHB_MPIS = new Vista.DbPanda.ConnProxy("CHB_MPIS", config);
 
   //※ 或 bypass secure module
   Vista.DB.DBHelper.MyLabDB = new Vista.DbPanda.ConnProxy("Data Source=relynb2;Initial Catalog=MyLabDB;Integrated Security=True;Encrypt=False");

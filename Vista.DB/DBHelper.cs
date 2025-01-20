@@ -19,6 +19,17 @@ class DBHelper
   public static ConnProxy MyLabDB = default!;
 
   /// <summary>
+  /// 測試資料庫。
+  /// </summary>
+  public static ConnProxy CHB_EXTEND = default!;
+
+  /// <summary>
+  /// 測試資料庫。
+  /// </summary>
+  public static ConnProxy CHB_MPIS = default!;
+
+
+  /// <summary>
   /// 用來測試連線，不必初始化。
   /// </summary>
   public static ConnProxy CONNTEST = default!;
