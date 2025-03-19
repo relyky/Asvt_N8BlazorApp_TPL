@@ -40,10 +40,8 @@ public class ConnProxy
   }
 
   /// <summary>
-  /// 依 IConf
+  /// 依 IConfiguration 取得連線字串。
   /// </summary>
-  /// <param name="connName"></param>
-  /// <param name="config"></param>
   public ConnProxy(string connName, IConfiguration config)
   {
     /// 連線字串只有建構時可設定。
@@ -52,17 +50,18 @@ public class ConnProxy
 
   private SecureString DoCreateConnProxyWithIConfig(string connName, IConfiguration config)
   {
-    bool enablePlainText = "EnablePlainText".Equals(config["ConnStringParser"]);
     try
     {
-      return AsSecureString(Decrypt(config.GetConnectionString(connName)!));
-    }
-    catch
-    {
+      bool enablePlainText = "EnablePlainText".Equals(config["ConnStringParser"]);
       if (enablePlainText)
         return AsSecureString(config.GetConnectionString(connName)!);
-      else
-        throw;
+
+      // 解密連線字串
+      return AsSecureString(Decrypt(config.GetConnectionString(connName)!));
+    }
+    catch (Exception ex)
+    {
+      throw new ApplicationException($"取得連線字串[{connName}]失敗！", ex);
     }
   }
 
