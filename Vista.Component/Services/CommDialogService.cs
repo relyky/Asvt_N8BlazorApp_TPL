@@ -12,9 +12,16 @@ namespace Vista.Services;
 public interface IDialogServiceEx : IDialogService
 {
   /// <summary>
-  /// 搭配 <Shared\AlertDialog /> 元件顯示訊息。※ 此 AlertDialog 是非同步的。
+  /// 搭配 <Shared\AlertDialog /> 元件顯示訊息。
+  /// 將直接進行下一步驟。設計用於最後步驟。
   /// </summary>
   void ShowAlert(string message, Color color = Color.Error, string title = "訊息");
+
+  /// <summary>
+  /// 搭配 <Shared\AlertDialog /> 元件顯示訊息。
+  /// 等 User 按下確認鈕才進行下一步驟。。
+  /// </summary>
+  Task ShowAlertAsync(string message, Color color = Color.Info, string title = "訊息");
 
   Task<bool> ConfirmAsync(string message, Color color = Color.Warning, string title = "再確認一次？");
 
@@ -48,12 +55,17 @@ sealed class CommDialogService(IDialogService _dialog)
   /// </summary>
   public void ShowAlert(string message, Color color = Color.Error, string title = "訊息")
   {
+    _ = ShowAlertAsync(message, color, title);
+  }
+
+  public async Task ShowAlertAsync(string message, Color color = Color.Info, string title = "訊息")
+  {
     var parameters = new DialogParameters();
     parameters.Add("ContentText", message);
     parameters.Add("Title", title);
     parameters.Add("Color", color);
 
-    _dialog.Show<AlertDialog>(title, parameters);
+    await _dialog.Show<AlertDialog>(title, parameters).Result;
     // ※ 此 AlertDialog 是非同步的。
   }
 
@@ -74,11 +86,12 @@ sealed class CommDialogService(IDialogService _dialog)
   public async Task<DialogResult> ShowExAsync<TComponent>(object? parameters, MaxWidth maxWidth, DialogPosition position)
     where TComponent : ComponentBase
   {
-    var option = new DialogOptions { 
+    var option = new DialogOptions
+    {
       MaxWidth = maxWidth,
       Position = position,
-      CloseButton = true, 
-      FullWidth = true 
+      CloseButton = true,
+      FullWidth = true
     };
     /// 把 Dialog 拉到最寬比較容易設計介面，不然會動態縮放又寬又窄的。
 
