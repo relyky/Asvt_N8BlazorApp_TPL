@@ -23,7 +23,7 @@
 </MudDialog>
 
 @code {
-  [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+  [CascadingParameter] IMudDialogInstance MudDialog { get; set; } = default!;
   [Parameter, EditorRequired] public DEMO014FormData FormData { get; set; } = default!;
 
   void HandleReconfirm(string ans)

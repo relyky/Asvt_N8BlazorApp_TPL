@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Vista.Component.Shared;
@@ -65,8 +66,7 @@ sealed class CommDialogService(IDialogService _dialog)
     parameters.Add("Title", title);
     parameters.Add("Color", color);
 
-    await _dialog.Show<AlertDialog>(title, parameters).Result;
-    // ※ 此 AlertDialog 是非同步的。
+    await _dialog.ShowAsync<AlertDialog>(title, parameters);
   }
 
   /// <summary>
@@ -79,8 +79,12 @@ sealed class CommDialogService(IDialogService _dialog)
     parameters.Add("Title", title);
     parameters.Add("Color", color);
 
-    var res = await _dialog.Show<ConfirmDialog>(title, parameters).Result;
-    return !res.Canceled;
+    var dialog = await _dialog.ShowAsync<ConfirmDialog>(title, parameters);
+    var result = await dialog.Result;
+    return !(result?.Canceled ?? false);
+
+    //var res = await _dialog.Show<ConfirmDialog>(title, parameters).Result;
+    //return !res.Canceled;
   }
 
   public async Task<DialogResult> ShowExAsync<TComponent>(object? parameters, MaxWidth maxWidth, DialogPosition position)
@@ -109,14 +113,15 @@ sealed class CommDialogService(IDialogService _dialog)
 
     var dialog = await _dialog.ShowAsync<TComponent>(null, prms, option);
     var result = await dialog.Result;
-    return result;
+    return result!;
   }
 
   #region 實作 IDialogService 介面
-  event Action<IDialogReference>? IDialogService.OnDialogInstanceAdded
+
+  event Func<IDialogReference, Task> IDialogService.DialogInstanceAddedAsync
   {
-    add => _dialog.OnDialogInstanceAdded += value;
-    remove => _dialog.OnDialogInstanceAdded -= value;
+    add => _dialog.DialogInstanceAddedAsync += value;
+    remove => _dialog.DialogInstanceAddedAsync -= value;
   }
 
   event Action<IDialogReference, DialogResult?>? IDialogService.OnDialogCloseRequested
@@ -125,54 +130,64 @@ sealed class CommDialogService(IDialogService _dialog)
     remove => _dialog.OnDialogCloseRequested -= value;
   }
 
+  [Obsolete("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。")]
   IDialogReference IDialogService.Show<[DynamicallyAccessedMembers((DynamicallyAccessedMemberTypes)(-1))] TComponent>()
   {
-    return _dialog.Show<TComponent>();
+    throw new NotImplementedException("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。");
   }
 
+  [Obsolete("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。")]
   IDialogReference IDialogService.Show<[DynamicallyAccessedMembers((DynamicallyAccessedMemberTypes)(-1))] TComponent>(string? title)
   {
-    return _dialog.Show<TComponent>(title);
+    throw new NotImplementedException("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。");
   }
 
+  [Obsolete("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。")]
   IDialogReference IDialogService.Show<[DynamicallyAccessedMembers((DynamicallyAccessedMemberTypes)(-1))] TComponent>(string? title, DialogOptions options)
   {
-    return _dialog.Show<TComponent>(title, options);
+    throw new NotImplementedException("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。");
   }
 
+  [Obsolete("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。")]
   IDialogReference IDialogService.Show<[DynamicallyAccessedMembers((DynamicallyAccessedMemberTypes)(-1))] TComponent>(string? title, DialogParameters parameters)
   {
-    return _dialog.Show<TComponent>(title, parameters);
+    throw new NotImplementedException("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。");
   }
 
+  [Obsolete("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。")]
   IDialogReference IDialogService.Show<[DynamicallyAccessedMembers((DynamicallyAccessedMemberTypes)(-1))] TComponent>(string? title, DialogParameters parameters, DialogOptions? options)
   {
-    return _dialog.Show<TComponent>(title, parameters, options);
+    throw new NotImplementedException("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。");
   }
 
+  [Obsolete("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。")]
   IDialogReference IDialogService.Show(Type component)
   {
-    return _dialog.Show(component);
+    throw new NotImplementedException("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。");
   }
 
+  [Obsolete("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。")]
   IDialogReference IDialogService.Show(Type component, string? title)
   {
-    return _dialog.Show(component, title);
+    throw new NotImplementedException("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。");
   }
 
+  [Obsolete("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。")]
   IDialogReference IDialogService.Show(Type component, string? title, DialogOptions options)
   {
-    return _dialog.Show(component, title, options);
+    throw new NotImplementedException("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。");
   }
 
+  [Obsolete("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。")]
   IDialogReference IDialogService.Show(Type component, string? title, DialogParameters parameters)
   {
-    return _dialog.Show(component, title, parameters);
+    throw new NotImplementedException("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。");
   }
 
+  [Obsolete("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。")]
   IDialogReference IDialogService.Show(Type component, string? title, DialogParameters parameters, DialogOptions options)
   {
-    return _dialog.Show(component, title, parameters, options);
+    throw new NotImplementedException("IDialogService.Show(...) 已過時，請使用 IDialogService.ShowAsync(...)。");
   }
 
   Task<IDialogReference> IDialogService.ShowAsync<[DynamicallyAccessedMembers((DynamicallyAccessedMemberTypes)(-1))] TComponent>()

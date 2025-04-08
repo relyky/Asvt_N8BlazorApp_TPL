@@ -8,11 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="BlazorComponentBus" Version="2.2.0" />
-    <PackageReference Include="ClosedXML.Report" Version="0.2.10" />
-    <PackageReference Include="DynamicExpresso.Core" Version="2.16.1" />
-    <PackageReference Include="FluentValidation" Version="11.9.1" />
-    <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.93" />
-    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.6" />
+    <PackageReference Include="ClosedXML.Report" Version="0.2.11" />
+    <PackageReference Include="DynamicExpresso.Core" Version="2.18.0" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.95" />
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.14" />
+    <PackageReference Include="System.IO.Packaging" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
