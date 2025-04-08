@@ -40,8 +40,8 @@
         </MudCardContent>
 
         <MudCardActions Class="justify-center">
-          <MudButton Variant=Variant.Filled Color=Color.Primary ButtonType=ButtonType.Submit Disabled=@f_Authing Class="px-6 py-3">
-            @if (f_Authing)
+          <MudButton Variant=Variant.Filled Color=Color.Primary ButtonType=ButtonType.Submit Disabled=@f_authing Class="px-6 py-3">
+            @if (f_authing)
             {
               <MudProgressCircular Size=Size.Small Indeterminate />
               <MudText Class="ms-2">登入中…</MudText>
@@ -65,14 +65,14 @@
 
   //## State
   LoginArgs loginModel = new() { userId = "smart", credential = "asvt", vcode = "0222210505", rememberMe = true };
-  bool f_Authing = false;
+  bool f_authing = false;
 
   async Task HandleValidSubmit(EditContext context)
   {
     // 基本檢查
     if (!context.Validate()) return;
 
-    f_Authing = true; // 表示執行登入中，可以用來鎖住【登入】按鈕避免亂按。
+    f_authing = true; // 表示執行登入中，可以用來鎖住【登入】按鈕避免亂按。
     StateHasChanged();
 
     loginModel.returnUrl = ReturnUrl ?? "/";
@@ -80,7 +80,7 @@
     if (ticket == null)
     {
       dlgSvc.ShowAlert("登入認證失敗！");
-      f_Authing = false;
+      f_authing = false;
       return;
     }
 
@@ -88,7 +88,7 @@
     if (ticketToken == null)
     {
       dlgSvc.ShowAlert("登入認證失敗！");
-      f_Authing = false;
+      f_authing = false;
       return;
     }
 
