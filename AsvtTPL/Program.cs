@@ -132,7 +132,7 @@ try
 
   //# for BLAZOR COOKIE Auth
   /// 參考：[針對錯誤進行疑難排解](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/security/?view=aspnetcore-8.0#troubleshoot-errors)
-  /// 在.NET 8 或更新版本中，請勿使用 <CascadingAuthenticationState /> 元件；改用 builder.Services.SAddCascadingAuthenticationState();
+  /// 在.NET 8 或更新版本中，請勿使用 <CascadingAuthenticationState /> 元件；改用 builder.Services.AddCascadingAuthenticationState();
   builder.Services.AddCascadingAuthenticationState();
   //builder.Services.AddScoped<AuthenticationStateProvider, Custom2AuthenticationStateProvider>(); 
   builder.Services.AddScoped<IAuthUser, AuthUserService>();
@@ -167,8 +167,7 @@ try
   // 註冊 客製化授權需求 Authorization Requirement。
   // ※ 將自動觸發對應的檢驗程序 
   builder.Services.AddSingleton<IAuthorizationHandler, AuthPageHandler>();
-
-  builder.Services.AddAntiforgery();
+  builder.Services.AddAntiforgery(); // for SSG form 
 
   #endregion
 
