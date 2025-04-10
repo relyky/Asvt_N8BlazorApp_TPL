@@ -42,6 +42,9 @@ try
   //Vista.DB.DBHelper.CONNSEC = new Vista.DB.ConnProxy(conns["CONNSEC"]);
   //Vista.DB.DBHelper.MyLabDB = new Vista.DB.ConnProxy(conns["MyLabDB"]);
 
+  //※ 或取得全部資料庫連線組態
+  //Vista.DB.DBHelper.Register(config);
+
   //※ 或用本機保護模組解開
   Vista.DB.DBHelper.CHB_EXTEND = new Vista.DbPanda.ConnProxy("CHB_EXTEND", config);
   Vista.DB.DBHelper.CHB_MPIS = new Vista.DbPanda.ConnProxy("CHB_MPIS", config);
