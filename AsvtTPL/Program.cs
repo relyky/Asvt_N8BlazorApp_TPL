@@ -179,6 +179,9 @@ try
   //## 註冊 IServiceProvider 備用
   Vista.AOP.ServiceActivator.Configure(app.Services);
 
+  //# 正式環境部署成子網站。
+  app.UsePathBase(config["PathBase"] ?? "/"); // 必須在 UseRouting 之前執行。
+
   if (!app.Environment.IsDevelopment())
   {
     //# [停用熱重新載入的回應壓縮](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/fundamentals/signalr?preserve-view=true&view=aspnetcore-8.0#disable-response-compression-for-hot-reload)
