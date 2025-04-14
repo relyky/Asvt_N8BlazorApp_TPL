@@ -46,11 +46,10 @@ try
   //Vista.DB.DBHelper.Register(config);
 
   //※ 或用本機保護模組解開
-  Vista.DB.DBHelper.CHB_EXTEND = new Vista.DbPanda.ConnProxy("CHB_EXTEND", config);
-  Vista.DB.DBHelper.CHB_MPIS = new Vista.DbPanda.ConnProxy("CHB_MPIS", config);
+  Vista.DB.DBHelper.MyLabDB = new Vista.DbPanda.ConnProxy("MyLabDB", config);
 
   //※ 或 bypass secure module
-  Vista.DB.DBHelper.MyLabDB = new Vista.DbPanda.ConnProxy("Data Source=relynb2;Initial Catalog=MyLabDB;Integrated Security=True;Encrypt=False");
+  //Vista.DB.DBHelper.MyLabDB = new Vista.DbPanda.ConnProxy("Data Source=relynb4;Initial Catalog=MyLabDB;Integrated Security=True;Encrypt=False");
 
   #endregion
 
