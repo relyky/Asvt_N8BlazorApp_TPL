@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using Dapper;
-using Vista.DbPanda;
 using Microsoft.Data.SqlClient;
 
 

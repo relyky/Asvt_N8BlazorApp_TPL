@@ -8,17 +8,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class EXAM_APP_DTL 
 {
   [Key]
-  [Required]
   public string APP_NO { get; set; } = default!;
   [Key]
-  [Required]
   public int ITEM_NO { get; set; }
-  [Required]
   public Decimal? UNIT_PRICE { get; set; }
   public string FEE_CODE { get; set; } = default!;
-  [Required]
   public int? UNIT_SALE { get; set; }
-  [Required]
   public string SELF_PAY_FLAG { get; set; } = default!;
 
   public void Copy(EXAM_APP_DTL src)
