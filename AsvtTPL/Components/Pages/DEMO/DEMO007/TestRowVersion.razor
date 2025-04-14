@@ -1,0 +1,48 @@
+﻿@using Vista.Biz.DEMO
+@inject DEMO007Biz bizSvc
+
+<MudPaper role="panel">
+  <MudText Typo="Typo.h4">Test RowVersion (@Sn)</MudText>
+  <MudButton OnClick=HandleLoadData>Load</MudButton>
+  <MudButton OnClick=HandleInsertData>Insert</MudButton>
+  <MudButton OnClick=HandleUpdateData>Update</MudButton>
+</MudPaper>
+
+<MudDataGrid T="MyProduct" Items=dataList Hover Striped Dense ShowColumnOptions=false
+             FixedHeader Height="calc(100vh - 340px)"
+             SelectOnRowClick RowClass="cursor-pointer"
+             HeaderClass="custom-secondary" Class="mb-3">
+  <Columns>
+    <PropertyColumn Property="m => m.Sn" Title="序號" />
+    <PropertyColumn Property="m => m.RowVersion" Title="原始版號">
+      <CellTemplate>
+        @(Convert.ToHexString(context.Item.RowVersion).TrimStart('0'))
+      </CellTemplate>
+    </PropertyColumn>
+    <PropertyColumn Property="m => m.RowVersionLong" Title="版號" />
+    <PropertyColumn Property="m => m.Title" Title="抬頭" />
+    <PropertyColumn Property="m => m.Status" Title="狀態" />
+  </Columns>
+</MudDataGrid>
+
+
+@code {
+    //## State
+    List<MyProduct> dataList = [];
+    long Sn = -1;
+
+    async Task HandleLoadData()
+    {
+      dataList = await Task.Run(() => bizSvc.QryDataList());
+    }
+
+    async Task HandleInsertData()
+    {
+      Sn = await Task.Run(() => bizSvc.InsertData());
+    }
+
+    async Task HandleUpdateData()
+    {
+      await Task.Run(() => bizSvc.UpdateData(Sn));
+    }
+}

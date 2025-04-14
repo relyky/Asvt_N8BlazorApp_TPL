@@ -18,7 +18,12 @@ public class MyProduct
   [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
   public int Sn { get; set; }
   [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-  public UInt64? RowVersion { get; set; }
+  public Byte[] RowVersion { get; set; }
+  /// <summary>
+  /// Computed Definition: (CONVERT([bigint],[RowVersion]))
+  /// </summary>
+  [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+  public Int64? RowVersionLong { get; set; }
   /// <summary>
   /// 抬頭
   /// </summary>
@@ -34,6 +39,7 @@ public class MyProduct
   {
     this.Sn = src.Sn;
     this.RowVersion = src.RowVersion;
+    this.RowVersionLong = src.RowVersionLong;
     this.Title = src.Title;
     this.Status = src.Status;
   }
@@ -43,6 +49,7 @@ public class MyProduct
     return new MyProduct {
       Sn = this.Sn,
       RowVersion = this.RowVersion,
+      RowVersionLong = this.RowVersionLong,
       Title = this.Title,
       Status = this.Status,
     };
