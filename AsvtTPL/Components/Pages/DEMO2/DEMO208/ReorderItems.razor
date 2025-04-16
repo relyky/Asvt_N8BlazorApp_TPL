@@ -1,70 +1,93 @@
-﻿@using MudBlazor.Utilities
+﻿@using Vista.Biz.DEMO
+@using MudBlazor.Utilities
+@inject ISnackbar snackSvc
 
 <style type="text/css">
+  .drop-view {
+    height: calc(100vh - 140px);
+    overflow-y: scroll;
+  }
+
   .item-box {
-  padding: 4px 8px 4px 8px;
-  margin-bottom: 4px;
+    padding: 4px 8px 4px 8px;
+    margin-bottom: 1px;
+  }
+
+  .item-selected {
+    background-color: lightyellow;
+    /* outline: 2px dashed #007bff; */
   }
 
   .text-indent {
-  margin-left: 2em;
+    margin-left: 2em;
   }
 
   .price-cell {
-  padding-top: 6px;
-  padding-bottom: 6px;
-  text-align: right;
+    text-align: right;
   }
 </style>
 
-<MudDropContainer T="DropItem" Items="_itemList"
-ItemsSelector=ItemsSelectorHandler
-ItemDropped=ItemDroppedHandler>
+<MudDropContainer T=DropItem Items=ItemList
+                  ItemsSelector=ItemsSelectorHandler
+                  ItemPicked=ItemPickedHandler
+                  ItemDropped=ItemDroppedHandler>
   <ChildContent>
     <MudDropZone T="DropItem" AllowReorder
-    Class="rounded mud-background-gray pa-2">
-      <MudText Typo=Typo.h6 Class="mb-4">拖拉區</MudText>
+                 Class="drop-view rounded mud-background-gray pa-2">
+      <MudToolBar Dense Gutters>
+        <MudText Typo=Typo.h6>報價項目</MudText>
+      </MudToolBar>
     </MudDropZone>
   </ChildContent>
   <ItemRenderer Context="item">
-    <MudPaper Elevation=1 Class=@Utils.Clsx("d-flex flex-wrap item-box","text-indent", item.Level == 2)>
-      <div class="flex-grow-1">
+    <MudPaper Elevation=@(item == ItemAim ? 9 : 1)
+              Class=@Utils.Clsx("d-flex item-box",("item-selected", item == ItemAim),("text-indent", item.Level == 2))>
+      <div>
         @if (item.Level == 2)
         {
           <code style="padding-right:.5em; font-size:1.25em;">@item.L1Num-@item.L2Num</code>
-          <span style="white-space:break-spaces;">@item.Description</span>
         }
         else
         {
           <code style="padding-right:.5em; font-size:1.5em;">@item.L1Num</code>
-          <span style="white-space:break-spaces;">@item.Description</span>
         }
       </div>
-      <div class="d-flex">
-        <div class="price-cell" style="width:6em;">@item.UnitPrice</div>
-        <div class="price-cell" style="width:4em;">@item.Quantity</div>
-        <div class="price-cell" style="width:10em;">@item.ExtendedPrice</div>
+      <div class="flex-grow-1 align-self-center">
+        <span style="white-space:break-spaces;">@item.Description</span>
+        @* for debug *@<span style="color:lightcoral;">[@(item.Order)@(item.IsGroup ? "g" : "")]</span>
       </div>
-      <div>
-        <MudButton Class="ml-2">編輯[@(item.Order)@(item.IsGroup ? "g" : "")] </MudButton>
+      <div class="d-flex align-self-center">
+        <div class="price-cell" style="width:5em;">@($"{item.UnitPrice:N0}")</div>
+        <div class="price-cell" style="width:3em;">@($"{item.Quantity:N1}")</div>
+        <div class="price-cell" style="width:7em;">@($"{item.ExtendedPrice:N0}")</div>
       </div>
     </MudPaper>
   </ItemRenderer>
 </MudDropContainer>
 
 @code {
-  //## Property
-  //string ItemClsx(int level) => new CssBuilder("pa-2 mb-2").AddClass("ml-8", level == 2).Build();
+  [Parameter, EditorRequired] public required List<DropItem> ItemList { get; set; }
+  [Parameter] public EventCallback<List<DropItem>> ItemListChanged { get; set; }
+  [Parameter, EditorRequired] public DropItem? ItemAim { get; set; }
+  [Parameter] public EventCallback<DropItem?> ItemAimChanged { get; set; }
 
-  private void ItemDroppedHandler(MudItemDropInfo<DropItem> dropItem)
+  //## Property
+
+  bool ItemsSelectorHandler(DropItem item, string dropzone) => true;
+
+  void ItemDroppedHandler(MudItemDropInfo<DropItem> dropItem)
   {
-    _itemList.UpdateOrder(dropItem, item => item.Order, 0); // 更新 order 排序
+    ItemList.UpdateOrder(dropItem, item => item.Order, 0); // 更新 order 排序
     DoSyncUpdateL1NumL2Num();
     DoSyncUpdateItemGroup();
+    ItemListChanged.InvokeAsync(ItemList);
     StateHasChanged();
   }
 
-  bool ItemsSelectorHandler(DropItem item, string dropzone) => true;
+  void ItemPickedHandler(MudDragAndDropItemTransaction<DropItem> pickItem)
+  {
+    ItemAimChanged.InvokeAsync(pickItem.Item);
+  }
 
   /// <summary>
   /// 同步更新相依欄位: L1Num, L2Num。
@@ -73,7 +96,7 @@ ItemDropped=ItemDroppedHandler>
   {
     int l1num = 1;
     int l2num = 0;
-    foreach (var item in _itemList.OrderBy(c => c.Order))
+    foreach (var item in ItemList.OrderBy(c => c.Order))
     {
       if (item.Level == 2)
       {
@@ -93,74 +116,10 @@ ItemDropped=ItemDroppedHandler>
   /// </summary>
   void DoSyncUpdateItemGroup()
   {
-    foreach (var item in _itemList.Where(c => c.Level == 1))
+    foreach (var item in ItemList.Where(c => c.Level == 1))
     {
-      item.IsGroup = _itemList.Any(x => x.Level == 2 && item.L1Num == x.L1Num);
+      item.IsGroup = ItemList.Any(x => x.Level == 2 && item.L1Num == x.L1Num);
     }
   }
 
-  private List<DropItem> _itemList = new()
-    {
-        new DropItem(){ Order =  0, Level = 1, IsGroup = false,  L1Num = 1, L2Num = 0, UnitPrice = 7000, Quantity = 1.0m, Description = "Project Management" },
-        new DropItem(){ Order =  1, Level = 1, IsGroup = false, L1Num = 2, L2Num = 0, UnitPrice = 7000, Quantity = 2.0m, Description = "System Analysis" },
-        new DropItem(){ Order =  2, Level = 1, IsGroup = false, L1Num = 3, L2Num = 0, UnitPrice = 7000, Quantity = 2.0m, Description = "System Design" },
-        new DropItem(){ Order =  3, Level = 1, IsGroup = true, L1Num = 4, L2Num = 0, UnitPrice =    0, Quantity = 0,    Description = "System Development" },
-        new DropItem(){ Order =  4, Level = 2, IsGroup = false, L1Num = 4, L2Num = 1, UnitPrice = 7000, Quantity = 4.5m, Description = "1.匯入T360-Funding Report.\r\n匯入檔案資料。轉換匯入的資料，產出 WMT Funding Report 所需資料。\r\n可查詢匯入的檔案資料。" },
-        new DropItem(){ Order =  5, Level = 2, IsGroup = false, L1Num = 4, L2Num = 2, UnitPrice = 7000, Quantity = 3.0m, Description = "2.T360-參數設定。\r\n提供設定畫面，以便設定 T360 Report 與 WMT 的欄位名稱(或代碼)的轉換。\r\n程式需 Maker/Checker 功能。" },
-        new DropItem(){ Order =  6, Level = 2, IsGroup = false, L1Num = 4, L2Num = 3, UnitPrice = 7000, Quantity = 1.5m, Description = "3.Funding Report 功能調整。\r\nFunding Report 需包含 T360 Report 的資料。" },
-        new DropItem(){ Order =  7, Level = 2, IsGroup = false, L1Num = 4, L2Num = 4, UnitPrice = 7000, Quantity = 1.5m, Description = "4.Pre-Funding Report 功能調整。\r\nPre-Funding Report 需包含 T360 Report 的資料。" },
-        new DropItem(){ Order =  8, Level = 1, IsGroup = false, L1Num = 5, L2Num = 0, UnitPrice = 7000, Quantity = 2.0m, Description = "Unit Test" },
-        new DropItem(){ Order =  9, Level = 1, IsGroup = false, L1Num = 6, L2Num = 0, UnitPrice = 7000, Quantity = 1.5m, Description = "System Integration Test" },
-        new DropItem(){ Order = 10, Level = 1, IsGroup = false, L1Num = 7, L2Num = 0, UnitPrice = 7000, Quantity = 2.0m, Description = "User Acceptance Test" },
-        new DropItem(){ Order = 11, Level = 1, IsGroup = false, L1Num = 8, L2Num = 0, UnitPrice = 7000, Quantity = 3.0m, Description = "Documenation - FSD, Source Compare Doc, UAT Program List, Product Program List" },
-        new DropItem(){ Order = 12, Level = 1, IsGroup = false, L1Num = 9, L2Num = 0, UnitPrice = 7000, Quantity = 1.0m, Description = "Production Support" },
-    };
-
-  public class DropItem
-  {
-    /// <summary>
-    /// UI控制欄位: 拖拉區內索引, IndexInZone
-    /// </summary>
-    public int Order { get; set; }
-
-    /// <summary>
-    /// UI控制欄位: 階層:1,2。
-    /// </summary>
-    public int Level { get; set; }
-
-    /// <summary>
-    /// UI控制欄位: 是否為項目分群。
-    /// </summary>
-    public bool IsGroup { get; set; }
-
-    /// <summary>
-    /// 產品名稱/型號及說明
-    /// </summary>
-    public required string Description { get; set; }
-
-    /// <summary>
-    /// 單價
-    /// </summary>
-    public decimal UnitPrice { get; set; }
-
-    /// <summary>
-    /// 數量
-    /// </summary>
-    public decimal Quantity { get; set; }
-
-    /// <summary>
-    /// 複價 := 單價 x 數量
-    /// </summary>
-    public decimal ExtendedPrice => UnitPrice * Quantity;
-
-    /// <summary>
-    /// 項次 L1
-    /// </summary>
-    public int L1Num { get; set; }
-
-    /// <summary>
-    /// 項次 L2
-    /// </summary>
-    public int L2Num { get; set; }
-  }
 }

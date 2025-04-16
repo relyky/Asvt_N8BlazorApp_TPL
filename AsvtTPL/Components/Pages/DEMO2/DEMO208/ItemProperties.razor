@@ -1,9 +1,58 @@
-﻿<MudPaper role="panel">
-  <h3>ItemProperties</h3>
+﻿@using Vista.Biz.DEMO
 
+@if (ItemAim == null)
+{
+  <MudText Typo=Typo.h6>請選擇一個項目</MudText>
+  return;
+}
 
+<MudPaper role="panel">
+  <MudToolBar Dense Gutters=false>
+    <MudText Typo=Typo.h6>編輯屬性</MudText>
+    <MudSpacer />
+    <MudIconButton Icon=@Icons.Material.Filled.Close OnClick="()=>OnClose.InvokeAsync()" />
+  </MudToolBar>
+
+  <EditForm Model=ItemAim>
+    <FluentValidationValidator />
+
+    <AsvtFormRow Grid=@([12])>
+      <AsvtStaticField For="()=>ItemAim.Order" Label="項目編號">
+        @($"{ItemAim.L1Num}.{ItemAim.L2Num}")
+      </AsvtStaticField>
+
+      @* for debug *@
+      <AsvtStaticField For="()=>ItemAim.Order" Label="Order/Level/IsGroup">
+        @($"{ItemAim.Order}/{ItemAim.Level}/{ItemAim.IsGroup}")
+      </AsvtStaticField>
+    </AsvtFormRow>
+
+    <AsvtFormRow Grid=@([6])>
+      <AsvtTextAreaField For="()=>ItemAim.Description" Grid=@([12]) />
+      <AsvtNumberField For="()=>ItemAim.UnitPrice" />
+      <AsvtNumberField For="()=>ItemAim.Quantity" />
+      <AsvtNumberField For="()=>ItemAim.ExtendedPrice" ReadOnly=true />
+    </AsvtFormRow>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton Variant=Variant.Filled Color=Color.Primary>更新</MudButton>
+      <MudButtonGroup Variant=Variant.Filled Color=@(f_remove ? Color.Warning : Color.Default)>
+        <MudButton Disabled=@(!f_remove)>移除</MudButton>
+        <MudToggleIconButton @bind-Toggled=f_remove
+                             Icon=@Icons.Material.Outlined.CheckBoxOutlineBlank
+                             ToggledIcon=@Icons.Material.Outlined.CheckBox />
+      </MudButtonGroup>
+    </MudStack>
+
+    <DialogValidationSummary />
+  </EditForm>
 </MudPaper>
 
 @code {
+  [Parameter] public DropItem? ItemAim { get; set; }
+  [Parameter] public EventCallback OnClose { get; set; }
+
+  //## State
+  bool f_remove = false;
 
 }

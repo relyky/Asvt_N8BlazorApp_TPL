@@ -1,0 +1,35 @@
+﻿@using Vista.Biz.DEMO
+
+<MudContainer>
+  <MudGrid Spacing=2>
+    <MudItem xs="@(itemAim == null ? 12 : 8)">
+      <ReorderItems @bind-ItemList=itemList @bind-ItemAim=itemAim />
+    </MudItem>
+    <MudHidden Hidden=@(itemAim == null)>
+      <MudItem xs=4>
+        <ItemProperties ItemAim=itemAim OnClose=@(()=> itemAim = null) />
+      </MudItem>
+    </MudHidden>
+  </MudGrid>
+</MudContainer>
+
+@code {
+
+  List<DropItem> itemList = new()
+    {
+        new DropItem(){ Order =  0, Level = 1, IsGroup = false,  L1Num = 1, L2Num = 0, UnitPrice = 7000m, Quantity = 1.0m, Description = "Project Management" },
+        new DropItem(){ Order =  1, Level = 1, IsGroup = false, L1Num = 2, L2Num = 0, UnitPrice = 7000m, Quantity = 2.0m, Description = "System Analysis" },
+        new DropItem(){ Order =  2, Level = 1, IsGroup = false, L1Num = 3, L2Num = 0, UnitPrice = 7000m, Quantity = 2.0m, Description = "System Design" },
+        new DropItem(){ Order =  3, Level = 1, IsGroup = true, L1Num = 4, L2Num = 0, UnitPrice =    0m, Quantity = 0.0m,    Description = "System Development" },
+        new DropItem(){ Order =  4, Level = 2, IsGroup = false, L1Num = 4, L2Num = 1, UnitPrice = 7000m, Quantity = 4.5m, Description = "1.匯入T360-Funding Report.\r\n匯入檔案資料。轉換匯入的資料，產出 WMT Funding Report 所需資料。\r\n可查詢匯入的檔案資料。" },
+        new DropItem(){ Order =  5, Level = 2, IsGroup = false, L1Num = 4, L2Num = 2, UnitPrice = 7000m, Quantity = 3.0m, Description = "2.T360-參數設定。\r\n提供設定畫面，以便設定 T360 Report 與 WMT 的欄位名稱(或代碼)的轉換。\r\n程式需 Maker/Checker 功能。" },
+        new DropItem(){ Order =  6, Level = 2, IsGroup = false, L1Num = 4, L2Num = 3, UnitPrice = 7000m, Quantity = 1.5m, Description = "3.Funding Report 功能調整。\r\nFunding Report 需包含 T360 Report 的資料。" },
+        new DropItem(){ Order =  7, Level = 2, IsGroup = false, L1Num = 4, L2Num = 4, UnitPrice = 7000m, Quantity = 1.5m, Description = "4.Pre-Funding Report 功能調整。\r\nPre-Funding Report 需包含 T360 Report 的資料。" },
+        new DropItem(){ Order =  8, Level = 1, IsGroup = false, L1Num = 5, L2Num = 0, UnitPrice = 7000m, Quantity = 2.0m, Description = "Unit Test" },
+        new DropItem(){ Order =  9, Level = 1, IsGroup = false, L1Num = 6, L2Num = 0, UnitPrice = 7000m, Quantity = 1.5m, Description = "System Integration Test" },
+        new DropItem(){ Order = 10, Level = 1, IsGroup = false, L1Num = 7, L2Num = 0, UnitPrice = 7000m, Quantity = 2.0m, Description = "User Acceptance Test" },
+        new DropItem(){ Order = 11, Level = 1, IsGroup = false, L1Num = 8, L2Num = 0, UnitPrice = 7000m, Quantity = 3.0m, Description = "Documenation - FSD, Source Compare Doc, UAT Program List, Product Program List" },
+        new DropItem(){ Order = 12, Level = 1, IsGroup = false, L1Num = 9, L2Num = 0, UnitPrice = 7000m, Quantity = 1.0m, Description = "Production Support" },
+    };
+  DropItem? itemAim = null;
+}
