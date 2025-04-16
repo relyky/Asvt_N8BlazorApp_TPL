@@ -1,16 +1,35 @@
 ﻿@using Vista.Biz.DEMO
 
 <MudContainer>
-  <MudGrid Spacing=2>
-    <MudItem xs="@(itemAim == null ? 12 : 8)">
-      <ReorderItems @bind-ItemList=itemList @bind-ItemAim=itemAim />
-    </MudItem>
-    <MudHidden Hidden=@(itemAim == null)>
-      <MudItem xs=4>
+
+  <div style="overflow:hidden; position:relative;">
+    <MudDrawerContainer Class="mud-height-full">
+      <MudDrawer Open=@(itemAim != null) Elevation=0
+                 Anchor=Anchor.Right
+                 Width="360px"
+                 Color=Color.Default
+                 Variant="@DrawerVariant.Persistent" >
+        @* property *@
         <ItemProperties ItemAim=itemAim OnClose=@(()=> itemAim = null) />
-      </MudItem>
-    </MudHidden>
-  </MudGrid>
+      </MudDrawer>
+
+      @* content *@
+      <ReorderItems @bind-ItemList=itemList @bind-ItemAim=itemAim />
+    </MudDrawerContainer>
+  </div>
+
+  @* ========================== *@
+
+  @* <MudGrid Spacing=2> *@
+  @*   <MudItem xs="@(itemAim == null ? 12 : 8)"> *@
+  @*     <ReorderItems @bind-ItemList=itemList @bind-ItemAim=itemAim /> *@
+  @*   </MudItem> *@
+  @*   <MudHidden Hidden=@(itemAim == null)> *@
+  @*     <MudItem xs=4> *@
+  @*       <ItemProperties ItemAim=itemAim OnClose=@(()=> itemAim = null) /> *@
+  @*     </MudItem> *@
+  @*   </MudHidden> *@
+  @* </MudGrid> *@
 </MudContainer>
 
 @code {
