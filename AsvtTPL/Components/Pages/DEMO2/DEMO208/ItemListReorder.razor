@@ -28,7 +28,7 @@
   }
 
   .remove-item-dropping .mud-chip {
-    background-color: red;
+    background-color: var(--mud-palette-error);
   }
 </style>
 
@@ -39,7 +39,8 @@
   <ChildContent>
     <MudToolBar Dense Gutters>
       <MudText Typo=Typo.h6>報價項目</MudText>
-      <MudButton OnClick=HandleAddItem>加入</MudButton>
+      <MudButton OnClick=HandleAddItem Disabled=@(2 == ItemAim?.Level)>加入主項</MudButton>
+      <MudButton OnClick=HandleAddSubItem Disabled=@(ItemAim is null)>加入次項</MudButton>
       <MudSpacer />
       <MudDropZone T="DropItem" Identifier="remove-zone" Class="rounded"
                    CanDrop=CanDropRemoveHandler
@@ -128,7 +129,7 @@
   }
 
   /// <summary>
-  /// 同步更新相依欄位: L1Num, L2Num。
+  /// 依據 Order, Level 同步更新相依欄位: L1Num, L2Num。
   /// </summary>
   void DoSyncUpdateL1NumL2Num()
   {
@@ -150,7 +151,7 @@
   }
 
   /// <summary>
-  /// 檢查有否子層並重新計算加總。
+  /// 依據 L1Num, L2Num 檢查有否子層 IsGroup 並重新計算加總。
   /// </summary>
   void DoSyncUpdateItemGroup()
   {
@@ -160,28 +161,73 @@
     }
   }
 
+  /// <summary>
+  /// 加入主項
+  /// </summary>
   async Task HandleAddItem()
   {
+    int insertOrder = ItemAim?.Order ?? 0;
+    int insertLiNum = ItemAim?.L1Num ?? 1;
+
     // 向後移位，以便新增項目。
-    foreach (var item in ItemList.OrderByDescending(c => c.Order))
+    foreach (var item in ItemList.Where(c => c.Order >= insertOrder).OrderByDescending(c => c.Order))
     {
       item.Order++;
       item.L1Num++;
     }
 
-    // 新增項目到列表第１個位置。
-    ItemList.Insert(0, new DropItem()
+    // 新增項目到列表指定第１個位置或選取項目前面。
+    ItemList.Insert(insertOrder, new DropItem()
       {
-        Order = 0,
+        Order = insertOrder,
         Level = 1,
         IsGroup = false,
-        L1Num = 1,
+        L1Num = insertLiNum,
         L2Num = 0,
         UnitPrice = 7000m,
         Quantity = 1.0m,
         Description = "新加入主要項目內容"
       });
 
+    // refersh UI
+    // DoSyncUpdateL1NumL2Num();
+    // DoSyncUpdateItemGroup(); // 此時不會改變 group
+    await ItemListChanged.InvokeAsync(ItemList);
+    refDropContainer.Refresh();
+  }
+
+  /// <summary>
+  /// 加入次項。依據選取項目加入次項。
+  /// </summary>
+  /// <returns></returns>
+  async Task HandleAddSubItem()
+  {
+    if (ItemAim is null) return;
+
+    int insertOrder = ItemAim.Order + 1;
+
+    // Order 向後移位１位，以便新增項目。
+    foreach (var item in ItemList.Where(c => c.Order >= insertOrder).OrderByDescending(c => c.Order))
+    {
+      item.Order++;
+    }
+
+    // 新增『次項目』到選取項目的下一位。
+    ItemList.Insert(insertOrder, new DropItem()
+      {
+        Order = insertOrder,
+        Level = 2,
+        IsGroup = false,
+        L1Num = ItemAim.L1Num,
+        L2Num = ItemAim.L2Num + 1,
+        UnitPrice = 7000m,
+        Quantity = 1.0m,
+        Description = "新加入次要項目內容"
+      });
+
+    // refersh UI
+    DoSyncUpdateL1NumL2Num();
+    DoSyncUpdateItemGroup();
     await ItemListChanged.InvokeAsync(ItemList);
     refDropContainer.Refresh();
   }
