@@ -5,16 +5,16 @@
   <div style="overflow:hidden; position:relative;">
     <MudDrawerContainer Class="mud-height-full">
       <MudDrawer Open=@(itemAim != null) Elevation=0
-                 Anchor=Anchor.Right
-                 Width="360px"
-                 Color=Color.Default
-                 Variant="@DrawerVariant.Persistent" >
+      Anchor=Anchor.Right
+      Width="360px"
+      Color=Color.Default
+      Variant="@DrawerVariant.Persistent" >
         @* property *@
-        <ItemProperties ItemAim=itemAim OnClose=@(()=> itemAim = null) />
+        <ItemProperties ItemAim=itemAim OnClose=@(()=> itemAim = null) @bind-EnableRemove=f_enableRemove />
       </MudDrawer>
 
       @* content *@
-      <ReorderItems @bind-ItemList=itemList @bind-ItemAim=itemAim />
+      <ItemListReorder @bind-ItemList=itemList @bind-ItemAim=itemAim />
     </MudDrawerContainer>
   </div>
 
@@ -33,7 +33,7 @@
 </MudContainer>
 
 @code {
-
+  //## State
   List<DropItem> itemList = new()
     {
         new DropItem(){ Order =  0, Level = 1, IsGroup = false,  L1Num = 1, L2Num = 0, UnitPrice = 7000m, Quantity = 1.0m, Description = "Project Management" },
@@ -51,4 +51,7 @@
         new DropItem(){ Order = 12, Level = 1, IsGroup = false, L1Num = 9, L2Num = 0, UnitPrice = 7000m, Quantity = 1.0m, Description = "Production Support" },
     };
   DropItem? itemAim = null;
+
+  // UI control
+  bool f_enableRemove = false;
 }

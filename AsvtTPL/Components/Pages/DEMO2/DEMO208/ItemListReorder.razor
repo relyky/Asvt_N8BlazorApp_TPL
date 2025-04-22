@@ -1,10 +1,11 @@
 ﻿@using Vista.Biz.DEMO
 @using MudBlazor.Utilities
+@inject IDialogServiceEx dlgSvc
 @inject ISnackbar snackSvc
 
 <style type="text/css">
   .drop-view {
-    height: calc(100vh - 140px);
+    height: calc(100vh - 180px);
     overflow-y: scroll;
   }
 
@@ -25,18 +26,30 @@
   .price-cell {
     text-align: right;
   }
+
+  .remove-item-dropping .mud-chip {
+    background-color: red;
+  }
 </style>
 
-<MudDropContainer T=DropItem Items=ItemList
-                  ItemsSelector=ItemsSelectorHandler
+<MudDropContainer T=DropItem @ref=refDropContainer
+                  Items=ItemList
                   ItemPicked=ItemPickedHandler
                   ItemDropped=ItemDroppedHandler>
   <ChildContent>
-    <MudDropZone T="DropItem" AllowReorder
+    <MudToolBar Dense Gutters>
+      <MudText Typo=Typo.h6>報價項目</MudText>
+      <MudButton OnClick=HandleAddItem>加入</MudButton>
+      <MudSpacer />
+      <MudDropZone T="DropItem" Identifier="remove-zone" Class="rounded"
+                   CanDrop=CanDropRemoveHandler
+                   CanDropClass="remove-item-dropping">
+        <MudChip T="string" Icon="@Icons.Material.Filled.DeleteForever">移除區</MudChip>
+      </MudDropZone>
+    </MudToolBar>
+    <MudDropZone T="DropItem" Identifier="order-zone" ItemsSelector=OrderItemsSelectorHandler AllowReorder
                  Class="drop-view rounded mud-background-gray pa-2">
-      <MudToolBar Dense Gutters>
-        <MudText Typo=Typo.h6>報價項目</MudText>
-      </MudToolBar>
+      <div></div>
     </MudDropZone>
   </ChildContent>
   <ItemRenderer Context="item">
@@ -71,17 +84,42 @@
   [Parameter, EditorRequired] public DropItem? ItemAim { get; set; }
   [Parameter] public EventCallback<DropItem?> ItemAimChanged { get; set; }
 
+  //## Resource
+  MudDropContainer<DropItem> refDropContainer = default!;
+
   //## Property
 
   bool ItemsSelectorHandler(DropItem item, string dropzone) => true;
+  bool OrderItemsSelectorHandler(DropItem item) => true;
 
-  void ItemDroppedHandler(MudItemDropInfo<DropItem> dropItem)
+  async Task ItemDroppedHandler(MudItemDropInfo<DropItem> dropItem)
   {
-    ItemList.UpdateOrder(dropItem, item => item.Order, 0); // 更新 order 排序
-    DoSyncUpdateL1NumL2Num();
-    DoSyncUpdateItemGroup();
-    ItemListChanged.InvokeAsync(ItemList);
-    StateHasChanged();
+    if (dropItem.DropzoneIdentifier == "remove-zone")
+    {
+      //# 移除項目
+      ItemList.Remove(dropItem.Item!);
+      DoSyncUpdateL1NumL2Num();
+      DoSyncUpdateItemGroup();
+      await ItemListChanged.InvokeAsync(ItemList);
+      //StateHasChanged();
+    }
+    else
+    {
+      //# 移動項目
+      ItemList.UpdateOrder(dropItem, item => item.Order, 0); // 更新 order 排序
+      DoSyncUpdateL1NumL2Num();
+      DoSyncUpdateItemGroup();
+      await ItemListChanged.InvokeAsync(ItemList);
+      //StateHasChanged();
+    }
+  }
+
+  //# 若還有次項不可移除。
+  bool CanDropRemoveHandler(DropItem item)
+  {
+    bool hasChildItem = item.IsGroup; // ItemList.Any(c => c.L1Num == item.L1Num && c.L2Num != 0);
+    if (hasChildItem) snackSvc.Add("尚有次項目不可移除。", Severity.Warning);
+    return !hasChildItem;
   }
 
   void ItemPickedHandler(MudDragAndDropItemTransaction<DropItem> pickItem)
@@ -120,5 +158,31 @@
     {
       item.IsGroup = ItemList.Any(x => x.Level == 2 && item.L1Num == x.L1Num);
     }
+  }
+
+  async Task HandleAddItem()
+  {
+    // 向後移位，以便新增項目。
+    foreach (var item in ItemList.OrderByDescending(c => c.Order))
+    {
+      item.Order++;
+      item.L1Num++;
+    }
+
+    // 新增項目到列表第１個位置。
+    ItemList.Insert(0, new DropItem()
+      {
+        Order = 0,
+        Level = 1,
+        IsGroup = false,
+        L1Num = 1,
+        L2Num = 0,
+        UnitPrice = 7000m,
+        Quantity = 1.0m,
+        Description = "新加入主要項目內容"
+      });
+
+    await ItemListChanged.InvokeAsync(ItemList);
+    refDropContainer.Refresh();
   }
 }

@@ -9,6 +9,7 @@
 <MudPaper role="panel">
   <MudToolBar Dense Gutters=false>
     <MudText Typo=Typo.h6>編輯屬性</MudText>
+    <MudSwitch Color=Color.Warning Value=EnableRemove ValueChanged=EnableRemoveChanged Label="啟動移除" />
     <MudSpacer />
     <MudIconButton Icon=@Icons.Material.Filled.Close OnClick="()=>OnClose.InvokeAsync()" />
   </MudToolBar>
@@ -36,12 +37,7 @@
 
     <MudStack Row Justify=Justify.Center Class="my-3">
       <MudButton Variant=Variant.Filled Color=Color.Primary>更新</MudButton>
-      <MudButtonGroup Variant=Variant.Filled Color=@(f_remove ? Color.Warning : Color.Default)>
-        <MudButton Disabled=@(!f_remove)>移除</MudButton>
-        <MudToggleIconButton @bind-Toggled=f_remove
-                             Icon=@Icons.Material.Outlined.CheckBoxOutlineBlank
-                             ToggledIcon=@Icons.Material.Outlined.CheckBox />
-      </MudButtonGroup>
+      <MudButton Variant=Variant.Filled Color=Color.Warning Disabled=@(!EnableRemove)>移除</MudButton>
     </MudStack>
 
     <DialogValidationSummary />
@@ -51,6 +47,8 @@
 @code {
   [Parameter] public DropItem? ItemAim { get; set; }
   [Parameter] public EventCallback OnClose { get; set; }
+  [Parameter] public bool EnableRemove { get; set; }
+  [Parameter] public EventCallback<bool> EnableRemoveChanged { get; set; }
 
   //## State
   bool f_remove = false;
