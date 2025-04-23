@@ -13,6 +13,7 @@
                    Required=@Required
                    Class=@Class
                    Variant=@(_readOnly ? Variant.Filled : Variant.Text)
+                   Format=@Format
                    Step=@Step
                    />
 </MudItem>
@@ -22,4 +23,6 @@
   /// 步進值:預設1。
   /// </summary>
   [Parameter] public T? Step { get; set; }
+
+  [Parameter] public string? Format { get; set; }
 }
