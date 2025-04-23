@@ -1,0 +1,78 @@
+﻿@using FluentValidation
+@using System.ComponentModel.DataAnnotations
+@inject ISnackbar snackSvc
+
+<MudText Typo=Typo.h3>測試 Immediate 屬性</MudText>
+
+<EditForm Model="info" OnValidSubmit=HandleSubmit Context="formCtx">
+  <FluentValidationValidator />
+
+  <MudPaper role="panel">
+    <AsvtFormRow>
+      <AsvtTextField For="()=>info.TextValue1" Immediate OnChange="v => {}" />
+    </AsvtFormRow>
+
+    <MudGrid Spacing=3>
+      <MudItem xs=12 md=6>
+        <MudTextField @bind-Value=info.TextValue1 Label="文字１" For="()=>info.TextValue1" Immediate Variant=Variant.Outlined Margin=Margin.Dense />
+      </MudItem>
+      <MudItem xs=6 md=3>
+        <MudNumericField @bind-Value=info.UnitPrice Step=100m Label="單價" For="()=>info.UnitPrice" Immediate Variant=Variant.Outlined Margin=Margin.Dense />
+      </MudItem>
+      <MudItem xs=6 md=3>
+        <MudNumericField @bind-Value=info.Quantity Step=0.5m Label="數量" For="()=>info.Quantity" Immediate Variant=Variant.Outlined Margin=Margin.Dense />
+      </MudItem>
+      <MudItem xs=12 md=6>
+        <MudField Label="複價" Variant=Variant.Outlined Margin=Margin.Dense>
+          @info.TextValue1 @info.ExtendedPrice
+        </MudField>
+      </MudItem>
+    </MudGrid>
+  </MudPaper>
+  <MudStack Row Justify=Justify.Center>
+    <MudButton ButtonType=ButtonType.Submit
+               Variant=Variant.Filled Color=Color.Primary
+               Disabled=@(!formCtx.Validate())>更新</MudButton>
+  </MudStack>
+</EditForm>
+
+<pre>
+  @Utils.JsonSerialize(info)
+</pre>
+
+@code {
+  TestModel info = new();
+  // OnChange=@(v => snackSvc.Add($"TextValue1.Changed → {v}"))
+  // OnChange="v => {}"
+
+  Task HandleSubmit(EditContext ctx)
+  {
+    return Task.CompletedTask;
+  }
+
+  public class TestModel
+  {
+    [Display(Name = "文字１")]
+    public string TextValue1 { get; set; } = "就是這麼簡單";
+
+    [Display(Name = "單價")]
+    public decimal UnitPrice { get; set; } = 7800m;
+
+    [Display(Name = "數量")]
+    public decimal Quantity { get; set; } = 1.5m;
+
+    [Display(Name = "複價")]
+    public decimal ExtendedPrice => UnitPrice * Quantity;
+  }
+
+  public class TestModelValidator : AbstractValidator<TestModel>
+  {
+    public TestModelValidator()
+    {
+      RuleFor(m => m.TextValue1).NotEmpty();
+      RuleFor(m => m.UnitPrice).NotEmpty().GreaterThan(2000m);
+      RuleFor(m => m.Quantity).NotEmpty().GreaterThanOrEqualTo(0.5m);
+    }
+  }
+
+}
