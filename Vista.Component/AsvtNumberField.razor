@@ -12,5 +12,14 @@
                    HelperText=@HelperText
                    Required=@Required
                    Class=@Class
-                   Variant=@(_readOnly ? Variant.Filled : Variant.Text) />
+                   Variant=@(_readOnly ? Variant.Filled : Variant.Text)
+                   Step=@Step
+                   />
 </MudItem>
+
+@code {
+  /// <summary>
+  /// 步進值:預設1。
+  /// </summary>
+  [Parameter] public T? Step { get; set; }
+}

@@ -39,7 +39,7 @@
 
         <AsvtCheckField For="()=>formData.HasDriverLicense" />
 
-        <AsvtNumberField For="()=>formData.ExpectedSalary" />
+        <AsvtNumberField For="()=>formData.ExpectedSalary" Step="1000m" />
         <AsvtSelectField For="()=>formData.ExpectedJobTitle" Options=OptionRepos.PositionTitle />
 
         <AsvtDropdownField For="()=>formData.SampleCode" CodeRepo=sampleRepo />
