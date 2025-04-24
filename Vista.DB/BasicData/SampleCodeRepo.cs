@@ -23,7 +23,7 @@ internal class SampleCodeRepo : CodeNameRepoBase<CodeName>, ICodeNameRepo
 
       ////※ 以非同步語法取回基本資料
       //using var conn = await DBHelper.MyLabDB.OpenAsync();
-      //var result = await conn.QueryAsync<CodeName>(@"SELECT Code = TRIM(STR([Sn])), Name = Title, Gropp = null FROM MyProduct");
+      //var result = await conn.QueryAsync<CodeName>(@"SELECT Code = TRIM(STR([Sn])), Name = Title, Group = null FROM MyProduct (NOLOCK)");
       //return result.AsList(); // codeList
     });
   }
