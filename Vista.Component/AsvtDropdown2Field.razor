@@ -2,9 +2,17 @@
 @using Microsoft.Extensions.Logging
 @using System.Linq.Expressions
 @using System.Reflection
+@using MudBlazor.Utilities
 @inherits AsvtFieldBase<string>
 @implements IDisposable
 @inject ILogger<AsvtDropdown2Field> logger
+
+@* 解決 MudAutocomplete 在 ReadOnly 狀態下仍可下拉的 bug。 *@　
+<style>
+  .asvt-dropdown-field-no-pointer-events {
+    pointer-events: none;
+  }
+</style>
 
 @* 建議未來改名成：AsvtCombobox2Field。命名依照 Material Design 典範 *@
 <MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
@@ -15,7 +23,7 @@
                    ReadOnly=@(_suppressInput || _readOnly)
                    HelperText=@HelperText
                    Required=@Required
-                   Class=@(CodeRepo.IsLoaded ? Class : "d-none")
+                   Class=@CssClass
                    Variant=@(_suppressInput || _readOnly ? Variant.Filled : Variant.Text)
                    Error=@ValidationError
                    ErrorText=@ValidationErrorText
@@ -91,6 +99,11 @@
   {
     this.EditContext.OnFieldChanged -= HandleFieldChanged;
   }
+
+  string CssClass => new CssBuilder()
+    .AddClass(CodeRepo.IsLoaded ? Class : "d-none")
+    .AddClass("asvt-dropdown-field-no-pointer-events", _suppressInput || _readOnly)
+    .Build();
 
   protected override void OnInitialized()
   {
