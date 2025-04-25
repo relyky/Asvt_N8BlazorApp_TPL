@@ -23,9 +23,9 @@
 </MudPaper>
 
 @code {
-  [CascadingParameter] _DEMO013 BizState { get; set; } = default!;
+  [CascadingParameter] _DEMO013 BizState { get; init; } = default!;
 
-    //## State
+  //## State
   DEMO013FormStep3 formStep3 { get => BizState.formData.Step3; set => BizState.formData.Step3 = value; }
 
   async Task PrevtStep()

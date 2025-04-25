@@ -40,7 +40,7 @@
 }
 
 @code {
-  [CascadingParameter] _DEMO014 BizState { get; set; } = default!;
+  [CascadingParameter] _DEMO014 BizState { get; init; } = default!;
 
   //## State
   List<DEMO014Profile> dataList => BizState.dataList;

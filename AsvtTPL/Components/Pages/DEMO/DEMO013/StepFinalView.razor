@@ -44,7 +44,7 @@
 </MudPaper>
 
 @code {
-  [CascadingParameter] _DEMO013 BizState { get; set; } = default!;
+  [CascadingParameter] _DEMO013 BizState { get; init; } = default!;
 
   //# properties
   DEMO013FormData formData { get => BizState.formData; set => BizState.formData = value; }

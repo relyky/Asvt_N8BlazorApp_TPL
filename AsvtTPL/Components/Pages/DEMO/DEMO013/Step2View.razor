@@ -22,7 +22,7 @@
 </MudPaper>
 
 @code {
-  [CascadingParameter] _DEMO013 BizState { get; set; } = default!;
+  [CascadingParameter] _DEMO013 BizState { get; init; } = default!;
 
   //## State
   DEMO013FormStep2 formStep2 { get => BizState.formData.Step2; set => BizState.formData.Step2 = value; }

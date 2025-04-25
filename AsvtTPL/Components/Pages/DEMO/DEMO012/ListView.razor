@@ -63,7 +63,7 @@
 </MudDialog>
 
 @code {
-  [CascadingParameter] _DEMO012 BizState { get; set; } = default!;
+  [CascadingParameter] _DEMO012 BizState { get; init; } = default!;
 
   //## Resource
   DialogOptions dlgOption = new() { Position = DialogPosition.TopCenter };

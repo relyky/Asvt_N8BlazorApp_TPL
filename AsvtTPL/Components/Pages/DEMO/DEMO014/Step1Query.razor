@@ -25,7 +25,7 @@
 }
 
 @code {
-  [CascadingParameter] _DEMO014 BizState { get; set; } = default!;
+  [CascadingParameter] _DEMO014 BizState { get; init; } = default!;
 
   //## State
   bool f_loading = false;

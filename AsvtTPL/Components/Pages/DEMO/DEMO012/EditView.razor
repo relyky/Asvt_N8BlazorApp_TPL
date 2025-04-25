@@ -36,7 +36,7 @@
 </MudContainer>
 
 @code {
-  [CascadingParameter] _DEMO012 BizState { get; set; } = default!;
+  [CascadingParameter] _DEMO012 BizState { get; init; } = default!;
 
   //## State
   bool f_loading = false;

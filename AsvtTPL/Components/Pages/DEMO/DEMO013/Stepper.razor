@@ -22,7 +22,7 @@
 </MudToolBar>
 
 @code {
-  [CascadingParameter] _DEMO013 BizState { get; set; } = default!;
+  [CascadingParameter] _DEMO013 BizState { get; init; } = default!;
 
   //# properties
   DisplayMode Step { get => BizState.mode; set => BizState.mode = value; }
