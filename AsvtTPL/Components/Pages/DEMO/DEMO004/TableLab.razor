@@ -61,9 +61,19 @@
 </MudTable>
 
 <MudDataGrid Items=elementList Loading=f_loading Hover=f_hover Dense=f_dense Striped=f_striped Bordered=f_fordered
+             SortMode=SortMode.Single
+             ShowColumnOptions=f_showColumnOptions
+             ColumnResizeMode=ResizeMode.None
+             Filterable=f_filterable
+             ShowFilterIcons=f_showFilterIcons
+             ShowMenuIcon=f_showMenuIcon
              Class="mb-3" HeaderClass=@headerClass>
   <ToolBarContent>
     <MudText Typo=Typo.h6>MudDataGrid</MudText>
+    <MudSwitch Color=Color.Info @bind-Value=f_filterable Label="Filterable" />
+    <MudSwitch Color=Color.Info @bind-Value=f_showColumnOptions Label="ShowColumnOptions" />
+    <MudSwitch Color=Color.Info @bind-Value=f_showFilterIcons Label="ShowFilterIcons" />
+    <MudSwitch Color=Color.Info @bind-Value=f_showMenuIcon Label="ShowMenuIcon" />
   </ToolBarContent>
   <Columns>
     <PropertyColumn Property="m => m.Number" Title="Nr" />
@@ -85,6 +95,11 @@
   bool f_striped = true;
   bool f_fordered = false;
   string headerClass = "custom-primary";
+  // for DataGrid
+  bool f_filterable = false;
+  bool f_showColumnOptions = false;
+  bool f_showFilterIcons = false;
+  bool f_showMenuIcon = false;
 
   private IEnumerable<ElementInfo> elementList = new List<ElementInfo>()
     {
