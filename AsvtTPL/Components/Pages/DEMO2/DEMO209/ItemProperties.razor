@@ -1,0 +1,53 @@
+﻿@using Vista.Biz.DEMO
+
+@if (shadowItem == null)
+{
+  <MudText Typo=Typo.h6>請選擇一個項目</MudText>
+  return;
+}
+
+<MudPaper role="panel">
+  <MudToolBar Dense Gutters=false>
+    <MudText Typo=Typo.h6>編輯屬性</MudText>
+    <MudSpacer />
+    <MudIconButton Icon=@Icons.Material.Filled.Close OnClick="()=>OnClose.InvokeAsync()" />
+  </MudToolBar>
+
+  <EditForm Model=shadowItem OnSubmit=HandleSubmit>
+    <FluentValidationValidator />
+
+    <AsvtFormRow Grid=@([6])>
+      <AsvtStaticField For="()=>shadowItem.Order">
+        @(shadowItem.Order + 1)
+      </AsvtStaticField>
+      <AsvtTextAreaField For="()=>shadowItem.Comment" Lines=5 MaxLines=9 Grid=@([12]) />
+    </AsvtFormRow>
+
+    <MudStack Row Justify=Justify.Center Class="my-3">
+      <MudButton ButtonType=ButtonType.Submit Variant=Variant.Filled Color=Color.Primary>更新</MudButton>
+    </MudStack>
+
+    <DialogValidationSummary />
+  </EditForm>
+
+</MudPaper>
+
+@code {
+  [Parameter] public CommentItem? ItemAim { get; set; }
+  [Parameter] public EventCallback OnClose { get; set; }
+  [Parameter] public EventCallback<CommentItem> OnUpdate { get; set; }
+
+  //## State
+  CommentItem? shadowItem = null;
+
+  protected override Task OnParametersSetAsync()
+  {
+    shadowItem = ItemAim?.Clone();
+    return base.OnParametersSetAsync();
+  }
+
+  async Task HandleSubmit(EditContext ctx)
+  {
+    await OnUpdate.InvokeAsync(shadowItem);
+  }
+}

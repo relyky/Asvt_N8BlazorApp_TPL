@@ -1,0 +1,154 @@
+﻿@using Vista.Biz.DEMO
+@using MudBlazor.Utilities
+
+<style type="text/css">
+  .drop-view {
+    height: calc(100vh - 220px);
+    overflow-y: scroll;
+  }
+
+  .item-box {
+    padding: 4px 8px 4px 8px;
+    margin-bottom: 1px;
+  }
+
+  .item-selected {
+    background-color: lightyellow;
+    /* outline: 2px dashed #007bff; */
+  }
+
+  .remove-item-dropping .mud-chip {
+    background-color: var(--mud-palette-error);
+  }
+</style>
+
+@* <p>DEBUG》 count:@ItemList.Count | aim:@(ItemAim is null ? "nil" : $"{ItemAim.Order}") </p> *@
+
+<MudDropContainer T=CommentItem @ref=refDropContainer
+                  Items=@(ItemList.OrderBy(c => c.Order))
+                  ItemPicked=ItemPickedHandler
+                  ItemDropped=ItemDroppedHandler>
+  <ChildContent>
+    <MudToolBar Dense Gutters Class="gap-3">
+      <MudText Typo=Typo.h6>報價聲明</MudText>
+      <MudButton OnClick=HandleAddItem Variant=Variant.Outlined Color=Color.Primary Size=Size.Small>新增項目</MudButton>
+      <MudSpacer />
+      <MudDropZone T="CommentItem" Identifier="remove-zone" Class="rounded"
+                   CanDrop=CanDropRemoveHandler
+                   CanDropClass="remove-item-dropping">
+        <MudChip T="string" Icon="@Icons.Material.Filled.DeleteForever">移除區</MudChip>
+      </MudDropZone>
+    </MudToolBar>
+
+    @* drop zone header *@
+    <div class="rounded-t mud-background-gray" style="padding: 8px 8px 2px 8px;" >
+      <MudPaper Elevation=1 Class="d-flex item-box" Style="margin-right: 10px;">
+        <div>
+          <span style="padding-right:.5em;">項次</span>
+        </div>
+        <div class="flex-grow-1 align-self-center">
+          <span style="white-space:break-spaces;">內容</span>
+        </div>
+      </MudPaper>
+    </div>
+
+    <MudDropZone T="CommentItem" Identifier="order-zone" ItemsSelector=OrderItemsSelectorHandler AllowReorder
+                 Class="drop-view rounded-b mud-background-gray" Style="padding: 2px 8px 8px 8px;">
+      <div></div>
+    </MudDropZone>
+  </ChildContent>
+  <ItemRenderer Context="item">
+    <MudPaper Elevation=@(item == ItemAim ? 9 : 1)
+              Class=@Utils.Clsx("d-flex item-box",("item-selected", item == ItemAim))>
+      <div>
+        <code style="padding-right:.5em; font-size:1.5em;">@(item.Order + 1)</code>
+      </div>
+      <div class="flex-grow-1 align-self-center">
+        <span style="white-space:break-spaces;">@item.Comment</span>
+      </div>
+    </MudPaper>
+  </ItemRenderer>
+</MudDropContainer>
+
+@code {
+  [Parameter, EditorRequired] public required List<CommentItem> ItemList { get; set; }
+  [Parameter] public EventCallback<List<CommentItem>> ItemListChanged { get; set; }
+  [Parameter, EditorRequired] public CommentItem? ItemAim { get; set; }
+  [Parameter] public EventCallback<CommentItem?> ItemAimChanged { get; set; }
+
+  //## Resource
+  MudDropContainer<CommentItem> refDropContainer = default!;
+
+  //## Property
+  bool OrderItemsSelectorHandler(CommentItem item) => true;
+  bool CanDropRemoveHandler(CommentItem item) => true;
+
+  void ItemPickedHandler(MudDragAndDropItemTransaction<CommentItem> pickItem)
+  {
+    ItemAimChanged.InvokeAsync(pickItem.Item);
+  }
+
+  async Task ItemDroppedHandler(MudItemDropInfo<CommentItem> dropItem)
+  {
+    if (dropItem.DropzoneIdentifier == "remove-zone")
+    {
+      //# 移除項目
+      int removeOrder = dropItem.Item!.Order;
+      ItemList.Remove(dropItem.Item!);
+
+      // 選取項目因移除故無效
+      await ItemAimChanged.InvokeAsync(null);
+
+      // 更新 order 排序
+      foreach (var item in ItemList)
+      {
+        if (item.Order > removeOrder)
+          item.Order--;
+      }
+
+      await ItemListChanged.InvokeAsync(ItemList);
+      //StateHasChanged();
+    }
+    else
+    {
+      //# 移動項目
+      ItemList.UpdateOrder(dropItem, item => item.Order, 0); // 更新 order 排序
+      await ItemListChanged.InvokeAsync(ItemList);
+      //StateHasChanged();
+    }
+  }
+
+  /// <summary>
+  /// 加入主項
+  /// </summary>
+  async Task HandleAddItem()
+  {
+    // 新增項目到選取位置後面。
+    int insertOrder = ItemAim?.Order + 1 ?? ItemList.Count;
+
+    // 向後移位，以便新增項目。
+    foreach (var item in ItemList.Where(c => c.Order >= insertOrder))
+    {
+      item.Order++;
+    }
+
+    // 新增項目
+    ItemList.Add(new CommentItem()
+      {
+        Order = insertOrder,
+        Comment = $"新增聲明@{DateTime.Now:HH:mm:ss.fff}"
+      });
+
+    // refresh UI
+    await ItemListChanged.InvokeAsync(ItemList);
+    refDropContainer.Refresh();
+  }
+
+  /// <summary>
+  /// publish method
+  /// </summary>
+  public void RefreshDropContainer()
+  {
+    refDropContainer.Refresh();
+  }
+}

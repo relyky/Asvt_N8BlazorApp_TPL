@@ -1,0 +1,49 @@
+﻿@using Vista.Biz.DEMO
+
+<MudContainer>
+
+  <div style="overflow:hidden; position:relative;">
+    <MudDrawerContainer Class="mud-height-full">
+      <MudDrawer Open=@(itemAim != null) Elevation=0
+                 Anchor=Anchor.Right
+                 Width="360px"
+                 Color=Color.Default
+                 Variant="@DrawerVariant.Persistent">
+        @* property *@
+        <ItemProperties ItemAim=itemAim
+                        OnClose=@(()=> itemAim = null)
+                        OnUpdate=HandleUpdateItem />
+      </MudDrawer>
+
+      @* content *@
+      <ItemListReorder @bind-ItemList=itemList @bind-ItemAim=itemAim />
+    </MudDrawerContainer>
+  </div>
+</MudContainer>
+
+@code {
+  //## Resource
+
+  //## State
+  List<CommentItem> itemList = new()
+    {
+      new CommentItem { Order = 0, Comment = "本專案包括一年保固維護服務,專案保固有效期間為自本專案系統驗收之日起一年,保固期滿經雙方同意後另行簽訂年度維護合約,系統年度維護費用不得超過本專案總價10%。" },
+      new CommentItem { Order = 1, Comment = "本專案報償單依據(Order Form:CW126873)訂定之。" },
+      new CommentItem { Order = 2, Comment = "報價單(寫死的)有效期限:2025年04月27日。" },
+      new CommentItem { Order = 3, Comment = "報價單有效期限:#QuoExpDate#。" },
+      new CommentItem { Order = 4, Comment = "本報價單經客戶確認回簽後視為正式訂單,雙方權利義務由本專案員賣合約書訂定之。" },
+    };
+
+  CommentItem? itemAim = null;
+
+  Task HandleUpdateItem(CommentItem shadowItem)
+  {
+    // 先確定就是這個項目才更新欄位
+    if (itemAim?.Order == shadowItem.Order)
+    {
+      itemAim.Comment = shadowItem.Comment;
+    }
+
+    return Task.CompletedTask;
+  }
+}
