@@ -17,19 +17,6 @@
       <ItemListReorder @bind-ItemList=itemList @bind-ItemAim=itemAim />
     </MudDrawerContainer>
   </div>
-
-  @* ========================== *@
-
-  @* <MudGrid Spacing=2> *@
-  @*   <MudItem xs="@(itemAim == null ? 12 : 8)"> *@
-  @*     <ReorderItems @bind-ItemList=itemList @bind-ItemAim=itemAim /> *@
-  @*   </MudItem> *@
-  @*   <MudHidden Hidden=@(itemAim == null)> *@
-  @*     <MudItem xs=4> *@
-  @*       <ItemProperties ItemAim=itemAim OnClose=@(()=> itemAim = null) /> *@
-  @*     </MudItem> *@
-  @*   </MudHidden> *@
-  @* </MudGrid> *@
 </MudContainer>
 
 @code {
