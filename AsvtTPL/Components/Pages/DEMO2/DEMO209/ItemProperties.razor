@@ -1,6 +1,6 @@
 ﻿@using Vista.Biz.DEMO
 
-@if (shadowItem == null)
+@if (ItemAim is null || shadowItem is null)
 {
   <MudText Typo=Typo.h6>請選擇一個項目</MudText>
   return;
@@ -20,7 +20,7 @@
       <AsvtStaticField For="()=>shadowItem.Order">
         @(shadowItem.Order + 1)
       </AsvtStaticField>
-      <AsvtTextAreaField For="()=>shadowItem.Comment" Lines=5 MaxLines=9 Grid=@([12]) />
+      <AsvtTextAreaField For="()=>shadowItem.Comment" Lines=7 MaxLines=11 Grid=@([12]) />
     </AsvtFormRow>
 
     <MudStack Row Justify=Justify.Center Class="my-3">
@@ -37,13 +37,17 @@
   [Parameter] public EventCallback OnClose { get; set; }
   [Parameter] public EventCallback<CommentItem> OnUpdate { get; set; }
 
+  //## Resource
+  // 用來避免當掉！
+  static CommentItem emptyItem = new CommentItem { Order = -1, Comment = string.Empty };
+
   //## State
   CommentItem? shadowItem = null;
 
-  protected override Task OnParametersSetAsync()
+  protected override async Task OnParametersSetAsync()
   {
-    shadowItem = ItemAim?.Clone();
-    return base.OnParametersSetAsync();
+    await base.OnParametersSetAsync();
+    shadowItem = ItemAim?.Clone() ?? emptyItem; // emptyItem 用來避免當掉！
   }
 
   async Task HandleSubmit(EditContext ctx)
