@@ -1,17 +1,17 @@
-/*html, body {
+ï»¿/*html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 */
 
-/* ®Õ¥¿ MudTabs ¦b««ª½¤è¦V³¡§½®É¨Ï±o tabpanel width ¹L¼e°İÃD */
+/* æ ¡æ­£ MudTabs åœ¨å‚ç›´æ–¹å‘éƒ¨å±€æ™‚ä½¿å¾— tabpanel width éå¯¬å•é¡Œ */
 .custom-tabpanel {
   width: calc(100% - 160px);
 }
 
 /* ValidationSummary
 <ul class="validation-errors">
-  <li class="validation-message">'§Ú¤w¾\Åª¨Ã¦P·N' ¥²»İ¦P·N¤~¯àÄ~Äò¡C</li>
-  <li class="validation-message">'§Ú¤w¾\Åª¨Ã¦P·N' ¥²»İ¦P·N¤~¯àÄ~Äò¡C</li>
+  <li class="validation-message">'æˆ‘å·²é–±è®€ä¸¦åŒæ„' å¿…éœ€åŒæ„æ‰èƒ½ç¹¼çºŒã€‚</li>
+  <li class="validation-message">'æˆ‘å·²é–±è®€ä¸¦åŒæ„' å¿…éœ€åŒæ„æ‰èƒ½ç¹¼çºŒã€‚</li>
 </ul>
 */
 ul.validation-errors {
@@ -21,3 +21,12 @@ ul.validation-errors {
   ul.validation-errors > li.validation-message {
     color: var(--mud-palette-error);
   }
+
+
+/************ override: MudTextField - required sign(*) æ”¹æˆç´…è‰² ************/
+.mud-input-control.mud-input-required > .mud-input-control-input-container > .mud-input-label::after {
+  content: "*";
+  color: var(--mud-palette-error);
+  /* content: "(å¿…å¡«)"; */
+  /* font-size: .75em; */
+}
