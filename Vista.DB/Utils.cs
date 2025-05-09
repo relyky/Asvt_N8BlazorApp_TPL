@@ -350,6 +350,17 @@ static class Utils
   /// </summary>
   static readonly byte[] seed = { 131, 117, 87, 14, 21, 150, 19, 75, 24, 10, 159, 78, 90, 51, 71, 159, 214, 186, 251, 20, 207, 246, 142, 127, 13, 29, 37, 43, 59, 30, 234, 13 };
 
+  /// <summary>
+  /// 計算檔案 SHA256 雜湊值。
+  /// 傳回 Base64 字串。
+  /// </summary>
+  public static string ComputeSha256(byte[] fileBlob)
+  {
+    using SHA256 sha256 = SHA256.Create();
+    byte[] hashBytes = sha256.ComputeHash(fileBlob);
+    return Convert.ToBase64String(hashBytes);
+  }
+
   #endregion
 
   #region CSS 工具
