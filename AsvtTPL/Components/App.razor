@@ -20,7 +20,9 @@
   <HeadOutlet @rendermode="@RenderModeForPage" />
   <SectionOutlet @rendermode="@RenderModeForPage" SectionName="myHeadScript" />
 </head>
-
+@* <body oncontextmenu="return false"> 
+*  ref→(如何使用 JavaScript 禁用滑鼠右鍵)[https://www.astralweb.com.tw/how-to-disable-text-selection-and-right-click-on-a-web-page/]
+*@
 <body>
   <Routes @rendermode="@RenderModeForPage" />
 
@@ -39,7 +41,7 @@
   <script src="_content/Vista.Component/runtime.bundle.js"></script>
   <script src="_content/Vista.Component/shared.bundle.js"></script>
   <script src="_content/Vista.Component/main.bundle.js"></script>
-  <script src="lib/print-js/print.min.js" ></script>
+  <script src="lib/print-js/print.min.js"></script>
 
   @* <!-- To setup: js-event-bus --> *@
   <script src="_content/Vista.Component/js-event-bus.min.js"></script>
