@@ -9,6 +9,14 @@
     輸入元件<code>MudInput</code>實作請參考<MudLink Href="https://mudblazor.com/components/textfield#input" Target="_blank"> Input </MudLink>文件。
   </MudText>
 
+  <MudText Typo=Typo.subtitle1 GutterBottom>這是說明段落的抬頭</MudText>
+  <MudText Typo=Typo.body1 Class="d-flex">
+    <MudIcon Icon=@Icons.Material.Rounded.Check Color=Color.Primary Class="mr-1" />這裡放置明確的前置說明並加入圖示。<br />
+  </MudText>
+  <MudText Typo=Typo.body1 Class="d-flex">
+    <MudIcon Icon=@Icons.Material.Rounded.Close Color=Color.Default Class="mr-1" />這裡放置明確的前置說明並加入圖示。
+  </MudText>
+
   <MudStack Row AlignItems=AlignItems.Center>
     <MudText Typo=Typo.h6>選取特性：</MudText>
     <MudCheckBox Color=Color.Primary @bind-Value=uploadArgs.PickMe1>選我選我</MudCheckBox>
@@ -35,7 +43,7 @@
 </MudPaper>
 
 <MudStack Row Justify=Justify.Center Class="my-3">
-  <MudButton Variant=Variant.Filled Color=Color.Primary Size=Size.Large OnClick=HandleUpload Disabled=f_loading >開始上傳</MudButton>
+  <MudButton Variant=Variant.Filled Color=Color.Primary Size=Size.Large OnClick=HandleUpload Disabled=f_loading>開始上傳</MudButton>
 </MudStack>
 
 @if (f_loading)
