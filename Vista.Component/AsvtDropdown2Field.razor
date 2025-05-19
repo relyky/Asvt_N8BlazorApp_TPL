@@ -29,7 +29,7 @@
                    Error=@ValidationError
                    ErrorText=@ValidationErrorText
                    SearchFunc=@CodeRepo.SearchFunc
-                   ToStringFunc=@(c => c == null ? null : $"{c.Code}-{c.Name}")
+                   ToStringFunc=@ToStringFunc
                    MaxItems=@MaxItems
                    MaxHeight="500"
                    OpenIcon=@Icons.Material.Filled.ExpandMore
@@ -73,6 +73,11 @@
   /// 呈現下拉項目筆數。null 表示不限制。
   /// </summary>
   [Parameter] public int? MaxItems { get; set; } = 100;
+  
+  /// <summary>
+  /// 代碼名稱轉換函數。
+  /// </summary>
+  [Parameter] public Func<ICodeName, string?> ToStringFunc { get; set; } = (c) => c == null ? null : $"{c.Code}-{c.Name}";
 
   /// <summary>
   /// 轉型 FieldValue
