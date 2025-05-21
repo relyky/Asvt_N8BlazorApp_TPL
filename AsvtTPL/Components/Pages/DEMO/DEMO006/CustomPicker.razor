@@ -1,0 +1,77 @@
+﻿@using Vista.Biz.DataPicking
+@inherits AsvtFieldBase<string>
+@inject ISnackbar snackSvc
+
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+  <MudTextField T=string
+                @bind-Value=@FieldValue
+                For=@For
+                Immediate=@Immediate
+                Label=@_label
+                ReadOnly=@_readOnly
+                HelperText=@HelperText
+                Required=@Required
+                Class=@Class
+                Variant=@(_readOnly ? Variant.Filled : Variant.Text)
+                Adornment=Adornment.End
+                Disabled=@f_loading
+                AdornmentIcon=@(f_loading ? Icons.Material.Filled.Downloading : Icons.Material.Filled.MenuBook )
+                OnAdornmentClick=ShowPicker />
+
+  <MudPopover Open=@f_showPicker Class="pa-3" Paper
+              OverflowBehavior=OverflowBehavior.FlipAlways
+              AnchorOrigin=Origin.BottomCenter
+              TransformOrigin=Origin.TopCenter
+              Style="min-width: 310px; max-width: 60vw;">
+
+    <CustomTable ItemList=itemList
+                 SelectedItem=selectedItem
+                 SelectedItemChanged=SelectedItemChanged />
+  </MudPopover>
+
+  <MudOverlay Visible=@f_showPicker OnClick=@(() => f_showPicker = false) DarkBackground=false />
+
+</MudItem>
+
+@code {
+  /// <summary>
+  /// event:選取項目，用來拿取選取標的全部欄位。
+  /// </summary>
+  [Parameter] public EventCallback<CustomCodeInfo> OnItemClick { get; set; }
+
+  //## Resource
+  CustomCodeRepo customCodeRepo = new();
+
+  //## State
+  bool f_loading = true;
+  bool f_showPicker = false;
+  IEnumerable<CustomCodeInfo> itemList => customCodeRepo.CodeList.Cast<CustomCodeInfo>();
+  CustomCodeInfo? selectedItem = null;
+
+  protected override void OnInitialized()
+  {
+    customCodeRepo.LoadedAct = () =>
+    {
+      f_loading = false;
+      InvokeAsync(StateHasChanged);
+    };
+  }
+
+  async Task SelectedItemChanged(CustomCodeInfo item)
+  {
+    selectedItem = item;
+    FieldValue = item.Code;
+    await OnItemClick.InvokeAsync(item);
+    f_showPicker = false;
+  }
+
+  Task ShowPicker()
+  {
+    // 唯讀模式不可變更。
+    if (_readOnly) return Task.CompletedTask;
+
+    // to render
+    f_showPicker = true;
+    return Task.CompletedTask;
+  }
+}
