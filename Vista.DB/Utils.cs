@@ -4,6 +4,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Vista.Models;
 
@@ -23,6 +24,32 @@ static class Utils
       options.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
 
     return JsonSerializer.Serialize(value, options);
+  }
+
+  public static bool IsEmailAddress(string email)
+  {
+    try
+    {
+      return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+          RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+    }
+    catch (RegexMatchTimeoutException)
+    {
+      return false;
+    }
+  }
+
+  /// <summary>
+  /// 檢查是否為多筆 Email Address。以分號(;)分隔。
+  /// </summary>
+  public static bool IsMultiEmailAddress(string multiEmail, bool allowEmpty = true)
+  {
+    // 允許空值
+    if (allowEmpty && string.IsNullOrWhiteSpace(multiEmail))
+      return true;
+
+    // 否則需符合 Email address 格式
+    return multiEmail.Split(';').Select(e => e.Trim()).Where(s => s != string.Empty).All(email => IsEmailAddress(email));
   }
 
   /// <summary>
