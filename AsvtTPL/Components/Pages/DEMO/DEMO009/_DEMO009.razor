@@ -3,9 +3,14 @@
 @attribute [Page("DEMO009", "查詢作業樣板")]
 @attribute [Authorize("AuthPage")]
 
-<MudContainer>
+@if (dataAim != null)
+{
+  <DataView Aim=dataAim OnClose=HandleClose />
+}
+
+<MudContainer Class=@(dataAim != null ? "d-none" : null)>
   <QueryPanel QArg1=@QArg1 OnRetrieveDataList=HandleRetrieveDataList />
-  <DataLister DataList=@dataList />
+  <DataLister DataList=@dataList OnSelect=HandleSelect />
 </MudContainer>
 
 @code {
@@ -13,9 +18,23 @@
 
   //## State
   List<DEMO009Data> dataList = [];
+  DEMO009Data? dataAim = null;
 
-  void HandleRetrieveDataList(List<DEMO009Data> _dataList)
+  async Task HandleRetrieveDataList(List<DEMO009Data> _dataList)
   {
     dataList = _dataList;
+    await Task.CompletedTask;
+  }
+
+  async Task HandleSelect(DEMO009Data data)
+  {
+    dataAim = data;
+    await Task.CompletedTask;
+  }
+
+  async Task HandleClose()
+  {
+    dataAim = null;
+    await Task.CompletedTask;
   }
 }

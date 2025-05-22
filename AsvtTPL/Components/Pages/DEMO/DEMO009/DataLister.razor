@@ -32,11 +32,17 @@
         @($"{context.Item.A + context.Item.B:N0}")
       </CellTemplate>
     </TemplateColumn>
+    <TemplateColumn>
+      <CellTemplate>
+        <MudLink Underline=Underline.None Color=Color.Primary OnClick="()=>OnSelect.InvokeAsync(context.Item)">明細</MudLink>
+      </CellTemplate>
+    </TemplateColumn>
   </Columns>
 </MudDataGrid>
 
 @code {
-  [Parameter,EditorRequired] public List<DEMO009Data> DataList { get; set; } = default!;
+  [Parameter, EditorRequired] public List<DEMO009Data> DataList { get; set; } = default!;
+  [Parameter] public EventCallback<DEMO009Data> OnSelect { get; set; }
 
   //## State
   bool f_loading = false;

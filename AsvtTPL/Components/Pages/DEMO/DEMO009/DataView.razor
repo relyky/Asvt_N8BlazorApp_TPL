@@ -1,0 +1,34 @@
+﻿@using Vista.Biz.DEMO
+
+<MudContainer>
+  <MudToolBar>
+    <MudTooltip Text="返回">
+      <MudIconButton Icon=@Icons.Material.Filled.ArrowBack Size=Size.Large Color=Color.Primary OnClick="()=>OnClose.InvokeAsync()" />
+    </MudTooltip>
+    <MudText Typo=Typo.h4>這是資料標題</MudText>
+  </MudToolBar>
+
+  <MudText Typo=Typo.body1>
+    顯示選取的資料明細。
+  </MudText>
+
+  <h6>for debug</h6>
+  <pre>@Utils.JsonSerialize(Aim)</pre>
+
+  <MudStack Row Justify=Justify.Center Class="my-3">
+    <MudButton Variant=Variant.Outlined Color=Color.Primary OnClick="()=>OnClose.InvokeAsync()">返回</MudButton>
+  </MudStack>
+</MudContainer>
+
+@code {
+  [Parameter, EditorRequired] public required DEMO009Data Aim { get; set; }
+  [Parameter] public EventCallback OnClose { get; set; }
+
+  protected override Task OnInitializedAsync()
+  {
+    // 使用 Aim 到 database 等帶出全部資料。
+    // ...
+
+    return Task.CompletedTask;
+  }
+}
