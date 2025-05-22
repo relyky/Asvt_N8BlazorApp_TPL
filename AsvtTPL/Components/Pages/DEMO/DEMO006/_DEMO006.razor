@@ -38,7 +38,7 @@
         <AsvtMonthField For="()=>formData.BirthYearMonth" HelperText="年月數值格式預設為６碼『YYYYMM』" />
         <AsvtDateField For="()=>formData.Birthday" HelperText="年月數值格式預設為８碼『YYYYMMDD』" />
 
-        <CustomPicker For="()=>formData.CustomCode" OnItemClick=HandleCustomItemClick />
+        <CustomPicker For="()=>formData.CustomCode" OnItemClick=HandleCustomItemClick AcctId="not-set" />
 
         <AsvtCheckField For="()=>formData.HasDriverLicense" />
 
@@ -296,7 +296,7 @@
 
   Task HandleCustomItemClick(CustomCodeInfo item)
   {
-    snackSvc.Add($"{item.Code},{item.Name},{item.Group},{item.FieldA},{item.FieldB},{item.FieldC}");
+    snackSvc.Add($"{item.Code},{item.Name},{item.AcctId},{item.Email}");
     return Task.CompletedTask;
   }
 

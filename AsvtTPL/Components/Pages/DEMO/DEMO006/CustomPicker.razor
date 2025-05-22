@@ -14,19 +14,18 @@
                 Class=@Class
                 Variant=@(_readOnly ? Variant.Filled : Variant.Text)
                 Adornment=Adornment.End
-                Disabled=@f_loading
-                AdornmentIcon=@(f_loading ? Icons.Material.Filled.Downloading : Icons.Material.Filled.MenuBook )
+                AdornmentIcon=@Icons.Material.Filled.MenuBook
                 OnAdornmentClick=ShowPicker />
 
   <MudPopover Open=@f_showPicker Class="pa-3" Paper
               OverflowBehavior=OverflowBehavior.FlipAlways
-              AnchorOrigin=Origin.BottomCenter
-              TransformOrigin=Origin.TopCenter
+              AnchorOrigin=Origin.CenterCenter
+              TransformOrigin=Origin.CenterCenter
               Style="min-width: 310px; max-width: 60vw;">
 
-    <CustomTable ItemList=itemList
-                 SelectedItem=selectedItem
-                 SelectedItemChanged=SelectedItemChanged />
+    <CustomTable SelectedItem=selectedItem
+                      AcctId=@AcctId
+                      SelectedItemChanged=SelectedItemChanged />
   </MudPopover>
 
   <MudOverlay Visible=@f_showPicker OnClick=@(() => f_showPicker = false) DarkBackground=false />
@@ -39,23 +38,16 @@
   /// </summary>
   [Parameter] public EventCallback<CustomCodeInfo> OnItemClick { get; set; }
 
+  /// <summary>
+  /// 限制條件：客戶代碼 (此為 sample 依需要增減)
+  /// </summary>
+  [Parameter] public string? AcctId { get; set; }
+
   //## Resource
-  CustomCodeRepo customCodeRepo = new();
 
   //## State
-  bool f_loading = true;
   bool f_showPicker = false;
-  IEnumerable<CustomCodeInfo> itemList => customCodeRepo.CodeList.Cast<CustomCodeInfo>();
   CustomCodeInfo? selectedItem = null;
-
-  protected override void OnInitialized()
-  {
-    customCodeRepo.LoadedAct = () =>
-    {
-      f_loading = false;
-      InvokeAsync(StateHasChanged);
-    };
-  }
 
   async Task SelectedItemChanged(CustomCodeInfo item)
   {
@@ -65,13 +57,13 @@
     f_showPicker = false;
   }
 
-  Task ShowPicker()
+  async Task ShowPicker()
   {
     // 唯讀模式不可變更。
-    if (_readOnly) return Task.CompletedTask;
+    if (_readOnly) return;
 
     // to render
     f_showPicker = true;
-    return Task.CompletedTask;
+    await Task.CompletedTask;
   }
 }
