@@ -39,7 +39,8 @@ public static class DBHelperClassExtensions
   /// <summary>
   /// DBHelper: 取代 Dapper.Contrib 之 Get 指令無法多 p-key 取值的狀況
   /// </summary>
-  public static TTable GetEx<TTable>(this SqlConnection conn, object keys, SqlTransaction txn = null)
+  public static TTable? GetEx<TTable>(this SqlConnection conn, object keys, SqlTransaction? txn = null)
+    where TTable: class
   {
     // 依 Property 動態加入 P-Key 查詢條件
     List<String> conds = new List<string>();
