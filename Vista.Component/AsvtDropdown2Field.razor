@@ -5,7 +5,6 @@
 @using MudBlazor.Utilities
 @inherits AsvtFieldBase<string>
 @implements IDisposable
-@inject ILogger<AsvtDropdown2Field> logger
 
 @* 解決 MudAutocomplete 在 ReadOnly 狀態下仍可下拉的 bug。 *@　
 <style>
@@ -34,11 +33,13 @@
                    MaxHeight="500"
                    OpenIcon=@Icons.Material.Filled.ExpandMore
                    CloseIcon=@Icons.Material.Filled.ExpandLess
+                   DebounceInterval=300
                    Clearable=true
                    ResetValueOnEmptyText=true
                    CoerceValue=false
                    CoerceText=true
-                   SelectValueOnTab=false
+                   SelectValueOnTab=true
+                   SelectOnActivation=false
                    Strict=true
                    ShowProgressIndicator=true
                    ProgressIndicatorColor=Color.Info>
@@ -139,7 +140,6 @@
 
       //# for 刷新UI
       CodeRepo.GroupBy = groupValue;
-      logger.LogTrace($"ON:AsvtDropdown2Field.OnInitialized → {_groupField.FieldName}:{groupValue} → suppressInput:{_suppressInput}");
     }
   }
 
@@ -156,7 +156,6 @@
     System.Diagnostics.Trace.Assert(_groupProp is not null);
     string? groupValue = _groupProp.GetValue(_groupField.Model) as string;
     _suppressInput = String.IsNullOrWhiteSpace(groupValue);
-    logger.LogTrace($"ON:AsvtDropdown2Field.HandleFieldChanged → {_groupField.FieldName}:{groupValue} → suppressInput:{_suppressInput}");
 
     //# 刷新UI
     CodeRepo.GroupBy = groupValue;

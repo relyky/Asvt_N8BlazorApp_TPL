@@ -54,7 +54,9 @@
 
         <AsvtAutoTextField For="()=>formData.Favorite" TextRepo=textRepo />
 
-        <AsvtTriStateField For="()=>formData.YesIam" TrueSign=@(["Y","是的"]) FuzySign=@(["X","有與沒有之間"]) />
+        <AsvtTriStateField For="()=>formData.YesIam"
+                           TrueSign=@(["Y","是的"])
+                           FuzySign=@(["X","有與沒有之間"]) />
 
         <AsvtMultiCheckField For="()=>formData.InterestingList" Options=OptionRepos.Interesting Grid=@([12]) Required
                              HelperText=@Utils.JsonSerialize(interestingList)
