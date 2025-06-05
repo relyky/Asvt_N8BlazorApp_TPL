@@ -12,7 +12,7 @@
 @* ※ 屬性 SelectValueOnTab 若設成 true 會讓下一個 select 元件掉入無限遞迴！ *@
 @* 例如：選『銀行』→ <tab> →『分行』會進入 UI 無限遞迴。 *@
 <MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
-  <MudAutocomplete T="ICodeName" @ref=refElement
+  <MudAutocomplete T="ICodeName"
                    @bind-Value=codeValue
                    Immediate=@Immediate
                    Label=@_label
@@ -34,9 +34,10 @@
                    ResetValueOnEmptyText=true
                    CoerceValue=false
                    CoerceText=true
+                   Strict=true
                    SelectValueOnTab=true
                    SelectOnActivation=false
-                   Strict=true
+                   OpenOnFocus=false
                    ShowProgressIndicator=true
                    ProgressIndicatorColor=Color.Info>
     <MoreItemsTemplate>
@@ -45,13 +46,6 @@
       </MudText>
     </MoreItemsTemplate>
   </MudAutocomplete>
-
-  @if (!CodeRepo.IsLoaded)
-  {
-    @* 延遲載入中時，以 Skeleton 呈現。 *@
-    <MudSkeleton Animation=MudBlazor.Animation.Pulse Width="40%" />
-    <MudSkeleton Animation=MudBlazor.Animation.Wave Width="80%" Height="32px" />
-  }
 </MudItem>
 
 @code {
@@ -77,23 +71,7 @@
     set => FieldValue = (value != null) ? value.Code : null!;
   }
 
-  MudAutocomplete<ICodeName> refElement = default!;
-
   string CssClass => new CssBuilder()
-    .AddClass(CodeRepo.IsLoaded ? Class : "d-none")
     .AddClass("asvt-dropdown-field-no-pointer-events", _readOnly)
     .Build();
-
-  protected override void OnInitialized()
-  {
-    base.OnInitialized();
-    CodeRepo.LoadedAct = () =>
-    {
-      //# Refersh
-      refElement.SearchFunc(null, new CancellationToken()); // [非正確解]效果同初次填滿下拉項目。否則重置(填值)無作用！
-      refElement.ForceRender(false);
-      //codeValue = CodeNameRepo[FieldValue]; // 重新填入
-      StateHasChanged();
-    };
-  }
 }

@@ -38,9 +38,10 @@
                    ResetValueOnEmptyText=true
                    CoerceValue=false
                    CoerceText=true
+                   Strict=true
                    SelectValueOnTab=true
                    SelectOnActivation=false
-                   Strict=true
+                   OpenOnFocus=false
                    ShowProgressIndicator=true
                    ProgressIndicatorColor=Color.Info>
     <MoreItemsTemplate>
@@ -49,13 +50,6 @@
       </MudText>
     </MoreItemsTemplate>
   </MudAutocomplete>
-
-  @if (!CodeRepo.IsLoaded)
-  {
-    @* 延遲載入中時，以 Skeleton 呈現。 *@
-    <MudSkeleton Animation=MudBlazor.Animation.Pulse Width="40%" />
-    <MudSkeleton Animation=MudBlazor.Animation.Wave Width="80%" Height="32px" />
-  }
 </MudItem>
 
 @code {
@@ -74,7 +68,7 @@
   /// 呈現下拉項目筆數。null 表示不限制。
   /// </summary>
   [Parameter] public int? MaxItems { get; set; } = 100;
-  
+
   /// <summary>
   /// 代碼名稱轉換函數。
   /// </summary>
@@ -93,7 +87,7 @@
 
   #region 相依 GroupFor 產生的內部屬性
   FieldIdentifier _groupField;
-  PropertyInfo? _groupProp;
+  PropertyInfo? _groupProp = null;
 
   /// <summary>
   /// [控制旗標]壓制輸入 - 就是強制唯讀。
@@ -108,22 +102,12 @@
   }
 
   string CssClass => new CssBuilder()
-    .AddClass(CodeRepo.IsLoaded ? Class : "d-none")
     .AddClass("asvt-dropdown-field-no-pointer-events", _suppressInput || _readOnly)
     .Build();
 
   protected override void OnInitialized()
   {
-    base.OnInitialized();
     this.EditContext.OnFieldChanged += HandleFieldChanged;
-    CodeRepo.LoadedAct = () =>
-    {
-      //# Refersh
-      refElement.SearchFunc(null, new CancellationToken()); // [非正確解]效果同初次填滿下拉項目。否則重置(填值)無作用！
-      refElement.ForceRender(false);
-      //codeValue = CodeNameRepo[FieldValue]; // 重新填入
-      StateHasChanged();
-    };
 
     //#依 GroupFor 初始取得 GroupBy 值
     //※ GroupFor 必需一開始就指定有或無。
@@ -134,8 +118,7 @@
       _groupProp = _groupField.Model.GetType().GetProperty(_groupField.FieldName);
 
       //# 取 GruopBy 現在值
-      System.Diagnostics.Trace.Assert(_groupProp is not null);
-      string? groupValue = _groupProp.GetValue(_groupField.Model) as string;
+      string? groupValue = _groupProp!.GetValue(_groupField.Model) as string;
       _suppressInput = String.IsNullOrWhiteSpace(groupValue);
 
       //# for 刷新UI
@@ -146,14 +129,15 @@
   void HandleFieldChanged(object? sender, FieldChangedEventArgs e)
   {
     //# 未指定 GroupFor 參數，離開。
-    if (GroupFor is null) return;
+    if (_groupProp is null) return;
+    if (e.FieldIdentifier.FieldName != _groupField.FieldName)
+      return;
 
     //# 非指定的 GroupFor 欄位，離開。
     bool isTheGroupField = _groupField.Model.Equals(e.FieldIdentifier.Model) && _groupField.FieldName.Equals(e.FieldIdentifier.FieldName);
     if (!isTheGroupField) return;
 
     //# 取 GruopBy 新值
-    System.Diagnostics.Trace.Assert(_groupProp is not null);
     string? groupValue = _groupProp.GetValue(_groupField.Model) as string;
     _suppressInput = String.IsNullOrWhiteSpace(groupValue);
 
