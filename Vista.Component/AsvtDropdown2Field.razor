@@ -109,6 +109,8 @@
   {
     this.EditContext.OnFieldChanged += HandleFieldChanged;
 
+    CodeRepo.LoadedAct = StateHasChanged;
+
     //#依 GroupFor 初始取得 GroupBy 值
     //※ GroupFor 必需一開始就指定有或無。
     if (GroupFor is not null)

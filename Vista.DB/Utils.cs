@@ -57,8 +57,9 @@ static class Utils
   /// </summary>
   /// <remarks>
   /// 範例：CatchAndRetry<Exception>(3, 3000, n => {...});
+  /// 範例：CatchAndRetry<Exception>(3, 3000, n => {...}, logger);
   /// </remarks>
-  public static void CatchAndRetry<TException>(int retryCount, int retryDuration, Action<int> act)
+  public static void CatchAndRetry<TException>(int retryCount, int retryDuration, Action<int> act, Action<TException, int>? loggerAct = null)
       where TException : Exception
   {
     for (; ; )
@@ -68,10 +69,13 @@ static class Utils
         act.Invoke(retryCount);
         break;
       }
-      catch (TException)
+      catch (TException ex)
       {
         if (retryCount-- > 0) // decide to retry or not.
         {
+          // used for logging the exception
+          loggerAct?.Invoke(ex, retryCount);
+
           // waiting short time and then re-exec.
           System.Threading.SpinWait.SpinUntil(() => false, retryDuration);
           continue; // retry
@@ -86,8 +90,9 @@ static class Utils
   /// </summary>
   /// <remarks>
   /// 範例：CatchAndRetry<Exception>(new int[] {1000,2000,3000}, n => {...});
+  /// 範例：CatchAndRetry<Exception>(new int[] {1000,2000,3000}, n => {...},logger);
   /// </remarks>
-  public static void CatchAndRetry<TException>(int[] retryDuration, Action<int> act)
+  public static void CatchAndRetry<TException>(int[] retryDuration, Action<int> act, Action<TException, int>? loggerAct = null)
       where TException : Exception
   {
     int idx = 0;
@@ -98,10 +103,13 @@ static class Utils
         act.Invoke(idx);
         break;
       }
-      catch (TException)
+      catch (TException ex)
       {
         if (retryDuration.Length > idx) // decide to retry or not.
         {
+          // used for logging the exception
+          loggerAct?.Invoke(ex, idx);
+
           // waiting short time and then re-exec.
           System.Threading.SpinWait.SpinUntil(() => false, retryDuration[idx++]);
           continue; // retry
@@ -419,7 +427,7 @@ static class Utils
 
     foreach (var input in cssClassList)
     {
-      if(input is null)
+      if (input is null)
       {
         continue;
       }

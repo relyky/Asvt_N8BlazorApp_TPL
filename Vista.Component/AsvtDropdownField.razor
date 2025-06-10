@@ -4,7 +4,7 @@
 @* 解決 MudAutocomplete 在 ReadOnly 狀態下仍可下拉的 bug。 *@　
 <style>
   .asvt-dropdown-field-no-pointer-events {
-    pointer-events: none;
+  pointer-events: none;
   }
 </style>
 
@@ -13,33 +13,33 @@
 @* 例如：選『銀行』→ <tab> →『分行』會進入 UI 無限遞迴。 *@
 <MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
   <MudAutocomplete T="ICodeName"
-                   @bind-Value=codeValue
-                   Immediate=@Immediate
-                   Label=@_label
-                   ReadOnly=@_readOnly
-                   HelperText=@HelperText
-                   Required=@Required
-                   Class=@CssClass
-                   Variant=@(_readOnly ? Variant.Filled : Variant.Text)
-                   Error=@ValidationError
-                   ErrorText=@ValidationErrorText
-                   SearchFunc=@CodeRepo.SearchFunc
-                   ToStringFunc=@ToStringFunc
-                   MaxItems=@MaxItems
-                   MaxHeight="500"
-                   OpenIcon=@Icons.Material.Filled.ExpandMore
-                   CloseIcon=@Icons.Material.Filled.ExpandLess
-                   DebounceInterval=300
-                   Clearable=true
-                   ResetValueOnEmptyText=true
-                   CoerceValue=false
-                   CoerceText=true
-                   Strict=true
-                   SelectValueOnTab=true
-                   SelectOnActivation=false
-                   OpenOnFocus=false
-                   ShowProgressIndicator=true
-                   ProgressIndicatorColor=Color.Info>
+  @bind-Value=codeValue
+  Immediate=@Immediate
+  Label=@_label
+  ReadOnly=@_readOnly
+  HelperText=@HelperText
+  Required=@Required
+  Class=@CssClass
+  Variant=@(_readOnly ? Variant.Filled : Variant.Text)
+  Error=@ValidationError
+  ErrorText=@ValidationErrorText
+  SearchFunc=@CodeRepo.SearchFunc
+  ToStringFunc=@ToStringFunc
+  MaxItems=@MaxItems
+  MaxHeight="500"
+  OpenIcon=@Icons.Material.Filled.ExpandMore
+  CloseIcon=@Icons.Material.Filled.ExpandLess
+  DebounceInterval=300
+  Clearable=true
+  ResetValueOnEmptyText=true
+  CoerceValue=false
+  CoerceText=true
+  Strict=true
+  SelectValueOnTab=true
+  SelectOnActivation=false
+  OpenOnFocus=false
+  ShowProgressIndicator=true
+  ProgressIndicatorColor=Color.Info>
     <MoreItemsTemplate>
       <MudText Align=Align.Center Class="px-4 py-1 mud-theme-dark">
         @($"只顯示前{MaxItems}/{CodeRepo.CodeList.Count}筆")
@@ -74,4 +74,9 @@
   string CssClass => new CssBuilder()
     .AddClass("asvt-dropdown-field-no-pointer-events", _readOnly)
     .Build();
+
+  protected override void OnInitialized()
+  {
+    CodeRepo.LoadedAct = StateHasChanged;
+  }
 }
