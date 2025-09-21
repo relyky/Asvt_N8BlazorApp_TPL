@@ -15,7 +15,7 @@ internal static class CustomThemeResource
       Primary = "#BF4690",
       PrimaryDarken = "#802F61",
       PrimaryLighten = "#ED58B4", //"#CC4B9B",
-      Secondary = "#CA87B0", //"#939BFF", // "#47B8BF", // "#CA87B0",
+      Secondary = "#E7C058", // #E7C058 "#939BFF", // "#47B8BF", // "#CA87B0",
       Tertiary = "#EFD1E4",
       TertiaryContrastText = "#424242",
       HoverOpacity = 0.16, // default:0.06,
