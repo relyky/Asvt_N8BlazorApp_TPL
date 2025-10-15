@@ -29,7 +29,7 @@ public interface ICodeNameRepo
   /// <summary>
   /// map code to name
   /// </summary>
-  ICodeName? this[string key, string gruop] { get; }
+  ICodeName? this[string key, string group] { get; }
 
   /// <summary>
   /// AutoCompoete:SearchFunc:專案代碼

@@ -60,7 +60,7 @@
 
   /// <summary>
   /// Group by the field。
-  /// ※ GroupFor 必需一開始就指定有或無。
+  /// ※ GroupFor 必需一開始就指定且不可變。
   /// </summary>
   [Parameter] public Expression<Func<string>>? GroupFor { get; set; }
 
@@ -79,7 +79,7 @@
   /// </summary>
   ICodeName? codeValue
   {
-    get => CodeRepo[FieldValue];
+    get => _groupProp is null ? CodeRepo[FieldValue] : CodeRepo[FieldValue, GroupValue!];
     set => FieldValue = (value != null) ? value.Code : null!;
   }
 
@@ -94,6 +94,12 @@
   /// 當 GroupFor 欄位空值時，不可進行輸入操作。
   /// </summary>
   bool _suppressInput = false;
+
+  /// <summary>
+  /// 取 GruopBy 現在值。
+  /// ※ 前置存取操作 _groupField 取得需先完成。
+  /// </summary>
+  string? GroupValue => _groupProp is null ? null : _groupProp!.GetValue(_groupField.Model) as string;
   #endregion
 
   public void Dispose()
