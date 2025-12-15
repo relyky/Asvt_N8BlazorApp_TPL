@@ -1,5 +1,4 @@
 ﻿@using BlazorTemplater
-@using PuppeteerSharp
 @using Vista.Biz.DEMO
 @using Vista.Component.Models
 @page "/DEMO007"
@@ -18,7 +17,6 @@
   @* 命令列 *@
   <MudStack Row Justify=Justify.Center Class="mb-2">
     <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=HandleComponentRendererReport>測試 Render Component to Report</MudButton>
-    <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=HandlePoppeteerReport>測試 Poppeteer Sharp to PDF(放棄此法)</MudButton>
     <MudButton Variant=Variant.Filled OnClick=HandleHtmlReport>測試 Html Report</MudButton>
     <MudButton Variant=Variant.Filled OnClick=HandlePdfReport>測試 Html to PDF</MudButton>
     <MudButton Variant=Variant.Filled OnClick=HandlePrintPdf>測試直接送印 PDF</MudButton>
@@ -248,98 +246,6 @@
 
       //# 下載檔案
       string filename = $"ReportSample_{DateTime.Now.ToString("yyyyMMdd")}.pdf";
-      await jsTool.DownloadFileAsync(filename, fileBlob);
-    }
-    catch (Exception ex)
-    {
-      dlgSvc.ShowAlert("出現例外！" + ex.Message);
-    }
-    finally
-    {
-      f_loading = false;
-    }
-  }
-
-  async Task HandlePoppeteerReport()
-  {
-    try
-    {
-      f_loading = true;
-
-      // 模擬資料
-      List<ImageCropInfo> itemList = new()
-      {
-        new ImageCropInfo { ImageFileName = "image1.jpg", ImageType = "JPEG" },
-        new ImageCropInfo { ImageFileName = "image2.png", ImageType = "PNG" },
-        new ImageCropInfo { ImageFileName = "image3.gif", ImageType = "GIF" },
-      };
-
-      List<(string, string)> barcodeList = new()
-      {
-        ("A10011", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6AQMAAADbddhrAAAABlBMVEWNFIX///9IEO+QAAAAi0lEQVR4nK3RMQoEIQwF0EBawasIaQdydcHWwwi/Xci4GmWcdtfqwSf6g2TzZPoVxDWRPqHIsANJgvALFW9gRQ6Fid/jIJb1lsMsqPdxMFHBgR6iHmhSdIxvSI8+BwqbXAfMUh3jG8RXbrOPQ0EhfqONvnKG775gaDPaENUZORQRo/wGcezhE//5wRuPCTh2Hi4G9AAAAABJRU5ErkJggg=="),
-        ("B10011", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6AQMAAADbddhrAAAABlBMVEWNFIX///9IEO+QAAAAi0lEQVR4nK3RMQoEIQwF0EBawasIaQdydcHWwwi/Xci4GmWcdtfqwSf6g2TzZPoVxDWRPqHIsANJgvALFW9gRQ6Fid/jIJb1lsMsqPdxMFHBgR6iHmhSdIxvSI8+BwqbXAfMUh3jG8RXbrOPQ0EhfqONvnKG775gaDPaENUZORQRo/wGcezhE//5wRuPCTh2Hi4G9AAAAABJRU5ErkJggg=="),
-        ("C10011", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6AQMAAADbddhrAAAABlBMVEWNFIX///9IEO+QAAAAi0lEQVR4nK3RMQoEIQwF0EBawasIaQdydcHWwwi/Xci4GmWcdtfqwSf6g2TzZPoVxDWRPqHIsANJgvALFW9gRQ6Fid/jIJb1lsMsqPdxMFHBgR6iHmhSdIxvSI8+BwqbXAfMUh3jG8RXbrOPQ0EhfqONvnKG775gaDPaENUZORQRo/wGcezhE//5wRuPCTh2Hi4G9AAAAABJRU5ErkJggg=="),
-        ("D10011", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6AQMAAADbddhrAAAABlBMVEWNFIX///9IEO+QAAAAi0lEQVR4nK3RMQoEIQwF0EBawasIaQdydcHWwwi/Xci4GmWcdtfqwSf6g2TzZPoVxDWRPqHIsANJgvALFW9gRQ6Fid/jIJb1lsMsqPdxMFHBgR6iHmhSdIxvSI8+BwqbXAfMUh3jG8RXbrOPQ0EhfqONvnKG775gaDPaENUZORQRo/wGcezhE//5wRuPCTh2Hi4G9AAAAABJRU5ErkJggg=="),
-        ("A19002", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADoAAAA6AQMAAADbddhrAAAABlBMVEWNFIX///9IEO+QAAAAjklEQVR4nK3RQQrEMAgFUMFtoVcR3Ba8eqBbDxP4B3AaNGHS7UxWD34wfkKRp9GvIHYh+4ahITaIHsovON7AjAqG0JpTINb5ViHisNqnwEQ3dnjAx+WF3tVkRAviXKtO3MqqI1qIIPcNxNJ67lMwXMc5ogXRqyF7LQA9o4XTLKOC4clyTuGprFrdE//5wQ+PIDbYpkeIRwAAAABJRU5ErkJggg=="),
-      };
-
-      //# 產生 HTML 報表檔
-      string html = new ComponentRenderer<MyHtmlReport>()
-                          .Set(m => m.Title, "唷~ 太神了傑克")
-                          .Set(m => m.ItemList, itemList)
-                          .Set(m => m.BarcodeList, barcodeList)
-                          .Set(m => m.WatermarkImageUrl, $"{navSvc.BaseUri}image/watermark_draft.png")
-                          .Render();
-
-      //## Convert to blob
-      //byte[] fileBlob = System.Text.UTF8Encoding.UTF8.GetBytes(html); // html file blob.
-
-      // 指定本地以 Chromium 為基礎的瀏覽器路徑
-      //const string browserPath = @"C:\Program Files\Google\Chrome\Application\chrome.exe"; // chrome
-      const string browserPath = @"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"; // edge
-
-      // 啟動本地瀏覽器
-      var browser = await Puppeteer.LaunchAsync(new LaunchOptions
-      {
-        ExecutablePath = browserPath,
-        Headless = true // 無頭模式
-      });
-
-
-      // 定義頁首和頁尾模板
-      string headerTemplate = @"
-<div style='border: solid 1pt red; font-size: 9pt; width: 100%; margin: 0 1cm; padding: 0 1mm; text-align: center;'>
-  <span>我是頁首標題</span>
-  <div style='float: right'>
-    <img alg='logo' style='height: 40px;' src='data:image/png;base64,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' />
-    <div>2099/12/31</div>
-  </div>
-</div>";
-      string footerTemplate = @"
-<div style='border: solid 1pt red; font-size: 9pt; width:100%; margin: 0 1cm; text-align:right;'>
-  Page <span class='pageNumber'></span> of <span class='totalPages'></span>
-</div>";
-
-      using var page = await browser.NewPageAsync();
-      await page.SetContentAsync(html);
-      byte[] fileBlob = await page.PdfDataAsync(new PdfOptions
-      {
-          Format = PuppeteerSharp.Media.PaperFormat.A4,
-          DisplayHeaderFooter = true,
-          HeaderTemplate = headerTemplate, 
-          FooterTemplate = footerTemplate, 
-          // MarginOptions = new PuppeteerSharp.Media.MarginOptions // 或在 html 內容中用 @page { margin... } 設定。
-          // {
-          //     Top = "1cm",
-          //     Bottom = "1cm",
-          //     Left = "1cm",
-          //     Right = "1cm"
-          // },
-          //Landscape = true, // 若 TRUE 為橫向。或在 html 內容中用 @page { size: A4 landscape; } 設定。
-      });
-        
-      //# 下載檔案
-      string filename = $"ReportPoppeteerSample_{DateTime.Now.ToString("yyyyMMdd")}.pdf";
       await jsTool.DownloadFileAsync(filename, fileBlob);
     }
     catch (Exception ex)
