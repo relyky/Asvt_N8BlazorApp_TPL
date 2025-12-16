@@ -24,7 +24,9 @@ internal static class CustomThemeResource
       Warning = "#FF9F40", // default:"#FF9800",
       Error = "#FF6384",   // default:"#F44336",
       Dark = "#575757",
-      Surface = "#FAFAFA",
+      Background = "#FAFAFA", // default: "#FFFFFF"
+      Surface = "#F5F5F5",
+      BackgroundGray = "#F0F0F0", // default: "#F5F5F5"
       DrawerBackground = "#FAFAFA",
       AppbarBackground = "#BF4690", // Primary
       AppbarText = "#FAFAFA", // Surface
