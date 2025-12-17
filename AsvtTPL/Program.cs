@@ -1,4 +1,4 @@
-using AsvtTPL.Components;
+ï»¿using AsvtTPL.Components;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -13,47 +13,47 @@ using WkHtmlToPdfDotNet;
 
 try
 {
-  // ¨Ï¥Î Console ¬ö¿ıªì©l¤Æ¹Lµ{¡A³o¼Ë¤~¯àÅı§@·~¨t²Î§ì¨ì¿ù»~°T®§¡C¥HÅı¡i¨Æ¥óÀËµø¾¹¡j¬d¬İ¿ù»~°T®§¡C 
+  // ä½¿ç”¨ Console ç´€éŒ„åˆå§‹åŒ–éç¨‹ï¼Œé€™æ¨£æ‰èƒ½è®“ä½œæ¥­ç³»çµ±æŠ“åˆ°éŒ¯èª¤è¨Šæ¯ã€‚ä»¥è®“ã€äº‹ä»¶æª¢è¦–å™¨ã€‘æŸ¥çœ‹éŒ¯èª¤è¨Šæ¯ã€‚ 
   Console.WriteLine($"{DateTime.Now:yyyy/MM/dd HH:mm:ss} Web host init.");
 
   var builder = WebApplication.CreateBuilder(args);
   IConfiguration config = builder.Configuration;
 
-  #region ¡±¡± Prefix system initialization -------------------------------------
-  //## ¨ú±o¨t²Î¦WºÙ¡A¨t²Î°ò¥»°Ñ¼Æ
+  #region Â§Â§ Prefix system initialization -------------------------------------
+  //## å–å¾—ç³»çµ±åç¨±ï¼Œç³»çµ±åŸºæœ¬åƒæ•¸
   string SystemId = config["SystemID"] ?? builder.Environment.ApplicationName;
   string LogFolder = config["LogFolder"] ?? "Log";
 
-  //## ³]©w FluentValidation ¨ú±oÄæ¦ì¦WºÙ¤èªk
+  //## è¨­å®š FluentValidation å–å¾—æ¬„ä½åç¨±æ–¹æ³•
   FluentValidation.ValidatorOptions.Global.DisplayNameResolver = (type, member, expression) =>
   {
     var withDisplay = member?.GetCustomAttributes(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute), false).FirstOrDefault() as System.ComponentModel.DataAnnotations.DisplayAttribute;
     if (withDisplay != null) return withDisplay.GetName();
 
-    // À³¸Ó¨S¦b¥Î LabelAttribute ¥ıremark¡C
+    // æ‡‰è©²æ²’åœ¨ç”¨ LabelAttribute å…ˆremarkã€‚
     //var withLabel = member?.GetCustomAttributes(typeof(MudBlazor.LabelAttribute), false).FirstOrDefault() as MudBlazor.LabelAttribute;
     //if (withLabel != null) return withLabel.Name;
 
     return null;
   };
 
-  //## ¸ê®Æ®w³s½uªì©l¤Æ
+  //## è³‡æ–™åº«é€£ç·šåˆå§‹åŒ–
   //var conns = AsvtSecureModule.TakeSecDbConnString("CONNSEC", "CONNLAB", "CONNGRAPH");
   //Vista.DB.DBHelper.CONNSEC = new Vista.DB.ConnProxy(conns["CONNSEC"]);
   //Vista.DB.DBHelper.MyLabDB = new Vista.DB.ConnProxy(conns["MyLabDB"]);
 
-  //¡° ©Î¨ú±o¥ş³¡¸ê®Æ®w³s½u²ÕºA
+  //â€» æˆ–å–å¾—å…¨éƒ¨è³‡æ–™åº«é€£ç·šçµ„æ…‹
   //Vista.DB.DBHelper.Register(config);
 
-  //¡° ©Î¥Î¥»¾÷«OÅ@¼Ò²Õ¸Ñ¶}
+  //â€» æˆ–ç”¨æœ¬æ©Ÿä¿è­·æ¨¡çµ„è§£é–‹
   Vista.DB.DBHelper.MyLabDB = new Vista.DbPanda.ConnProxy("MyLabDB", config);
 
-  //¡° ©Î bypass secure module
+  //â€» æˆ– bypass secure module
   //Vista.DB.DBHelper.MyLabDB = new Vista.DbPanda.ConnProxy("Data Source=relynb4;Initial Catalog=MyLabDB;Integrated Security=True;Encrypt=False");
 
   #endregion
 
-  #region ¡±¡± Serilog configuration. -------------------------------------------
+  #region Â§Â§ Serilog configuration. -------------------------------------------
   Log.Logger = new LoggerConfiguration()
       .ReadFrom.Configuration(builder.Configuration)
       .Enrich.WithProperty("MachineName", Environment.MachineName)
@@ -62,10 +62,10 @@ try
       .Enrich.FromLogContext()
       .WriteTo.Async(cfg =>
       {
-        //# ¤å¦rÀÉ
+        //# æ–‡å­—æª”
         cfg.File($"{LogFolder}/{SystemId}Log.txt",
               rollingInterval: RollingInterval.Day);
-        //# JSON ÀÉ
+        //# JSON æª”
         cfg.File(new Serilog.Formatting.Json.JsonFormatter(), $"{LogFolder}/{SystemId}Log.json",
               rollingInterval: RollingInterval.Day);
       })
@@ -77,72 +77,72 @@ try
   Console.WriteLine($"{DateTime.Now:yyyy/MM/dd HH:mm:ss} Web host start.");
   Log.Information("Web host start.");
 
-  #region ¡±¡± Add services to the container. -----------------------------------
+  #region Â§Â§ Add services to the container. -----------------------------------
 
-  ////## ÅÜ§ó¹w³]½s½X¦¨¤¤¤éÁú»y¨t --- ¨S¦³°İÃD´N¤£¥Î¥´¶}¡C
-  ////  °Ñ¦Ò¡G[¦p¦óÅÜ§ó ASP.NET Core MVC ªº¹w³] HtmlEncoder ªº½s½X½d³ò](https://blog.miniasp.com/post/2023/09/01/How-to-change-HtmlEncoder-UnicodeRanges-in-ASPNET-Core?full=1&fbclid=IwAR2ljLeSiAJWozDbXMVJEFVoeVW5wUOjWK65p5xNC0Qr4CQptyLCdnE9viM)
+  ////## è®Šæ›´é è¨­ç·¨ç¢¼æˆä¸­æ—¥éŸ“èªç³» --- æ²’æœ‰å•é¡Œå°±ä¸ç”¨æ‰“é–‹ã€‚
+  ////  åƒè€ƒï¼š[å¦‚ä½•è®Šæ›´ ASP.NET Core MVC çš„é è¨­ HtmlEncoder çš„ç·¨ç¢¼ç¯„åœ](https://blog.miniasp.com/post/2023/09/01/How-to-change-HtmlEncoder-UnicodeRanges-in-ASPNET-Core?full=1&fbclid=IwAR2ljLeSiAJWozDbXMVJEFVoeVW5wUOjWK65p5xNC0Qr4CQptyLCdnE9viM)
   //builder.Services.AddSingleton(System.Text.Encodings.Web.HtmlEncoder.Create(allowedRanges: new[] {
   //    System.Text.Unicode.UnicodeRanges.BasicLatin,
   //    System.Text.Unicode.UnicodeRanges.CjkUnifiedIdeographs
   //}));
 
-  //## for ¦h°ê»y¨t(«ü©w¹w³]»y¨t)
-  /// NET8 ¦h°ê»y¨t§ïÅÜ¤F¡Aref¡÷[ASP.NET Core Blazor ¥ş²y¤Æ©M·í¦a»y¨t¤Æ-8.0](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/globalization-localization?view=aspnetcore-8.0)
-  /// ¹w³]§ì¨ú§@·~¨t²Î»y¨t¡C
+  //## for å¤šåœ‹èªç³»(æŒ‡å®šé è¨­èªç³»)
+  /// NET8 å¤šåœ‹èªç³»æ”¹è®Šäº†ï¼Œrefâ†’[ASP.NET Core Blazor å…¨çƒåŒ–å’Œç•¶åœ°èªç³»åŒ–-8.0](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/globalization-localization?view=aspnetcore-8.0)
+  /// é è¨­æŠ“å–ä½œæ¥­ç³»çµ±èªç³»ã€‚
   //builder.Services.AddLocalization();
 
   builder.Services.AddControllers(); // for enable WebApi
   //builder.Services.AddEndpointsApiExplorer();
 
-  // µù¥U¡GDIªA°È
+  // è¨»å†Šï¼šDIæœå‹™
   builder.Services.AddHealthChecks();
   builder.Services.AddMemoryCache();         // IMemoryCache
   builder.Services.AddHttpContextAccessor(); // IHttpContextAccessor
   //builder.Services.AddHttpClient();        // IHttpClientFactory
 
-  // µù¥U¡Gmessage bus between components (µù¥U¦¨ Singleton ·|§ó¦n¥Î¡C)
+  // è¨»å†Šï¼šmessage bus between components (è¨»å†Šæˆ Singleton æœƒæ›´å¥½ç”¨ã€‚)
   builder.Services.AddSingleton<BlazorComponentBus.ComponentBus>();
 
-  // µù¥U¡GWkHtmlToPdfDotNet, ¥²»İ¬OSingleton¡C
+  // è¨»å†Šï¼šWkHtmlToPdfDotNet, å¿…éœ€æ˜¯Singletonã€‚
   builder.Services.AddSingleton(typeof(WkHtmlToPdfDotNet.Contracts.IConverter), new SynchronizedConverter(new PdfTools()));
 
-  // µù¥U¡G«È»sªA°È
+  // è¨»å†Šï¼šå®¢è£½æœå‹™
   builder.Services.AddSingleton<AccountService>();
-  builder.Services.AddTransient<MyIdleEventHandler>(); // [¹êÅç©Ê¾÷¨î] for AddIdleCircuitHandler 
+  builder.Services.AddTransient<MyIdleEventHandler>(); // [å¯¦é©—æ€§æ©Ÿåˆ¶] for AddIdleCircuitHandler 
 
-  // µù¥U Vista.Biz ¤¤¦WºÙµ²§À¬° "Biz" ªºªA°È
+  // è¨»å†Š Vista.Biz ä¸­åç¨±çµå°¾ç‚º "Biz" çš„æœå‹™
   foreach (var bizType in (Assembly.GetAssembly(typeof(Vista.Biz.DEMO.SampleBiz))!.GetTypes())
     .Where(t => t.Name.EndsWith("Biz")))
   {
     builder.Services.AddScoped(bizType);
   }
 
-  // µù¥U¡GMudBlazor »P©µ¦ù¥\¯à©µ¦ù
+  // è¨»å†Šï¼šMudBlazor èˆ‡å»¶ä¼¸åŠŸèƒ½å»¶ä¼¸
   builder.Services.AddMudServices()
     .AddVistaComponentServices()
-    .AddIdleCircuitHandler<MyIdleEventHandler>(options => options.IdleTimeout = TimeSpan.FromSeconds(7)); // [¹êÅç©Ê¾÷¨î]
+    .AddIdleCircuitHandler<MyIdleEventHandler>(options => options.IdleTimeout = TimeSpan.FromSeconds(7)); // [å¯¦é©—æ€§æ©Ÿåˆ¶]
 
   // for Interactive mode
-  // ¨Ã©Ô¤j SignalR ¤W¶Ç­­¨î¨ì 640KB ¥H¤W¶Ç¹Ï¤ù¡A¹w³]¬°32KB¡C
-  // ref ¡÷ [Size limits on JavaScript interop calls](https://learn.microsoft.com/en-us/aspnet/core/blazor/javascript-interoperability/?view=aspnetcore-8.0)
+  // ä¸¦æ‹‰å¤§ SignalR ä¸Šå‚³é™åˆ¶åˆ° 640KB ä»¥ä¸Šå‚³åœ–ç‰‡ï¼Œé è¨­ç‚º32KBã€‚
+  // ref â†’ [Size limits on JavaScript interop calls](https://learn.microsoft.com/en-us/aspnet/core/blazor/javascript-interoperability/?view=aspnetcore-8.0)
   builder.Services.AddRazorComponents()
       .AddInteractiveServerComponents();
       //.AddHubOptions(options => options.MaximumReceiveMessageSize = 640000);
 
   //# for BLAZOR COOKIE Auth
-  /// °Ñ¦Ò¡G[°w¹ï¿ù»~¶i¦æºÃÃø±Æ¸Ñ](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/security/?view=aspnetcore-8.0#troubleshoot-errors)
-  /// ¦b.NET 8 ©Î§ó·sª©¥»¤¤¡A½Ğ¤Å¨Ï¥Î <CascadingAuthenticationState /> ¤¸¥ó¡F§ï¥Î builder.Services.AddCascadingAuthenticationState();
+  /// åƒè€ƒï¼š[é‡å°éŒ¯èª¤é€²è¡Œç–‘é›£æ’è§£](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/security/?view=aspnetcore-8.0#troubleshoot-errors)
+  /// åœ¨.NET 8 æˆ–æ›´æ–°ç‰ˆæœ¬ä¸­ï¼Œè«‹å‹¿ä½¿ç”¨ <CascadingAuthenticationState /> å…ƒä»¶ï¼›æ”¹ç”¨ builder.Services.AddCascadingAuthenticationState();
   builder.Services.AddCascadingAuthenticationState();
   //builder.Services.AddScoped<AuthenticationStateProvider, Custom2AuthenticationStateProvider>(); 
   builder.Services.AddScoped<IAuthUser, AuthUserService>();
   builder.Services.AddHttpContextAccessor();
-  /// ¡° ¤£­n¦b«eºİ¤¸¥ó¨Ï¥Î IHttpContextAccesser ¦]¬° HttpContext ªºª¬ºA¨Ã«D§Y®É¤ÏÀ³ªº¡A
-  /// ¦¨¦]¬O SignalR »P HTTP ¬O¤£¦Pªº³q°T¨ó©w¥B­ì«h¤W¤£¯à¦@¦s¡C
-  /// ¦ı Blazor Server App ¤S¤ä´© Cookie Authentication¡C
-  /// §ï¥Î AuthenticationStateProvider ¾÷¨î¨úµn¤Jª¬ºA¡C
+  /// â€» ä¸è¦åœ¨å‰ç«¯å…ƒä»¶ä½¿ç”¨ IHttpContextAccesser å› ç‚º HttpContext çš„ç‹€æ…‹ä¸¦éå³æ™‚åæ‡‰çš„ï¼Œ
+  /// æˆå› æ˜¯ SignalR èˆ‡ HTTP æ˜¯ä¸åŒçš„é€šè¨Šå”å®šä¸”åŸå‰‡ä¸Šä¸èƒ½å…±å­˜ã€‚
+  /// ä½† Blazor Server App åˆæ”¯æ´ Cookie Authenticationã€‚
+  /// æ”¹ç”¨ AuthenticationStateProvider æ©Ÿåˆ¶å–ç™»å…¥ç‹€æ…‹ã€‚
 
   //## for BLAZOR COOKIE Auth
-  /// ref ¡÷ https://blazorhelpwebsite.com/ViewBlogPost/36
+  /// ref â†’ https://blazorhelpwebsite.com/ViewBlogPost/36
   builder.Services.Configure<CookiePolicyOptions>(options =>
   {
     options.MinimumSameSitePolicy = SameSiteMode.Strict;
@@ -157,14 +157,14 @@ try
         options.Cookie.Name = ".AsvtTPL.Cookies"; //default:.AspNetCore.Cookies
       });
 
-  // µù¥U «È»s Policy »Pº¡¨¬¥¦©Ò­nªº»İ¨D Authorization Requirement
+  // è¨»å†Š å®¢è£½ Policy èˆ‡æ»¿è¶³å®ƒæ‰€è¦çš„éœ€æ±‚ Authorization Requirement
   builder.Services.AddAuthorization(options =>
   {
     options.AddPolicy("AuthPage", policy => policy.Requirements.Add(new AuthPageRequirement()));
   });
 
-  // µù¥U «È»s¤Æ±ÂÅv»İ¨D Authorization Requirement¡C
-  // ¡° ±N¦Û°ÊÄ²µo¹ïÀ³ªºÀËÅçµ{§Ç 
+  // è¨»å†Š å®¢è£½åŒ–æˆæ¬Šéœ€æ±‚ Authorization Requirementã€‚
+  // â€» å°‡è‡ªå‹•è§¸ç™¼å°æ‡‰çš„æª¢é©—ç¨‹åº 
   builder.Services.AddSingleton<IAuthorizationHandler, AuthPageHandler>();
   builder.Services.AddAntiforgery(); // for SSG form 
 
@@ -172,19 +172,19 @@ try
 
   var app = builder.Build();
 
-  #region ¡±¡± Configure the HTTP request pipeline. -----------------------------
-  /// ref ¡÷ [¤¤¤¶³nÅé¶¶§Ç](https://learn.microsoft.com/zh-tw/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0#middleware-order)
+  #region Â§Â§ Configure the HTTP request pipeline. -----------------------------
+  /// ref â†’ [ä¸­ä»‹è»Ÿé«”é †åº](https://learn.microsoft.com/zh-tw/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0#middleware-order)
 
-  //## µù¥U IServiceProvider ³Æ¥Î
+  //## è¨»å†Š IServiceProvider å‚™ç”¨
   Vista.AOP.ServiceActivator.Configure(app.Services);
 
-  //# ¥¿¦¡Àô¹Ò³¡¸p¦¨¤lºô¯¸¡C
-  app.UsePathBase(config["PathBase"] ?? "/"); // ¥²¶·¦b UseRouting ¤§«e°õ¦æ¡C
+  //# æ­£å¼ç’°å¢ƒéƒ¨ç½²æˆå­ç¶²ç«™ã€‚
+  app.UsePathBase(config["PathBase"] ?? "/"); // å¿…é ˆåœ¨ UseRouting ä¹‹å‰åŸ·è¡Œã€‚
 
   if (!app.Environment.IsDevelopment())
   {
-    //# [°±¥Î¼ö­«·s¸ü¤Jªº¦^À³À£ÁY](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/fundamentals/signalr?preserve-view=true&view=aspnetcore-8.0#disable-response-compression-for-hot-reload)
-    //app.UseResponseCompression(); // ¥¿¦¡ª©µo¦æ«á·|±Ò°Ê¥¢±Ñªº¼Ë¤l¡H
+    //# [åœç”¨ç†±é‡æ–°è¼‰å…¥çš„å›æ‡‰å£“ç¸®](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/fundamentals/signalr?preserve-view=true&view=aspnetcore-8.0#disable-response-compression-for-hot-reload)
+    //app.UseResponseCompression(); // æ­£å¼ç‰ˆç™¼è¡Œå¾Œæœƒå•Ÿå‹•å¤±æ•—çš„æ¨£å­ï¼Ÿ
 
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -195,19 +195,19 @@ try
   app.UseStaticFiles();
   app.UseAntiforgery(); // for SSG form 
 
-  //## for ¦h°ê»y¨t(«ü©w¹w³]»y¨t)
-  /// NET8 ¦h°ê»y¨t§ïÅÜ¤F¡Aref¡÷[ASP.NET Core Blazor ¥ş²y¤Æ©M·í¦a»y¨t¤Æ-8.0](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/globalization-localization?view=aspnetcore-8.0)
-  //app.UseRequestLocalization("zh-TW"); // «ü©w¹w³]»y¨t¡C
+  //## for å¤šåœ‹èªç³»(æŒ‡å®šé è¨­èªç³»)
+  /// NET8 å¤šåœ‹èªç³»æ”¹è®Šäº†ï¼Œrefâ†’[ASP.NET Core Blazor å…¨çƒåŒ–å’Œç•¶åœ°èªç³»åŒ–-8.0](https://learn.microsoft.com/zh-tw/aspnet/core/blazor/globalization-localization?view=aspnetcore-8.0)
+  //app.UseRequestLocalization("zh-TW"); // æŒ‡å®šé è¨­èªç³»ã€‚
 
   //# for BLAZOR COOKIE Auth
   app.UseCookiePolicy();
   app.UseAuthentication();
   app.UseAuthorization();
 
-  //## HTTP 400-599 ¿ù»~³B²z 
-  /// ®Ú¾Ú¹w³]¡AASP.NET Core À³¥Îµ{¦¡¤£·|´£¨Ñ HTTP ¿ù»~ª¬ºA½X (¨Ò¦p¡u404 - §ä¤£¨ì¡v) ªºª¬ºA½X­¶­±¡C 
-  /// ·íÀ³¥Îµ{¦¡³]©w¨S¦³¥»¤åªº HTTP 400-599 ¿ù»~ª¬ºA½X®É¡A¥¦·|¶Ç¦^¸Óª¬ºA½X©M¤@­ÓªÅ¥Õªº¦^À³¥»¤å¡C 
-  /// ref¡÷https://learn.microsoft.com/zh-tw/aspnet/core/fundamentals/error-handling?view=aspnetcore-8.0#usestatuscodepages
+  //## HTTP 400-599 éŒ¯èª¤è™•ç† 
+  /// æ ¹æ“šé è¨­ï¼ŒASP.NET Core æ‡‰ç”¨ç¨‹å¼ä¸æœƒæä¾› HTTP éŒ¯èª¤ç‹€æ…‹ç¢¼ (ä¾‹å¦‚ã€Œ404 - æ‰¾ä¸åˆ°ã€) çš„ç‹€æ…‹ç¢¼é é¢ã€‚ 
+  /// ç•¶æ‡‰ç”¨ç¨‹å¼è¨­å®šæ²’æœ‰æœ¬æ–‡çš„ HTTP 400-599 éŒ¯èª¤ç‹€æ…‹ç¢¼æ™‚ï¼Œå®ƒæœƒå‚³å›è©²ç‹€æ…‹ç¢¼å’Œä¸€å€‹ç©ºç™½çš„å›æ‡‰æœ¬æ–‡ã€‚ 
+  /// refâ†’https://learn.microsoft.com/zh-tw/aspnet/core/fundamentals/error-handling?view=aspnetcore-8.0#usestatuscodepages
   app.UseStatusCodePagesWithRedirects("/ErrorStatus/{0}");
 
   //## Endpoints
@@ -227,7 +227,7 @@ try
 }
 catch (Exception ex)
 {
-  // ¨Ï¥Î Console ¬ö¿ıªì©l¤Æ¹Lµ{¡A³o¼Ë¤~¯àÅı§@·~¨t²Î§ì¨ì¿ù»~°T®§¡C¥HÅı¡i¨Æ¥óÀËµø¾¹¡j¬d¬İ¿ù»~°T®§¡C
+  // ä½¿ç”¨ Console ç´€éŒ„åˆå§‹åŒ–éç¨‹ï¼Œé€™æ¨£æ‰èƒ½è®“ä½œæ¥­ç³»çµ±æŠ“åˆ°éŒ¯èª¤è¨Šæ¯ã€‚ä»¥è®“ã€äº‹ä»¶æª¢è¦–å™¨ã€‘æŸ¥çœ‹éŒ¯èª¤è¨Šæ¯ã€‚
   Console.WriteLine($"{DateTime.Now:yyyy/MM/dd HH:mm:ss} Web host terminated unexpectedly!.\r\n{ex}");
   Log.Fatal(ex, "Web host terminated unexpectedly");
 }
