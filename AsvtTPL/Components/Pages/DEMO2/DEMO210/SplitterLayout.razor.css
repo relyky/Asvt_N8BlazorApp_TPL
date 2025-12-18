@@ -1,0 +1,157 @@
+/* SplitterLayout Component Styles */
+
+.splitter-layout-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    min-height: 500px;
+}
+
+/* Toolbar Styles */
+.splitter-toolbar {
+    background: #2c3e50;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+.splitter-toolbar button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.splitter-toolbar button:hover {
+    background: #2980b9;
+}
+
+.splitter-toolbar button:active {
+    transform: scale(0.98);
+}
+
+.splitter-toolbar .toolbar-hint {
+    margin-left: auto;
+    font-size: 14px;
+}
+
+/* Grid Container */
+.grid-container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 50% 6px 50%;
+    grid-template-rows: 100%;
+    overflow: hidden;
+}
+
+/* Left Panel (contains top and bottom split) */
+.left-panel {
+    display: grid;
+    grid-template-rows: 50% 6px 50%;
+    overflow: hidden;
+}
+
+/* Panel Styles */
+.panel {
+    background: white;
+    overflow: auto;
+    position: relative;
+}
+
+.panel-content {
+    padding: 30px;
+    height: 100%;
+}
+
+.panel h2 {
+    color: #2c3e50;
+    margin-bottom: 16px;
+    font-size: 24px;
+}
+
+.panel p {
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 12px;
+}
+
+/* Panel Label Badge */
+.panel-label {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(52, 152, 219, 0.15);
+    color: #2980b9;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 5;
+}
+
+/* Vertical Divider (Left-Right Split) */
+.divider-vertical {
+    background: #ddd;
+    cursor: col-resize;
+    position: relative;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.divider-vertical:hover {
+    background: #3498db;
+}
+
+.divider-vertical.dragging {
+    background: #2980b9;
+}
+
+.divider-vertical::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 2px;
+}
+
+/* Horizontal Divider (Top-Bottom Split) */
+.divider-horizontal {
+    background: #ddd;
+    cursor: row-resize;
+    position: relative;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.divider-horizontal:hover {
+    background: #3498db;
+}
+
+.divider-horizontal.dragging {
+    background: #2980b9;
+}
+
+.divider-horizontal::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 2px;
+}

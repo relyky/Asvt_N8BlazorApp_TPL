@@ -1,8 +1,47 @@
-﻿@page "/DEMO210"
+@page "/DEMO210"
 @attribute [Page("DEMO210", "畫面分割範例")]
 @attribute [Authorize("AuthPage")]
 
-<h3>DEMO210 畫面分割範例</h3>
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-0" Style="height: calc(100vh - 132px);">
+    <SplitterLayout LeftTopTitle="左上區域"
+                    LeftBottomTitle="左下區域"
+                    RightTitle="右側區域">
+        <LeftTopPanel>
+            <h2>這是左上半分割畫面</h2>
+            <p>使用 CSS Grid 實作的三區塊分割佈局。</p>
+            <div class="info-box">
+                <h3>佈局說明</h3>
+                <ul>
+                    <li>外層使用 Grid 進行左右分割</li>
+                    <li>左側再使用 Grid 進行上下分割</li>
+                    <li>右側為單一完整區域</li>
+                </ul>
+            </div>
+            <p style="margin-top: 16px;">你可以拖曳中間的分隔線來調整各區塊的大小。</p>
+        </LeftTopPanel>
+
+        <LeftBottomPanel>
+            <h2>這是左下半分割畫面</h2>
+            <p>此區塊與左上區塊共享左側空間，可透過水平分隔線調整比例。</p>
+            <div class="info-box">
+                <h3>技術特點</h3>
+                <ul>
+                    <li>Grid Template Columns 控制左右比例</li>
+                    <li>Grid Template Rows 控制上下比例</li>
+                    <li>動態調整 grid 尺寸</li>
+                    <li>最小尺寸保護機制</li>
+                </ul>
+            </div>
+        </LeftBottomPanel>
+
+        <RightPanel>
+            <h2>右半分割畫面預計放圖片</h2>
+            <div class="image-container">
+                <img src="https://cdn.pixabay.com/photo/2022/08/15/03/07/path-7387018_960_720.jpg" alt="示意圖">
+            </div>
+        </RightPanel>
+    </SplitterLayout>
+</MudContainer>
 
 @code {
 

@@ -1,0 +1,170 @@
+@inject IJSRuntime JSRuntime
+@implements IAsyncDisposable
+
+<div class="splitter-layout-container">
+    @if (ShowToolbar)
+    {
+        <div class="splitter-toolbar">
+            <button @onclick="ResetLayout">重置佈局</button>
+            <span class="toolbar-hint">拖曳分隔線調整區塊大小</span>
+        </div>
+    }
+
+    <div class="grid-container" @ref="gridContainer">
+        <!-- 左側面板（包含上下分割） -->
+        <div class="left-panel" @ref="leftPanel">
+            <!-- 左上區塊 -->
+            <div class="panel">
+                @if (!string.IsNullOrEmpty(LeftTopTitle))
+                {
+                    <span class="panel-label">@LeftTopTitle</span>
+                }
+                <div class="panel-content">
+                    @LeftTopPanel
+                </div>
+            </div>
+
+            <!-- 水平分隔線 -->
+            <div class="divider-horizontal" @ref="horizontalDivider"></div>
+
+            <!-- 左下區塊 -->
+            <div class="panel">
+                @if (!string.IsNullOrEmpty(LeftBottomTitle))
+                {
+                    <span class="panel-label">@LeftBottomTitle</span>
+                }
+                <div class="panel-content">
+                    @LeftBottomPanel
+                </div>
+            </div>
+        </div>
+
+        <!-- 垂直分隔線 -->
+        <div class="divider-vertical" @ref="verticalDivider"></div>
+
+        <!-- 右側面板 -->
+        <div class="panel">
+            @if (!string.IsNullOrEmpty(RightTitle))
+            {
+                <span class="panel-label">@RightTitle</span>
+            }
+            <div class="panel-content">
+                @RightPanel
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ElementReference gridContainer;
+    private ElementReference leftPanel;
+    private ElementReference verticalDivider;
+    private ElementReference horizontalDivider;
+    private IJSObjectReference? jsModule;
+
+    /// <summary>
+    /// 左上區塊內容
+    /// </summary>
+    [Parameter]
+    public RenderFragment? LeftTopPanel { get; set; }
+
+    /// <summary>
+    /// 左下區塊內容
+    /// </summary>
+    [Parameter]
+    public RenderFragment? LeftBottomPanel { get; set; }
+
+    /// <summary>
+    /// 右側區塊內容
+    /// </summary>
+    [Parameter]
+    public RenderFragment? RightPanel { get; set; }
+
+    /// <summary>
+    /// 左上區塊標題
+    /// </summary>
+    [Parameter]
+    public string? LeftTopTitle { get; set; }
+
+    /// <summary>
+    /// 左下區塊標題
+    /// </summary>
+    [Parameter]
+    public string? LeftBottomTitle { get; set; }
+
+    /// <summary>
+    /// 右側區塊標題
+    /// </summary>
+    [Parameter]
+    public string? RightTitle { get; set; }
+
+    /// <summary>
+    /// 是否顯示工具列
+    /// </summary>
+    [Parameter]
+    public bool ShowToolbar { get; set; } = true;
+
+    /// <summary>
+    /// 最小尺寸（像素），預設 100px
+    /// </summary>
+    [Parameter]
+    public int MinSize { get; set; } = 100;
+
+    /// <summary>
+    /// 初始左側寬度百分比（0-100），預設 50%
+    /// </summary>
+    [Parameter]
+    public double InitialLeftWidth { get; set; } = 50;
+
+    /// <summary>
+    /// 初始上方高度百分比（0-100），預設 50%
+    /// </summary>
+    [Parameter]
+    public double InitialTopHeight { get; set; } = 50;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./Components/Pages/DEMO2/DEMO210/SplitterLayout.razor.js");
+
+                await jsModule.InvokeVoidAsync("initGridSplitter",
+                    gridContainer,
+                    leftPanel,
+                    verticalDivider,
+                    horizontalDivider,
+                    MinSize,
+                    InitialLeftWidth,
+                    InitialTopHeight);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SplitterLayout 初始化失敗: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task ResetLayout()
+    {
+        if (jsModule != null)
+        {
+            await jsModule.InvokeVoidAsync("resetGridLayout");
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (jsModule != null)
+        {
+            try
+            {
+                await jsModule.InvokeVoidAsync("disposeGridSplitter");
+                await jsModule.DisposeAsync();
+            }
+            catch { }
+        }
+    }
+}
