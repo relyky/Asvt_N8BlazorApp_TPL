@@ -110,16 +110,29 @@ div[role=panel].mud-paper {
 .mud-table.mud-simple-table thead.custom-primary th {
   background-color: var(--mud-palette-primary) !important;
   color: var(--mud-palette-primary-text) !important;
+  padding: 6px 12px 6px 8px;
+  padding-inline-start: 8px;
+  padding-inline-end: 12px;
 }
 
   .mud-table-head.custom-primary .mud-table-cell .mud-icon-button-label {
     color: var(--mud-palette-primary-text) !important;
   }
 
+  .mud-table-head.custom-primary .mud-table-cell .column-header .sortable-column-header,
+  .mud-table-head.custom-secondary .mud-table-cell .column-header .sortable-column-header,
+  .mud-table-head.custom-tertiary .mud-table-cell .column-header .sortable-column-header,
+  .mud-table-head.custom-dark .mud-table-cell .column-header .sortable-column-header {
+    min-width: 2rem; /* 寬度最少 2 個字 */
+  }
+
 .mud-table-head.custom-secondary .mud-table-cell,
 .mud-table.mud-simple-table thead.custom-secondary th {
   background-color: var(--mud-palette-secondary) !important;
   color: var(--mud-palette-secondary-text) !important;
+  padding: 6px 12px 6px 8px;
+  padding-inline-start: 8px;
+  padding-inline-end: 12px;
 }
 
   .mud-table-head.custom-secondary .mud-table-cell .mud-icon-button-label {
@@ -130,6 +143,9 @@ div[role=panel].mud-paper {
 .mud-table.mud-simple-table thead.custom-tertiary th {
   background-color: var(--mud-palette-tertiary) !important;
   color: var(--mud-palette-tertiary-text) !important;
+  padding: 6px 12px 6px 8px;
+  padding-inline-start: 8px;
+  padding-inline-end: 12px;
 }
 
   .mud-table-head.custom-tertiary .mud-table-cell .mud-icon-button-label {
@@ -140,6 +156,9 @@ div[role=panel].mud-paper {
 .mud-table.mud-simple-table thead.custom-dark th {
   background-color: var(--mud-palette-dark) !important;
   color: var(--mud-palette-dark-text) !important;
+  padding: 6px 12px 6px 8px;
+  padding-inline-start: 8px;
+  padding-inline-end: 12px;
 }
 
   .mud-table-head.custom-dark .mud-table-cell .mud-icon-button-label {

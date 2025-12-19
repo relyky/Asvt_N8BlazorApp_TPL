@@ -8,7 +8,7 @@
   <DataView Aim=dataAim OnClose=HandleClose />
 }
 
-<MudContainer Class=@(dataAim != null ? "d-none" : null)>
+<MudContainer MaxWidth=MaxWidth.Medium Class=@(dataAim != null ? "d-none" : null)>
   <QueryPanel QArg1=@QArg1 OnRetrieveDataList=HandleRetrieveDataList />
   <DataLister DataList=@dataList OnSelect=HandleSelect />
 </MudContainer>
