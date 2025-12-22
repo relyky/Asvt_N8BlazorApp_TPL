@@ -52,7 +52,7 @@ class DEMO012Biz(ILogger<DEMO012Biz> _logger, IAuthUser _auth)
     //
     //    // 執行查詢
     //    using var conn = DBHelper.CONNSEC.Open();
-    //    var dataList = conn.Query<DEMO012FormData>(sql.ToString(), param).AsList();
+    //    var dataList = conn.Query<DEMO012Profile>(sql.ToString(), param).AsList();
 
     return dataList;
   }
