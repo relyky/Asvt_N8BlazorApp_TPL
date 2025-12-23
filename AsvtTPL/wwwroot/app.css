@@ -30,3 +30,53 @@ ul.validation-errors {
   /* content: "(必填)"; */
   /* font-size: .75em; */
 }
+
+/************ custom: MudGrid/MudItem RWD 判斷依據由視窗寬度改成 MudGrid 寬度 ***********
+ * 寬度依 bootstrap4 breakpoints: 
+ * 540px ~ 720px ~ 960px ~ 1140px
+ *
+ * 範例:
+ * <AsvtFormRow Class="app-splitter-grid">
+ *   <AstvTextField ... ItemClass="app-splitter-grid-item" />
+ *   <AstvTextField ... ItemClass="app-splitter-grid-item" />
+ *   <AstvTextField ... ItemClass="app-splitter-grid-item" />
+ * </AsvtFormRow>
+**/
+
+.mud-grid.app-splitter-grid {
+  /* 註冊為容器查詢上下文 */
+  container-name: app-splitter-grid-container;
+  container-type: inline-size;
+}
+
+/* 預設：全寬 xs */
+@container app-splitter-grid-container (max-width: 540px) {
+  .mud-grid.app-splitter-grid .mud-grid-item {
+    max-width: 100%;
+    flex-basis: 100%;
+  }
+}
+
+/* 容器寬度 sm > 540px：半寬 */
+@container app-splitter-grid-container (min-width: 540px) {
+  .mud-grid.app-splitter-grid .mud-grid-item {
+    max-width: 50%;
+    flex-basis: 50%;
+  }
+}
+
+/* 容器寬度 md > 720px：三分之一寬 */
+@container app-splitter-grid-container (min-width: 720px) {
+  .mud-grid.app-splitter-grid .mud-grid-item {
+    max-width: 33.333%;
+    flex-basis: 33.333%;
+  }
+}
+
+/* 容器寬度 lg > 960px：四分之一寬 */
+@container app-splitter-grid-container (min-width: 960px) {
+  .mud-grid.app-splitter-grid .mud-grid-item {
+    max-width: 25%;
+    flex-basis: 25%;
+  }
+}
