@@ -249,7 +249,8 @@ public class AccountService(
             .AddMenuItem(new MenuItem { FuncId = "DEMO207", FuncName = "QR Code Scanner Sample", Url = "DEMO207" })
             .AddMenuItem(new MenuItem { FuncId = "DEMO208", FuncName = "拖拉編輯展示", Url = "DEMO208" })
             .AddMenuItem(new MenuItem { FuncId = "DEMO209", FuncName = "拖拉編輯展示二", Url = "DEMO209" })
-            .AddMenuItem(new MenuItem { FuncId = "DEMO210", FuncName = "畫面分割範例", Url = "DEMO210" });
+            .AddMenuItem(new MenuItem { FuncId = "DEMO210", FuncName = "畫面分割範例", Url = "DEMO210" })
+            .AddMenuItem(new MenuItem { FuncId = "DEMO211", FuncName = "畫面分割範例２", Url = "DEMO211" });
       }
 
       #endregion

@@ -1,0 +1,116 @@
+@using FluentValidation
+@using System.ComponentModel.DataAnnotations
+@page "/DEMO211"
+@attribute [Page("DEMO211", "畫面分割範例２")]
+@attribute [Authorize("AuthPage")]
+
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-0" Style="height: calc(100vh - 132px);">
+  <EditForm Model="formData" AdditionalAttributes=@formAttributes OnValidSubmit=HandleValidSubmit>
+    <SplitterLayout @ref=splitterRef
+                    LeftTopTitle="左上區域"
+                    LeftBottomTitle="左下區域"
+                    RightTitle="右側區域">
+      <ToolbarContent>
+        <MudToolBar Class="gap-3">
+          <MudToggleIconButton @bind-Toggled=@f_messageTip
+                               Icon=@Icons.Material.Filled.Fullscreen Color=Color.Primary
+                               ToggledIcon=@Icons.Material.Filled.FullscreenExit ToggledColor=Color.Secondary />
+          <MudText Typo=Typo.h6>自訂畫面分割</MudText>
+          <MudSpacer />
+          <MudButton OnClick=HandleResetLayout Variant=Variant.Filled Color=Color.Secondary>重置</MudButton>
+          <MudButton ButtonType=ButtonType.Submit Variant=Variant.Filled Color=Color.Primary>送出</MudButton>
+          <MudIconButton Icon="@Icons.Material.Outlined.MoreVert" Color="Color.Inherit" />
+        </MudToolBar>
+      </ToolbarContent>
+      <LeftTopPanel>
+        <MudPaper role="panel">
+          <AsvtFormRow Class="app-splitter-grid">
+            <AsvtTextField For="() => formData.Foo" />
+            <AsvtTextField For="() => formData.Bar" />
+            <AsvtTextField For="() => formData.Foo" />
+            <AsvtTextField For="() => formData.Bar" />
+            <AsvtTextField For="() => formData.Foo" />
+            <AsvtTextField For="() => formData.Bar" />
+            <AsvtTextField For="() => formData.Foo" />
+          </AsvtFormRow>
+        </MudPaper>
+      </LeftTopPanel>
+      <LeftBottomPanel>
+        <MudPaper role="panel">
+          <AsvtFormRow Class="app-splitter-grid">
+            <AsvtTextField For="() => formData.Foo" />
+            <AsvtTextField For="() => formData.Bar" />
+            <AsvtTextField For="() => formData.Baz" />
+            <AsvtTextField For="() => formData.Foo" />
+            <AsvtTextField For="() => formData.Bar" />
+            <AsvtTextField For="() => formData.Baz" />
+          </AsvtFormRow>
+        </MudPaper>
+      </LeftBottomPanel>
+
+      <RightPanel>
+        <h2>右半分割畫面預計放圖片</h2>
+        <div class="image-container">
+          <img src="https://cdn.pixabay.com/photo/2022/08/15/03/07/path-7387018_960_720.jpg" alt="示意圖">
+        </div>
+      </RightPanel>
+    </SplitterLayout>
+  </EditForm>
+</MudContainer>
+
+@* display debug message *@
+<MudPopover Open=f_messageTip Fixed=false>
+  <MudStack Class="pa-4">
+    <MudButton OnClick=ToggleMessageTip Color=Color.Error>Close</MudButton>
+    <pre>@debugMessage</pre>
+  </MudStack>
+</MudPopover>
+
+@code {
+
+  // resource
+  readonly Dictionary<string, object> formAttributes = new([new("style", "height:100%")]);
+  SplitterLayout? splitterRef;
+
+  // state
+  FooModel formData = new();
+  bool f_messageTip = false;
+  string? debugMessage = null;
+
+  void ToggleMessageTip() => f_messageTip = !f_messageTip;
+
+  async Task HandleResetLayout()
+  {
+    if (splitterRef != null)
+      await splitterRef.ResetLayoutAsync();
+  }
+
+  Task HandleValidSubmit(EditContext ctx)
+  {
+    var model = ctx.Model as FooModel;
+    debugMessage = model != null ? Utils.JsonSerialize(model) : "無訊息！";
+    f_messageTip = true;
+    return Task.CompletedTask;
+  }
+
+  public record FooModel
+  {
+    [Display(Name = "孫悟空")]
+    public string Foo { get; set; } = "foo";
+    [Display(Name = "翻筋斗")]
+    public string Bar { get; set; } = "這是中文字";
+    [Display(Name = "巴啦巴啦")]
+    public string Baz { get; set; } = "巴啦巴啦";
+  }
+
+  public class FooModelValidator : AbstractValidator<FooModel>
+  {
+    public FooModelValidator()
+    {
+      RuleFor(m => m.Foo).NotEmpty();
+      RuleFor(m => m.Bar).NotEmpty();
+      RuleFor(m => m.Bar).NotEmpty();
+    }
+
+  }
+}

@@ -1,0 +1,18 @@
+/* DEMO211 測試頁面專用樣式 */
+
+/* 圖片容器 */
+.image-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: linear-gradient(135deg, #fef5e7 0%, #f9e6d5 100%);
+}
+
+.image-container img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
