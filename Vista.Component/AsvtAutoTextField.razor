@@ -4,7 +4,7 @@
 @* Autocomplete text input, 可以自由輸入(free solo)，也可以選取最近或常用的文字敘述。 *@
 @* 建議未來改名成：AsvtSelectSoloField。命名依照 Material Design 典範 *@
 @* ※ 屬性 SelectValueOnTab = false 設成 true 會讓下一個 select 元件掉入無限遞迴！ *@
-<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl Class=@ItemClass>
   <MudAutocomplete T="String"
                    @bind-Value=FieldValue
                    Immediate=@Immediate

@@ -27,6 +27,7 @@ public class AsvtFieldBase<T> : ComponentBase
   [Parameter] public string? HelperText { get; set; }
   [Parameter] public bool Required { get; set; }
   [Parameter] public string? Class { get; set; }
+  [Parameter] public string? ItemClass { get; set; }
 
   /// <summary>
   /// 自訂訊息。對外通知 FieldValue 已改變。

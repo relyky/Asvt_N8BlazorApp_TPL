@@ -11,7 +11,7 @@
 @* 建議未來改名成：AsvtComboboxField。命名依照 Material Design 典範 *@
 @* ※ 屬性 SelectValueOnTab 若設成 true 會讓下一個 select 元件掉入無限遞迴！ *@
 @* 例如：選『銀行』→ <tab> →『分行』會進入 UI 無限遞迴。 *@
-<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl>
+<MudItem xs=@_xs sm=@_sm md=@_md lg=@_lg xl=@_xl xxl=@_xxl Class=@ItemClass>
   <MudAutocomplete T="ICodeName"
   @bind-Value=codeValue
   Immediate=@Immediate
