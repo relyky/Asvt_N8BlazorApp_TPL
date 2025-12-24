@@ -204,7 +204,7 @@ IF age < 18
 2. 將其他邏輯（IF/ELSE）提到 Assignment 之前
 3. 重新設計決策樹結構，確保邏輯先判斷，最後才賦值
 
-詳細說明請參閱：**ASSIGNMENT-SIBLING-RULE-GUIDE.md**
+
 
 ## 使用技巧
 

@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 即時視覺化回饋
 - JSON 格式匯入/匯出
 - 嚴格的結構驗證規則
-- 保持高度靈活的操作體驗。操作拖拉**節點**時不進行限制，將集中在**驗證結構**時統一檢查。
+- **指導原則**：保持高度靈活的操作體驗。所有結構限制（特別是 Assignment 規則）都集中在「✓ 驗證結構」功能中進行檢查，操作時不設預防性限制。
 
 ---
 
@@ -75,14 +75,9 @@ class TreeNode {
 
 **原因：** Assignment 代表決策的最終結果（葉節點），是邏輯終止點。
 
-**強制執行位置：**
-- `decision-tree-editor.html:683-698` - `addChildNode()` 函數會阻止添加
-- `decision-tree-editor.html:948-968` - 拖拉操作會被阻止
-- `decision-tree-editor.html:1084-1092` - 驗證時會報錯
-
-**UI 提示：**
-- 編輯面板中「新增子節點」按鈕會被禁用
-- 節點旁邊會顯示紅色閃爍的「⚠️ 錯誤」標記
+**檢查與提示：**
+- **驗證**：點擊「✓ 驗證結構」時，`validateNode()` 函式會檢查並回報此錯誤。
+- **UI 提示**：若此錯誤存在，節點旁會顯示紅色閃爍的「⚠️ 錯誤」標記，編輯面板中也會有錯誤訊息。
 
 ### 規則 2：同層級唯一性 ⭐⭐ （v1.2 新增）
 
@@ -104,42 +99,39 @@ IF age < 18
     Assignment: guardian = optional  ← ✓ 該層級只有這一個節點
 ```
 
-**強制執行位置：**
-- `decision-tree-editor.html:686-692` - `addChildNode()` 檢查
-- `decision-tree-editor.html:707-719` - `addSiblingNode()` 檢查
-- `decision-tree-editor.html:816-854` - `updateNodeType()` 類型切換檢查
-- `decision-tree-editor.html:1107-1115` - 驗證函數
+**檢查與提示：**
+- **驗證**：點擊「✓ 驗證結構」時，`validateNode()` 函式會檢查並回報此錯誤。
 
 ---
 
 ## 主要函數對照表
 
 ### 節點操作
-- `addRootNode()` (658) - 新增根層級節點
-- `addChildNode(parent)` (680) - 新增子節點（含 Assignment 規則檢查）
-- `addSiblingNode(current)` (700) - 新增兄弟節點（含同層級檢查）
-- `deleteNode(node, parent)` (731) - 刪除節點及其子樹
+- `addRootNode()` - 新增根層級節點
+- `addChildNode(parent)` - 新增子節點
+- `addSiblingNode(current)` - 新增兄弟節點
+- `deleteNode(node, parent)` - 刪除節點及其子樹
 
 ### 渲染與 UI
-- `renderTree()` (507) - 重新渲染整個樹狀視圖
-- `renderNode(node, parent)` (521) - 遞迴渲染單一節點
-- `renderEditPanel(node)` (742) - 渲染右側編輯面板
+- `renderTree()` - 重新渲染整個樹狀視圖
+- `renderNode(node, parent)` - 遞迴渲染單一節點
+- `renderEditPanel(node)` - 渲染右側編輯面板
 
 ### 拖拉功能
-- `handleDragStart(e, node, parent)` (908) - 開始拖拉
-- `handleDrop(e, targetNode)` (941) - 放下節點（含 Assignment 規則檢查）
+- `handleDragStart(e, node, parent)` - 開始拖拉
+- `handleDrop(e, targetNode)` - 放下節點
 
 ### 驗證與匯出
-- `validateTree()` (1026) - 執行完整的結構驗證
-- `validateNode(node, errors, warnings, path)` (1060) - 遞迴驗證節點
-- `exportToJSON()` (1248) - 匯出為 JSON 檔案
-- `importFromJSON(event)` (1266) - 從 JSON 檔案匯入
-- `generateTextOutput(node, indent)` (1221) - 產生 IF/ELSE 文字規則
+- `validateTree()` - 執行完整的結構驗證
+- `validateNode(node, errors, warnings, path)` - 遞迴驗證節點
+- `exportToJSON()` - 匯出為 JSON 檔案
+- `importFromJSON(event)` - 從 JSON 檔案匯入
+- `generateTextOutput(node, indent)` - 產生 IF/ELSE 文字規則
 
 ### 輔助函數
-- `findNodeById(node, id)` (1006) - 以 ID 查找節點
-- `findParentNode(parent, childId)` (1015) - 查找節點的父節點
-- `showNotification(message, type)` (1323) - 顯示通知訊息
+- `findNodeById(node, id)` - 以 ID 查找節點
+- `findParentNode(parent, childId)` - 查找節點的父節點
+- `showNotification(message, type)` - 顯示通知訊息
 
 ---
 
@@ -178,12 +170,9 @@ html_template/
 ## 開發注意事項
 
 ### 修改驗證規則時
-1. 同時更新三個地方的邏輯：
-   - `addChildNode()` / `addSiblingNode()` - UI 操作限制
-   - `handleDrop()` - 拖拉操作限制
-   - `validateNode()` - 驗證函數
-2. 更新 `VALIDATION-RULES.md` 文件
-3. 考慮是否需要更新 `updateNodeType()` 的類型切換檢查
+1.  **核心邏輯**：主要修改 `validateNode()` 函式來實作新的或變更的規則。
+2.  **UI 提示**：可選擇性地在 `renderNode()` 或 `renderEditPanel()` 中增加視覺提示（如錯誤標記），以改善使用者體驗。
+3.  **文件同步**：記得更新 `VALIDATION-RULES.md` 和 `CLAUDE.md` 中的相關說明。
 
 ### 修改節點類型時
 1. 更新 `TreeNode` 類別的 constructor

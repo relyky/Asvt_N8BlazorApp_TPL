@@ -1121,26 +1121,11 @@ ${node.type === 'Assignment' && node.assignment ? '指定值: ' + node.assignmen
                 warnings.push(`路徑 ${currentPath.join(' > ')}: ELSE 節點建議放在最後`);
             }
             
-            // 新增規則2：同一層級中，如果有 Assignment 節點，則不能有其他節點
-            const assignmentNodes = node.children.filter(child => child.type === 'Assignment');
-            const otherNodes = node.children.filter(child => child.type !== 'Assignment');
-            
-            if (assignmentNodes.length > 0 && otherNodes.length > 0) {
-                const otherNodeTypes = otherNodes.map(n => getNodeTypeName(n.type)).join(', ');
-                errors.push(`路徑 ${currentPath.join(' > ')}: 同一層級中有 Assignment 節點時，不能有其他節點。` +
-                    `發現 ${assignmentNodes.length} 個 Assignment 和 ${otherNodes.length} 個其他節點（${otherNodeTypes}）。` +
-                    `Assignment 是終止點，該層級應只有 Assignment 節點。`);
-            }
-            
-            // 檢查 Assignment 後面是否還有兄弟節點（此規則被上面的規則涵蓋，保留作為額外檢查）
-            const assignmentIndex = node.children.findIndex(child => child.type === 'Assignment');
-            if (assignmentIndex !== -1 && assignmentIndex < node.children.length - 1) {
-                // 檢查 Assignment 後面的節點
-                const nodesAfterAssignment = node.children.slice(assignmentIndex + 1);
-                const nonAssignmentNodes = nodesAfterAssignment.filter(child => child.type !== 'Assignment');
-                if (nonAssignmentNodes.length > 0) {
-                    warnings.push(`路徑 ${currentPath.join(' > ')}: Assignment 節點後面還有 ${nonAssignmentNodes.length} 個非 Assignment 節點，建議調整順序`);
-                }
+            // 修正規則2：檢查同層級的 Assignment 唯一性
+            // 如果一個層級中存在 Assignment 節點，那麼該層級只能有這一個節點。
+            const assignmentCount = node.children.filter(child => child.type === 'Assignment').length;
+            if (assignmentCount > 0 && node.children.length > 1) {
+                errors.push(`路徑 ${currentPath.join(' > ')}: 同一層級中有 Assignment 節點時，它必須是唯一的節點。此處發現了 ${node.children.length} 個節點，違反了此規則。`);
             }
             
             // 遞迴檢查子節點
