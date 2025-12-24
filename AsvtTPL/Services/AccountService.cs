@@ -250,7 +250,8 @@ public class AccountService(
             .AddMenuItem(new MenuItem { FuncId = "DEMO208", FuncName = "拖拉編輯展示", Url = "DEMO208" })
             .AddMenuItem(new MenuItem { FuncId = "DEMO209", FuncName = "拖拉編輯展示二", Url = "DEMO209" })
             .AddMenuItem(new MenuItem { FuncId = "DEMO210", FuncName = "畫面分割範例", Url = "DEMO210" })
-            .AddMenuItem(new MenuItem { FuncId = "DEMO211", FuncName = "畫面分割範例２", Url = "DEMO211" });
+            .AddMenuItem(new MenuItem { FuncId = "DEMO211", FuncName = "畫面分割範例２", Url = "DEMO211" })
+            .AddMenuItem(new MenuItem { FuncId = "DEMO212", FuncName = "可拖拉決策樹", Url = "DEMO212" });
       }
 
       #endregion
