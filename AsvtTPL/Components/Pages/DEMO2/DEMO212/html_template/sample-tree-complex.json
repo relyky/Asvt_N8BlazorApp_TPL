@@ -1,0 +1,133 @@
+{
+  "id": "root",
+  "type": "Root",
+  "condition": "",
+  "assignment": "",
+  "children": [
+    {
+      "id": "node_101",
+      "type": "IfCondition",
+      "condition": "age >= 18",
+      "assignment": "",
+      "children": [
+        {
+          "id": "node_102",
+          "type": "IfCondition",
+          "condition": "hasLicense = true",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_103",
+              "type": "IfCondition",
+              "condition": "experience > 5",
+              "assignment": "",
+              "children": [
+                {
+                  "id": "node_104",
+                  "type": "Assignment",
+                  "condition": "",
+                  "assignment": "category = 'Senior Driver'",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "node_105",
+              "type": "ElseBranch",
+              "assignment": "",
+              "children": [
+                {
+                  "id": "node_106",
+                  "type": "Assignment",
+                  "condition": "",
+                  "assignment": "category = 'Junior Driver'",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "node_107",
+          "type": "IfCondition",
+          "condition": "hasLicense = false",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_108",
+              "type": "Assignment",
+              "condition": "",
+              "assignment": "category = 'Adult Non-Driver'",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node_109",
+          "type": "ElseBranch",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_110",
+              "type": "Assignment",
+              "condition": "",
+              "assignment": "category = 'Unknown Status'",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node_201",
+      "type": "ElseBranch",
+      "assignment": "",
+      "children": [
+        {
+          "id": "node_202",
+          "type": "IfCondition",
+          "condition": "age >= 16",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_203",
+              "type": "Assignment",
+              "condition": "",
+              "assignment": "category = 'Teen'",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node_204",
+          "type": "IfCondition",
+          "condition": "age >= 13",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_205",
+              "type": "Assignment",
+              "condition": "",
+              "assignment": "category = 'Teenager'",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node_206",
+          "type": "ElseBranch",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_207",
+              "type": "Assignment",
+              "condition": "",
+              "assignment": "category = 'Child'",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

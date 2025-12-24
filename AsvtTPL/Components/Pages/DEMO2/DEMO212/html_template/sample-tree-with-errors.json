@@ -1,0 +1,113 @@
+{
+  "id": "root",
+  "type": "Root",
+  "condition": "",
+  "assignment": "",
+  "children": [
+    {
+      "id": "node_001",
+      "type": "IfCondition",
+      "condition": "age >= 18",
+      "assignment": "",
+      "children": [
+        {
+          "id": "node_002",
+          "type": "Assignment",
+          "condition": "",
+          "assignment": "result = 'Adult'",
+          "children": [
+            {
+              "id": "node_003",
+              "type": "IfCondition",
+              "condition": "hasJob = true",
+              "assignment": "",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node_004",
+      "type": "IfCondition",
+      "condition": "age < 18",
+      "assignment": "",
+      "children": [
+        {
+          "id": "node_005",
+          "type": "Assignment",
+          "condition": "",
+          "assignment": "result = 'Minor'",
+          "children": []
+        },
+        {
+          "id": "node_006",
+          "type": "IfCondition",
+          "condition": "needParent = true",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_007",
+              "type": "Assignment",
+              "condition": "",
+              "assignment": "guardian = required",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node_008",
+      "type": "IfCondition",
+      "condition": "age = null",
+      "assignment": "",
+      "children": [
+        {
+          "id": "node_009",
+          "type": "Assignment",
+          "condition": "",
+          "assignment": "result = 'Unknown'",
+          "children": []
+        },
+        {
+          "id": "node_010",
+          "type": "Assignment",
+          "condition": "",
+          "assignment": "needVerify = true",
+          "children": []
+        },
+        {
+          "id": "node_011",
+          "type": "ElseBranch",
+          "condition": "",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_012",
+              "type": "Assignment",
+              "condition": "",
+              "assignment": "error = true",
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "node_013",
+      "type": "ElseBranch",
+      "condition": "",
+      "assignment": "",
+      "children": [
+        {
+          "id": "node_014",
+          "type": "Assignment",
+          "condition": "",
+          "assignment": "result = 'Default'",
+          "children": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>決策樹編輯器 - Decision Tree Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 左側 Tree View */
+        .tree-panel {
+            flex: 1;
+            background: white;
+            border-right: 2px solid #ddd;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tree-header {
+            padding: 20px;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tree-header h2 {
+            font-size: 20px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .tree-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        /* 樹狀結構樣式 */
+        .tree-node {
+            margin: 5px 0;
+            user-select: none;
+        }
+
+        .node-content {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .node-content:hover {
+            background: #ecf0f1;
+        }
+
+        .node-content.selected {
+            background: #d5e8f7;
+            border-color: #3498db;
+        }
+
+        .node-content.drag-over {
+            border-color: #27ae60;
+            background: #d5f4e6;
+        }
+
+        .node-toggle {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .node-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .node-icon.if {
+            background: #3498db;
+            color: white;
+        }
+
+        .node-icon.else {
+            background: #e67e22;
+            color: white;
+        }
+
+        .node-icon.assignment {
+            background: #27ae60;
+            color: white;
+        }
+
+        .node-icon.none {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .node-label {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .node-type-badge {
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .badge-if {
+            background: #3498db;
+            color: white;
+        }
+
+        .badge-else {
+            background: #e67e22;
+            color: white;
+        }
+
+        .badge-assignment {
+            background: #27ae60;
+            color: white;
+        }
+
+        .badge-none {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .badge-error {
+            background: #e74c3c;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .node-children {
+            margin-left: 30px;
+            border-left: 2px dotted #bdc3c7;
+            padding-left: 10px;
+        }
+
+        .node-children.collapsed {
+            display: none;
+        }
+
+        /* 右側編輯區 */
+        .edit-panel {
+            width: 400px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .edit-header {
+            padding: 20px;
+            background: #34495e;
+            color: white;
+        }
+
+        .edit-header h2 {
+            font-size: 20px;
+        }
+
+        .edit-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .form-group select,
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .placeholder {
+            text-align: center;
+            padding: 40px;
+            color: #95a5a6;
+        }
+
+        /* 輸出區域 */
+        .output-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 4px;
+        }
+
+        .output-section h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .output-section pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* 驗證訊息 */
+        .validation-message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .validation-message.error {
+            background: #fadbd8;
+            color: #c0392b;
+            border: 1px solid #e74c3c;
+        }
+
+        .validation-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #27ae60;
+        }
+
+        .validation-message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffc107;
+        }
+
+        /* 拖拉提示 */
+        .drag-hint {
+            position: fixed;
+            background: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+
+        /* 滾動條樣式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* 按鈕組 */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .button-group .btn {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左側 Tree View -->
+        <div class="tree-panel">
+            <div class="tree-header">
+                <h2>📊 決策樹結構</h2>
+                <div class="toolbar">
+                    <button class="btn btn-primary" onclick="addRootNode()">➕ 新增根節點</button>
+                    <button class="btn btn-success" onclick="validateTree()">✓ 驗證結構</button>
+                    <button class="btn btn-primary" onclick="exportToText()">📄 匯出規則</button>
+                    <button class="btn btn-primary" onclick="exportToJSON()">💾 匯出 JSON</button>
+                    <button class="btn btn-primary" onclick="document.getElementById('importFile').click()">📂 匯入 JSON</button>
+                    <button class="btn btn-danger" onclick="clearTree()">🗑️ 清空</button>
+                </div>
+            </div>
+            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importFromJSON(event)">
+            <div class="tree-content" id="treeContent">
+                <!-- 樹狀結構會動態生成在這裡 -->
+            </div>
+        </div>
+
+        <!-- 右側編輯區 -->
+        <div class="edit-panel">
+            <div class="edit-header">
+                <h2>✏️ 節點編輯器</h2>
+            </div>
+            <div class="edit-content" id="editContent">
+                <div class="placeholder">
+                    <p>請從左側選擇一個節點進行編輯</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 拖拉提示 -->
+    <div class="drag-hint" id="dragHint"></div>
+
+    <script>
+        // ==================== 資料模型 ====================
+        
+        class TreeNode {
+            constructor(type = 'None', id = null) {
+                this.id = id || this.generateId();
+                this.type = type; // 'IfCondition', 'ElseBranch', 'Assignment', 'None'
+                this.condition = '';
+                this.assignment = '';
+                this.children = [];
+                this.collapsed = false;
+            }
+
+            generateId() {
+                return 'node_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+
+            addChild(node) {
+                this.children.push(node);
+            }
+
+            removeChild(nodeId) {
+                this.children = this.children.filter(child => child.id !== nodeId);
+            }
+
+            toJSON() {
+                return {
+                    id: this.id,
+                    type: this.type,
+                    condition: this.condition,
+                    assignment: this.assignment,
+                    children: this.children.map(child => child.toJSON())
+                };
+            }
+
+            static fromJSON(data) {
+                const node = new TreeNode(data.type, data.id);
+                node.condition = data.condition || '';
+                node.assignment = data.assignment || '';
+                node.children = (data.children || []).map(child => TreeNode.fromJSON(child));
+                return node;
+            }
+        }
+
+        // ==================== 全域狀態 ====================
+        
+        let treeData = {
+            root: new TreeNode('Root', 'root'),
+            selectedNode: null
+        };
+
+        let draggedNode = null;
+        let draggedNodeParent = null;
+
+        // ==================== 初始化 ====================
+        
+        function init() {
+            // 載入範例資料（可選）
+            loadSampleData();
+            renderTree();
+        }
+
+        function loadSampleData() {
+            const root = treeData.root;
+            
+            // 範例一的結構
+            const if1 = new TreeNode('IfCondition');
+            if1.condition = 'A = 3';
+            const assign1 = new TreeNode('Assignment');
+            assign1.assignment = '\'3A\'';
+            if1.addChild(assign1);
+            
+            const if2 = new TreeNode('IfCondition');
+            if2.condition = 'B = 4';
+            const assign2 = new TreeNode('Assignment');
+            assign2.assignment = '\'Bar\'';
+            if2.addChild(assign2);
+            
+            const if3 = new TreeNode('IfCondition');
+            if3.condition = 'A < 10';
+            const assign3 = new TreeNode('Assignment');
+            assign3.assignment = '\'少數\'';
+            if3.addChild(assign3);
+            
+            const else1 = new TreeNode('ElseBranch');
+            const assign4 = new TreeNode('Assignment');
+            assign4.assignment = '\'otherwise\'';
+            else1.addChild(assign4);
+            
+            root.addChild(if1);
+            root.addChild(if2);
+            root.addChild(if3);
+            root.addChild(else1);
+        }
+
+        // ==================== Tree 渲染 ====================
+        
+        function renderTree() {
+            const container = document.getElementById('treeContent');
+            container.innerHTML = '';
+            
+            if (treeData.root.children.length === 0) {
+                container.innerHTML = '<div class="placeholder"><p>尚無節點，請點擊「新增根節點」開始建立決策樹</p></div>';
+                return;
+            }
+            
+            treeData.root.children.forEach(child => {
+                container.appendChild(renderNode(child, treeData.root));
+            });
+        }
+
+        function renderNode(node, parent) {
+            const nodeDiv = document.createElement('div');
+            nodeDiv.className = 'tree-node';
+            nodeDiv.setAttribute('data-node-id', node.id);
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'node-content';
+            contentDiv.draggable = true;
+            
+            if (treeData.selectedNode && treeData.selectedNode.id === node.id) {
+                contentDiv.classList.add('selected');
+            }
+            
+            // 展開/收合按鈕
+            const toggleBtn = document.createElement('span');
+            toggleBtn.className = 'node-toggle';
+            if (node.children.length > 0) {
+                toggleBtn.textContent = node.collapsed ? '▶' : '▼';
+                toggleBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleNode(node.id);
+                };
+            }
+            contentDiv.appendChild(toggleBtn);
+            
+            // 節點圖示
+            const icon = document.createElement('span');
+            icon.className = 'node-icon ' + getNodeClass(node.type);
+            icon.textContent = getNodeIcon(node.type);
+            contentDiv.appendChild(icon);
+            
+            // 節點標籤
+            const label = document.createElement('span');
+            label.className = 'node-label';
+            label.textContent = getNodeLabel(node);
+            contentDiv.appendChild(label);
+            
+            // 類型標籤
+            const badge = document.createElement('span');
+            badge.className = 'node-type-badge badge-' + getNodeClass(node.type);
+            badge.textContent = getNodeTypeName(node.type);
+            contentDiv.appendChild(badge);
+            
+            // 如果 Assignment 有子節點，顯示錯誤標記
+            if (node.type === 'Assignment' && node.children.length > 0) {
+                const errorBadge = document.createElement('span');
+                errorBadge.className = 'node-type-badge badge-error';
+                errorBadge.textContent = '⚠️ 錯誤';
+                errorBadge.title = 'Assignment 不應該有子節點';
+                errorBadge.style.marginLeft = '5px';
+                contentDiv.appendChild(errorBadge);
+            }
+            
+            // 事件監聽
+            contentDiv.onclick = () => selectNode(node);
+            contentDiv.ondragstart = (e) => handleDragStart(e, node, parent);
+            contentDiv.ondragover = (e) => handleDragOver(e);
+            contentDiv.ondrop = (e) => handleDrop(e, node);
+            contentDiv.ondragenter = (e) => handleDragEnter(e);
+            contentDiv.ondragleave = (e) => handleDragLeave(e);
+            contentDiv.ondragend = (e) => handleDragEnd(e);
+            
+            nodeDiv.appendChild(contentDiv);
+            
+            // 子節點
+            if (node.children.length > 0) {
+                const childrenDiv = document.createElement('div');
+                childrenDiv.className = 'node-children' + (node.collapsed ? ' collapsed' : '');
+                node.children.forEach(child => {
+                    childrenDiv.appendChild(renderNode(child, node));
+                });
+                nodeDiv.appendChild(childrenDiv);
+            }
+            
+            return nodeDiv;
+        }
+
+        function getNodeIcon(type) {
+            const icons = {
+                'IfCondition': '?',
+                'ElseBranch': '↩',
+                'Assignment': '=',
+                'None': '○'
+            };
+            return icons[type] || '○';
+        }
+
+        function getNodeClass(type) {
+            const classes = {
+                'IfCondition': 'if',
+                'ElseBranch': 'else',
+                'Assignment': 'assignment',
+                'None': 'none'
+            };
+            return classes[type] || 'none';
+        }
+
+        function getNodeTypeName(type) {
+            const names = {
+                'IfCondition': 'IF',
+                'ElseBranch': 'ELSE',
+                'Assignment': 'ASSIGN',
+                'None': 'NONE'
+            };
+            return names[type] || 'NONE';
+        }
+
+        function getNodeLabel(node) {
+            if (node.type === 'IfCondition') {
+                return node.condition ? `IF ${node.condition}` : 'IF (未設定條件)';
+            } else if (node.type === 'ElseBranch') {
+                return 'ELSE';
+            } else if (node.type === 'Assignment') {
+                return node.assignment ? node.assignment : '(未設定指定值)';
+            } else if (node.type === 'Root') {
+                return '根節點';
+            } else {
+                return 'NONE (未指定類型)';
+            }
+        }
+
+        // ==================== 節點操作 ====================
+        
+        function toggleNode(nodeId) {
+            const node = findNodeById(treeData.root, nodeId);
+            if (node) {
+                node.collapsed = !node.collapsed;
+                renderTree();
+            }
+        }
+
+        function selectNode(node) {
+            treeData.selectedNode = node;
+            renderTree();
+            renderEditPanel(node);
+        }
+
+        function addRootNode() {
+            const newNode = new TreeNode('None');
+            treeData.root.addChild(newNode);
+            renderTree();
+            selectNode(newNode);
+        }
+
+        function clearTree() {
+            if (treeData.root.children.length === 0) {
+                showNotification('⚠️ 樹已經是空的！', 'warning');
+                return;
+            }
+            
+            if (confirm('確定要清空整個決策樹嗎？此操作無法復原！')) {
+                treeData.root = new TreeNode('Root', 'root');
+                treeData.selectedNode = null;
+                renderTree();
+                renderEditPanel(null);
+                showNotification('✓ 決策樹已清空！', 'success');
+            }
+        }
+
+        function addChildNode(parentNode) {
+            // 檢查是否為 Assignment 節點
+            if (parentNode.type === 'Assignment') {
+                showNotification('⚠️ Assignment 是結構終止點，不能添加子節點！', 'error');
+                return;
+            }
+            
+            // 檢查父節點是否已有 Assignment 子節點
+            const hasAssignment = parentNode.children.some(child => child.type === 'Assignment');
+            if (hasAssignment) {
+                showNotification('⚠️ 該節點的子層級已有 Assignment 節點，不能再添加其他節點！\nAssignment 是終止點，同層級不能有其他節點。', 'error');
+                return;
+            }
+            
+            const newNode = new TreeNode('None');
+            parentNode.addChild(newNode);
+            renderTree();
+            selectNode(newNode);
+        }
+
+        function addSiblingNode(currentNode) {
+            const parent = findParentNode(treeData.root, currentNode.id);
+            if (!parent) {
+                alert('根節點無法新增兄弟節點！');
+                return;
+            }
+            
+            // 檢查同層級是否已有 Assignment 節點
+            const hasAssignment = parent.children.some(child => child.type === 'Assignment');
+            if (hasAssignment && currentNode.type !== 'Assignment') {
+                showNotification('⚠️ 同層級已有 Assignment 節點，不能再添加其他類型的兄弟節點！', 'error');
+                return;
+            }
+            
+            // 檢查是否要添加 Assignment，而同層級已有其他類型
+            const hasOtherTypes = parent.children.some(child => child.type !== 'Assignment');
+            if (hasOtherTypes && currentNode.type === 'Assignment') {
+                showNotification('⚠️ 同層級已有其他類型的節點，不能再添加 Assignment 兄弟節點！', 'error');
+                return;
+            }
+            
+            const newNode = new TreeNode('None');
+            const currentIndex = parent.children.findIndex(child => child.id === currentNode.id);
+            
+            // 在當前節點後面插入新節點
+            parent.children.splice(currentIndex + 1, 0, newNode);
+            
+            renderTree();
+            selectNode(newNode);
+        }
+
+        function deleteNode(node, parent) {
+            if (confirm('確定要刪除此節點及其所有子節點嗎？')) {
+                parent.removeChild(node.id);
+                treeData.selectedNode = null;
+                renderTree();
+                renderEditPanel(null);
+            }
+        }
+
+        // ==================== 編輯面板 ====================
+        
+        function renderEditPanel(node) {
+            const container = document.getElementById('editContent');
+            
+            if (!node) {
+                container.innerHTML = '<div class="placeholder"><p>請從左側選擇一個節點進行編輯</p></div>';
+                return;
+            }
+            
+            const parent = findParentNode(treeData.root, node.id);
+            
+            // 檢查 Assignment 節點是否有子節點（錯誤狀態）
+            const hasAssignmentError = node.type === 'Assignment' && node.children.length > 0;
+            
+            container.innerHTML = `
+                ${hasAssignmentError ? '<div class="validation-message error">⚠️ <strong>結構錯誤：</strong>Assignment 是終止點，不應該有子節點！目前有 ' + node.children.length + ' 個子節點。<br>請刪除所有子節點或調整結構。</div>' : ''}
+                
+                <div class="form-group">
+                    <label>節點類型</label>
+                    <select id="nodeType" onchange="updateNodeType()">
+                        <option value="None" ${node.type === 'None' ? 'selected' : ''}>NONE (未指定)</option>
+                        <option value="IfCondition" ${node.type === 'IfCondition' ? 'selected' : ''}>IF (條件判斷)</option>
+                        <option value="ElseBranch" ${node.type === 'ElseBranch' ? 'selected' : ''}>ELSE (其它分支)</option>
+                        <option value="Assignment" ${node.type === 'Assignment' ? 'selected' : ''}>Assignment (指定數值)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="conditionGroup" style="display: ${node.type === 'IfCondition' ? 'block' : 'none'}">
+                    <label>條件 (Condition)</label>
+                    <input type="text" id="nodeCondition" value="${node.condition || ''}" 
+                           placeholder="例如: A = 3, B > 10" onchange="updateNodeCondition()">
+                </div>
+                
+                <div class="form-group" id="assignmentGroup" style="display: ${node.type === 'Assignment' ? 'block' : 'none'}">
+                    <label>指定值 (Assignment)</label>
+                    <textarea id="nodeAssignment" onchange="updateNodeAssignment()" 
+                              placeholder="例如: '3A', 'Bar', result">${node.assignment || ''}</textarea>
+                </div>
+                
+                <div class="button-group">
+                    ${node.type !== 'Assignment' 
+                        ? '<button class="btn btn-primary" onclick="addChildNode(treeData.selectedNode)">➕ 新增子節點</button>' 
+                        : '<button class="btn btn-primary" disabled style="opacity: 0.5; cursor: not-allowed;" title="Assignment 是終止點，不能添加子節點">🚫 不可添加子節點</button>'}
+                    ${parent ? '<button class="btn btn-primary" onclick="addSiblingNode(treeData.selectedNode)">➕ 新增兄弟節點</button>' : ''}
+                </div>
+                ${node.type === 'Assignment' ? '<div class="validation-message warning" style="margin-top: 10px;">💡 <strong>提示：</strong>Assignment 節點是決策樹的終止點（葉節點），不能有子節點。</div>' : ''}
+                <div class="button-group">
+                    <button class="btn btn-danger" onclick="deleteNode(treeData.selectedNode, findParentNode(treeData.root, treeData.selectedNode.id))">🗑️ 刪除節點</button>
+                </div>
+                
+                <div class="output-section">
+                    <h3>節點資訊</h3>
+                    <div class="form-group">
+                        <select id="infoFormat" onchange="toggleInfoFormat()">
+                            <option value="text">基本資訊</option>
+                            <option value="json">JSON 格式</option>
+                        </select>
+                    </div>
+                    <pre id="textInfo">ID: ${node.id}
+類型: ${getNodeTypeName(node.type)}
+子節點數: ${node.children.length}
+${node.condition ? '條件: ' + node.condition : ''}
+${node.type === 'Assignment' && node.assignment ? '指定值: ' + node.assignment : ''}</pre>
+                    <pre id="jsonInfo" style="display: none;">${JSON.stringify(node.toJSON(), null, 2)}</pre>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="copyNodeJSON()">📋 複製節點 JSON</button>
+                </div>
+            `;
+        }
+
+        function updateNodeType() {
+            const type = document.getElementById('nodeType').value;
+            const currentNode = treeData.selectedNode;
+            const oldType = currentNode.type;
+            
+            // 檢查類型轉換的合法性
+            if (type !== oldType) {
+                const parent = findParentNode(treeData.root, currentNode.id);
+                if (parent) {
+                    const siblings = parent.children.filter(child => child.id !== currentNode.id);
+                    
+                    // 如果要改為 Assignment
+                    if (type === 'Assignment') {
+                        const hasOtherTypes = siblings.some(child => child.type !== 'Assignment');
+                        if (hasOtherTypes) {
+                            const otherTypes = siblings
+                                .filter(child => child.type !== 'Assignment')
+                                .map(child => getNodeTypeName(child.type))
+                                .join(', ');
+                            showNotification(`⚠️ 無法改為 Assignment！\n同層級已有其他類型的節點（${otherTypes}）。`, 'error');
+                            document.getElementById('nodeType').value = oldType;
+                            return;
+                        }
+                    }
+                    
+                    // 如果從 Assignment 改為其他類型
+                    if (oldType === 'Assignment') {
+                        const hasOtherAssignments = siblings.some(child => child.type === 'Assignment');
+                        if (hasOtherAssignments) {
+                            showNotification('⚠️ 無法改變類型！\n同層級已有 Assignment 節點，不能改為其他類型。', 'error');
+                            document.getElementById('nodeType').value = oldType;
+                            return;
+                        }
+                    }
+                    
+                    // 如果要改為非 Assignment 類型
+                    if (type !== 'Assignment' && type !== 'None') {
+                        const hasAssignments = siblings.some(child => child.type === 'Assignment');
+                        if (hasAssignments) {
+                            showNotification('⚠️ 無法改變類型！\n同層級已有 Assignment 節點，不能添加其他類型的節點。', 'error');
+                            document.getElementById('nodeType').value = oldType;
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            currentNode.type = type;
+            
+            // 根據類型顯示/隱藏欄位
+            const conditionGroup = document.getElementById('conditionGroup');
+            const assignmentGroup = document.getElementById('assignmentGroup');
+            
+            conditionGroup.style.display = type === 'IfCondition' ? 'block' : 'none';
+            assignmentGroup.style.display = type === 'Assignment' ? 'block' : 'none';
+            
+            renderTree();
+            renderEditPanel(treeData.selectedNode);
+        }
+
+        function updateNodeCondition() {
+            const condition = document.getElementById('nodeCondition').value;
+            treeData.selectedNode.condition = condition;
+            renderTree();
+        }
+
+        function updateNodeAssignment() {
+            const assignment = document.getElementById('nodeAssignment').value;
+            treeData.selectedNode.assignment = assignment;
+            renderTree();
+        }
+
+        function toggleInfoFormat() {
+            const format = document.getElementById('infoFormat').value;
+            const textInfo = document.getElementById('textInfo');
+            const jsonInfo = document.getElementById('jsonInfo');
+            
+            if (format === 'text') {
+                textInfo.style.display = 'block';
+                jsonInfo.style.display = 'none';
+            } else {
+                textInfo.style.display = 'none';
+                jsonInfo.style.display = 'block';
+            }
+        }
+
+        function copyNodeJSON() {
+            const node = treeData.selectedNode;
+            if (!node) return;
+            
+            const json = JSON.stringify(node.toJSON(), null, 2);
+            navigator.clipboard.writeText(json).then(() => {
+                showNotification('✓ 節點 JSON 已複製！', 'success');
+            });
+        }
+
+        // ==================== 拖拉功能 ====================
+        
+        function handleDragStart(e, node, parent) {
+            draggedNode = node;
+            draggedNodeParent = parent;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', e.target.innerHTML);
+            e.target.style.opacity = '0.5';
+            
+            const hint = document.getElementById('dragHint');
+            hint.textContent = '拖曳中: ' + getNodeLabel(node);
+            hint.style.display = 'block';
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            
+            const hint = document.getElementById('dragHint');
+            hint.style.left = (e.pageX + 10) + 'px';
+            hint.style.top = (e.pageY + 10) + 'px';
+            
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            e.target.closest('.node-content')?.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.target.closest('.node-content')?.classList.remove('drag-over');
+        }
+
+        function handleDrop(e, targetNode) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            e.target.closest('.node-content')?.classList.remove('drag-over');
+            
+            if (draggedNode && targetNode && draggedNode.id !== targetNode.id) {
+                // 檢查目標節點是否為 Assignment
+                if (targetNode.type === 'Assignment') {
+                    showNotification('⚠️ 無法拖放到 Assignment 節點下！Assignment 是結構終止點。', 'error');
+                    return false;
+                }
+                
+                // 檢查目標節點的子節點中是否已有 Assignment
+                const hasAssignment = targetNode.children.some(child => child.type === 'Assignment');
+                if (hasAssignment && draggedNode.type !== 'Assignment') {
+                    showNotification('⚠️ 目標節點的子層級已有 Assignment 節點，不能再添加其他類型的節點！', 'error');
+                    return false;
+                }
+                
+                // 檢查是否要拖入 Assignment，而目標節點已有其他類型的子節點
+                if (draggedNode.type === 'Assignment' && targetNode.children.length > 0) {
+                    const hasOtherTypes = targetNode.children.some(child => child.type !== 'Assignment');
+                    if (hasOtherTypes) {
+                        showNotification('⚠️ 目標節點已有其他類型的子節點，不能再添加 Assignment 節點！', 'error');
+                        return false;
+                    }
+                }
+                
+                // 檢查是否拖到自己的子節點
+                if (!isDescendant(draggedNode, targetNode)) {
+                    // 從原父節點移除
+                    draggedNodeParent.removeChild(draggedNode.id);
+                    // 加入新父節點
+                    targetNode.addChild(draggedNode);
+                    renderTree();
+                } else {
+                    showNotification('⚠️ 無法將節點移動到其子節點下！', 'error');
+                }
+            }
+            
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            e.target.style.opacity = '1';
+            document.getElementById('dragHint').style.display = 'none';
+            
+            // 移除所有 drag-over class
+            document.querySelectorAll('.drag-over').forEach(el => {
+                el.classList.remove('drag-over');
+            });
+        }
+
+        function isDescendant(parent, child) {
+            if (parent.id === child.id) return true;
+            for (let node of parent.children) {
+                if (isDescendant(node, child)) return true;
+            }
+            return false;
+        }
+
+        // ==================== 輔助函式 ====================
+        
+        function findNodeById(node, id) {
+            if (node.id === id) return node;
+            for (let child of node.children) {
+                const found = findNodeById(child, id);
+                if (found) return found;
+            }
+            return null;
+        }
+
+        function findParentNode(parent, childId) {
+            for (let child of parent.children) {
+                if (child.id === childId) return parent;
+                const found = findParentNode(child, childId);
+                if (found) return found;
+            }
+            return null;
+        }
+
+        // ==================== 驗證功能 ====================
+        
+        function validateTree() {
+            const errors = [];
+            const warnings = [];
+            
+            validateNode(treeData.root, errors, warnings, []);
+            
+            const container = document.getElementById('editContent');
+            let html = '';
+            
+            if (errors.length === 0 && warnings.length === 0) {
+                html += '<div class="validation-message success">✓ 決策樹結構驗證通過！</div>';
+            }
+            
+            if (errors.length > 0) {
+                html += '<div class="validation-message error"><strong>❌ 發現錯誤:</strong><ul>';
+                errors.forEach(err => {
+                    html += `<li>${err}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            if (warnings.length > 0) {
+                html += '<div class="validation-message warning"><strong>⚠️ 警告訊息:</strong><ul>';
+                warnings.forEach(warn => {
+                    html += `<li>${warn}</li>`;
+                });
+                html += '</ul></div>';
+            }
+            
+            html += '<div class="button-group"><button class="btn btn-primary" onclick="renderEditPanel(treeData.selectedNode)">返回編輯</button></div>';
+            
+            container.innerHTML = html;
+        }
+
+        function validateNode(node, errors, warnings, path) {
+            const currentPath = [...path, getNodeLabel(node)];
+            
+            // 檢查節點類型
+            if (node.type === 'None' && node.children.length === 0 && node.id !== 'root') {
+                warnings.push(`路徑 ${currentPath.join(' > ')}: 節點類型未設定`);
+            }
+            
+            // 檢查 IF 條件
+            if (node.type === 'IfCondition') {
+                if (!node.condition.trim()) {
+                    errors.push(`路徑 ${currentPath.join(' > ')}: IF 節點缺少條件`);
+                }
+                if (node.children.length === 0) {
+                    warnings.push(`路徑 ${currentPath.join(' > ')}: IF 節點沒有子節點（結果）`);
+                }
+            }
+            
+            // 檢查 ELSE 分支
+            if (node.type === 'ElseBranch' && node.children.length === 0) {
+                warnings.push(`路徑 ${currentPath.join(' > ')}: ELSE 節點沒有子節點（結果）`);
+            }
+            
+            // 檢查 Assignment
+            if (node.type === 'Assignment') {
+                if (!node.assignment.trim()) {
+                    errors.push(`路徑 ${currentPath.join(' > ')}: Assignment 節點缺少指定值`);
+                }
+                // 新增規則：Assignment 是終止點，不應該有子節點
+                if (node.children.length > 0) {
+                    errors.push(`路徑 ${currentPath.join(' > ')}: Assignment 是結構終止點，不應該有子節點（發現 ${node.children.length} 個子節點）`);
+                }
+            }
+            
+            // 檢查同一層是否有多個 ELSE
+            const elseCount = node.children.filter(child => child.type === 'ElseBranch').length;
+            if (elseCount > 1) {
+                errors.push(`路徑 ${currentPath.join(' > ')}: 同一層級有 ${elseCount} 個 ELSE 節點，只能有一個`);
+            }
+            
+            // 檢查 ELSE 是否在最後
+            const elseIndex = node.children.findIndex(child => child.type === 'ElseBranch');
+            if (elseIndex !== -1 && elseIndex !== node.children.length - 1) {
+                warnings.push(`路徑 ${currentPath.join(' > ')}: ELSE 節點建議放在最後`);
+            }
+            
+            // 新增規則2：同一層級中，如果有 Assignment 節點，則不能有其他節點
+            const assignmentNodes = node.children.filter(child => child.type === 'Assignment');
+            const otherNodes = node.children.filter(child => child.type !== 'Assignment');
+            
+            if (assignmentNodes.length > 0 && otherNodes.length > 0) {
+                const otherNodeTypes = otherNodes.map(n => getNodeTypeName(n.type)).join(', ');
+                errors.push(`路徑 ${currentPath.join(' > ')}: 同一層級中有 Assignment 節點時，不能有其他節點。` +
+                    `發現 ${assignmentNodes.length} 個 Assignment 和 ${otherNodes.length} 個其他節點（${otherNodeTypes}）。` +
+                    `Assignment 是終止點，該層級應只有 Assignment 節點。`);
+            }
+            
+            // 檢查 Assignment 後面是否還有兄弟節點（此規則被上面的規則涵蓋，保留作為額外檢查）
+            const assignmentIndex = node.children.findIndex(child => child.type === 'Assignment');
+            if (assignmentIndex !== -1 && assignmentIndex < node.children.length - 1) {
+                // 檢查 Assignment 後面的節點
+                const nodesAfterAssignment = node.children.slice(assignmentIndex + 1);
+                const nonAssignmentNodes = nodesAfterAssignment.filter(child => child.type !== 'Assignment');
+                if (nonAssignmentNodes.length > 0) {
+                    warnings.push(`路徑 ${currentPath.join(' > ')}: Assignment 節點後面還有 ${nonAssignmentNodes.length} 個非 Assignment 節點，建議調整順序`);
+                }
+            }
+            
+            // 遞迴檢查子節點
+            node.children.forEach(child => {
+                validateNode(child, errors, warnings, currentPath);
+            });
+        }
+
+        // ==================== 匯出功能 ====================
+        
+        function exportToText() {
+            const textOutput = generateTextOutput(treeData.root, 0);
+            const jsonOutput = JSON.stringify(treeData.root.toJSON(), null, 2);
+            
+            const container = document.getElementById('editContent');
+            container.innerHTML = `
+                <h3>決策樹輸出</h3>
+                
+                <div class="form-group">
+                    <label>選擇輸出格式</label>
+                    <select id="outputFormat" onchange="toggleOutputFormat()">
+                        <option value="text">文字規則 (IF/ELSE)</option>
+                        <option value="json">JSON 格式</option>
+                    </select>
+                </div>
+                
+                <div id="textOutputSection">
+                    <div class="output-section">
+                        <h4>文字規則輸出</h4>
+                        <pre id="textOutput">${textOutput}</pre>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="copyTextOutput()">📋 複製文字規則</button>
+                        <button class="btn btn-primary" onclick="downloadTextFile()">💾 下載 TXT</button>
+                    </div>
+                </div>
+                
+                <div id="jsonOutputSection" style="display: none;">
+                    <div class="output-section">
+                        <h4>JSON 輸出</h4>
+                        <pre id="jsonOutput">${jsonOutput}</pre>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="copyJSONOutput()">📋 複製 JSON</button>
+                        <button class="btn btn-primary" onclick="exportToJSON()">💾 下載 JSON</button>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="renderEditPanel(treeData.selectedNode)">返回編輯</button>
+                </div>
+            `;
+        }
+
+        function toggleOutputFormat() {
+            const format = document.getElementById('outputFormat').value;
+            const textSection = document.getElementById('textOutputSection');
+            const jsonSection = document.getElementById('jsonOutputSection');
+            
+            if (format === 'text') {
+                textSection.style.display = 'block';
+                jsonSection.style.display = 'none';
+            } else {
+                textSection.style.display = 'none';
+                jsonSection.style.display = 'block';
+            }
+        }
+
+        function copyTextOutput() {
+            const output = document.getElementById('textOutput').textContent;
+            navigator.clipboard.writeText(output).then(() => {
+                showNotification('✓ 文字規則已複製！', 'success');
+            });
+        }
+
+        function copyJSONOutput() {
+            const output = document.getElementById('jsonOutput').textContent;
+            navigator.clipboard.writeText(output).then(() => {
+                showNotification('✓ JSON 已複製！', 'success');
+            });
+        }
+
+        function downloadTextFile() {
+            const output = generateTextOutput(treeData.root, 0);
+            const blob = new Blob([output], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            a.download = `decision-tree-${timestamp}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('✓ TXT 檔案已下載！', 'success');
+        }
+
+        function generateTextOutput(node, indent) {
+            let output = '';
+            const spaces = '  '.repeat(indent);
+            
+            for (let child of node.children) {
+                if (child.type === 'IfCondition') {
+                    output += `${spaces}IF ${child.condition}\n`;
+                    if (child.children.length > 0) {
+                        output += generateTextOutput(child, indent + 1);
+                    }
+                } else if (child.type === 'ElseBranch') {
+                    output += `${spaces}ELSE\n`;
+                    if (child.children.length > 0) {
+                        output += generateTextOutput(child, indent + 1);
+                    }
+                } else if (child.type === 'Assignment') {
+                    output += `${spaces}${child.assignment}\n`;
+                    // Assignment 是終止點，不應該有子節點
+                    // 如果有子節點，驗證時會報錯，這裡不輸出
+                }
+            }
+            
+            return output;
+        }
+
+        // ==================== JSON 匯入/匯出 ====================
+        
+        function exportToJSON() {
+            const treeJSON = treeData.root.toJSON();
+            const jsonString = JSON.stringify(treeJSON, null, 2);
+            
+            // 下載 JSON 檔案
+            const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            a.download = `decision-tree-${timestamp}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            // 顯示成功訊息
+            showNotification('✓ JSON 已匯出！', 'success');
+        }
+
+        function importFromJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const jsonData = JSON.parse(e.target.result);
+                    
+                    // 驗證 JSON 結構
+                    if (!jsonData.id || !jsonData.type || !Array.isArray(jsonData.children)) {
+                        throw new Error('JSON 格式不正確：缺少必要欄位 (id, type, children)');
+                    }
+                    
+                    // 確認是否覆蓋現有資料
+                    if (treeData.root.children.length > 0) {
+                        if (!confirm('匯入 JSON 將會覆蓋現有的決策樹，確定要繼續嗎？')) {
+                            event.target.value = ''; // 清空 file input
+                            return;
+                        }
+                    }
+                    
+                    // 還原樹狀結構
+                    treeData.root = TreeNode.fromJSON(jsonData);
+                    treeData.selectedNode = null;
+                    
+                    // 重新渲染
+                    renderTree();
+                    renderEditPanel(null);
+                    
+                    // 顯示成功訊息並提示驗證
+                    showNotification('✓ JSON 匯入成功！建議執行「驗證結構」檢查。', 'success');
+                    
+                    // 詢問是否立即驗證
+                    setTimeout(() => {
+                        if (confirm('是否立即驗證結構？\n可以檢查是否有 Assignment 終止點錯誤等問題。')) {
+                            validateTree();
+                        }
+                    }, 1000);
+                    
+                } catch (error) {
+                    alert('匯入失敗：' + error.message);
+                    console.error('Import error:', error);
+                }
+                
+                // 清空 file input 以便下次可以選擇同一個檔案
+                event.target.value = '';
+            };
+            
+            reader.onerror = function() {
+                alert('讀取檔案失敗！');
+                event.target.value = '';
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function showNotification(message, type = 'info') {
+            // 建立通知元素
+            const notification = document.createElement('div');
+            notification.className = `validation-message ${type}`;
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+            notification.style.minWidth = '200px';
+            notification.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            
+            document.body.appendChild(notification);
+            
+            // 3 秒後自動移除
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.5s';
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
+
+        // ==================== 啟動 ====================
+        
+        window.onload = init;
+    </script>
+</body>
+</html>

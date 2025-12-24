@@ -1,0 +1,68 @@
+{
+  "id": "root",
+  "type": "Root",
+  "condition": "",
+  "assignment": "",
+  "children": [
+    {
+      "id": "node_001",
+      "type": "IfCondition",
+      "condition": "A = 3",
+      "assignment": "",
+      "children": [
+        {
+          "id": "node_002",
+          "type": "Assignment",
+          "condition": "",
+          "assignment": "'3A'",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "node_003",
+      "type": "IfCondition",
+      "condition": "B = 4",
+      "assignment": "",
+      "children": [
+        {
+          "id": "node_004",
+          "type": "Assignment",
+          "condition": "",
+          "assignment": "'Bar'",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "node_005",
+      "type": "IfCondition",
+      "condition": "A < 10",
+      "assignment": "",
+      "children": [
+        {
+          "id": "node_006",
+          "type": "Assignment",
+          "condition": "",
+          "assignment": "'少數'",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "node_007",
+      "type": "ElseBranch",
+      "condition": "",
+      "assignment": "",
+      "children": [
+        {
+          "id": "node_008",
+          "type": "Assignment",
+          "condition": "",
+          "assignment": "'otherwise'",
+          "children": []
+        }
+      ]
+    }
+  ]
+}
