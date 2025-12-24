@@ -441,7 +441,10 @@
             constructor(type = 'None', id = null) {
                 this.id = id || this.generateId();
                 this.type = type; // 'IfCondition', 'ElseBranch', 'Assignment', 'None'
-                this.condition = '';
+                this.description = '';
+                this.condField = '';
+                this.condOp = '';
+                this.condValue = '';
                 this.assignment = '';
                 this.children = [];
                 this.collapsed = false;
@@ -463,7 +466,10 @@
                 return {
                     id: this.id,
                     type: this.type,
-                    condition: this.condition,
+                    description: this.description,
+                    condField: this.condField,
+                    condOp: this.condOp,
+                    condValue: this.condValue,
                     assignment: this.assignment,
                     children: this.children.map(child => child.toJSON())
                 };
@@ -471,7 +477,10 @@
 
             static fromJSON(data) {
                 const node = new TreeNode(data.type, data.id);
-                node.condition = data.condition || '';
+                node.description = data.description || '';
+                node.condField = data.condField || '';
+                node.condOp = data.condOp || '';
+                node.condValue = data.condValue || '';
                 node.assignment = data.assignment || '';
                 node.children = (data.children || []).map(child => TreeNode.fromJSON(child));
                 return node;
@@ -501,19 +510,26 @@
             
             // 範例一的結構
             const if1 = new TreeNode('IfCondition');
-            if1.condition = 'A = 3';
+            if1.description = '這是一個範例條件。';
+            if1.condField = 'A';
+            if1.condOp = '=';
+            if1.condValue = '3';
             const assign1 = new TreeNode('Assignment');
             assign1.assignment = '\'3A\'';
             if1.addChild(assign1);
             
             const if2 = new TreeNode('IfCondition');
-            if2.condition = 'B = 4';
+            if2.condField = 'B';
+            if2.condOp = '>';
+            if2.condValue = '4';
             const assign2 = new TreeNode('Assignment');
             assign2.assignment = '\'Bar\'';
             if2.addChild(assign2);
             
             const if3 = new TreeNode('IfCondition');
-            if3.condition = 'A < 10';
+            if3.condField = 'A';
+            if3.condOp = '<';
+            if3.condValue = '10';
             const assign3 = new TreeNode('Assignment');
             assign3.assignment = '\'少數\'';
             if3.addChild(assign3);
@@ -654,7 +670,11 @@
 
         function getNodeLabel(node) {
             if (node.type === 'IfCondition') {
-                return node.condition ? `IF ${node.condition}` : 'IF (未設定條件)';
+                const { condField, condOp, condValue } = node;
+                const conditionText = (condField || condOp || condValue)
+                    ? `${condField || '?'} ${condOp || '?'} ${condValue || '?'}`
+                    : '(未設定條件)';
+                return `IF ${conditionText}`;
             } else if (node.type === 'ElseBranch') {
                 return 'ELSE';
             } else if (node.type === 'Assignment') {
@@ -746,10 +766,10 @@
             }
             
             const parent = findParentNode(treeData.root, node.id);
-            
-            // 檢查 Assignment 節點是否有子節點（錯誤狀態）
             const hasAssignmentError = node.type === 'Assignment' && node.children.length > 0;
             
+            const operators = ['=', '!=', '>', '<', '>=', '<='];
+
             container.innerHTML = `
                 ${hasAssignmentError ? '<div class="validation-message error">⚠️ <strong>結構錯誤：</strong>Assignment 是終止點，不應該有子節點！目前有 ' + node.children.length + ' 個子節點。<br>請刪除所有子節點或調整結構。</div>' : ''}
                 
@@ -762,11 +782,33 @@
                         <option value="Assignment" ${node.type === 'Assignment' ? 'selected' : ''}>Assignment (指定數值)</option>
                     </select>
                 </div>
+
+                <div class="form-group">
+                    <label>說明 (Description)</label>
+                    <input type="text" id="nodeDescription" onchange="updateNodeDescription()" 
+                           placeholder="此節點的說明文字..." value="${node.description || ''}">
+                </div>
                 
-                <div class="form-group" id="conditionGroup" style="display: ${node.type === 'IfCondition' ? 'block' : 'none'}">
-                    <label>條件 (Condition)</label>
-                    <input type="text" id="nodeCondition" value="${node.condition || ''}" 
-                           placeholder="例如: A = 3, B > 10" onchange="updateNodeCondition()">
+                <div id="conditionGroup" style="display: ${node.type === 'IfCondition' ? 'block' : 'none'}">
+                    <fieldset style="border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                        <legend style="font-weight: bold; color: #2c3e50; padding: 0 5px;">條件 (Condition)</legend>
+                        <div style="margin-top: 5px;">
+                            <div class="form-group">
+                                <label>比較欄位</label>
+                                <input type="text" id="nodeCondField" value="${node.condField || ''}" placeholder="例如: age, score" onchange="updateNodeCondField()">
+                            </div>
+                            <div class="form-group">
+                                <label>比較運算子</label>
+                                <select id="nodeCondOp" onchange="updateNodeCondOp()">
+                                    ${operators.map(op => `<option value="${op}" ${node.condOp === op ? 'selected' : ''}>${op}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>比較數值</label>
+                                <input type="text" id="nodeCondValue" value="${node.condValue || ''}" placeholder="例如: 18, 'true', 'Admin'" onchange="updateNodeCondValue()">
+                            </div>
+                        </div>
+                    </fieldset>
                 </div>
                 
                 <div class="form-group" id="assignmentGroup" style="display: ${node.type === 'Assignment' ? 'block' : 'none'}">
@@ -794,7 +836,8 @@
                     <pre id="textInfo">ID: ${node.id}
 類型: ${getNodeTypeName(node.type)}
 子節點數: ${node.children.length}
-${node.condition ? '條件: ' + node.condition : ''}
+說明: ${node.description || '(無)'}
+${node.type === 'IfCondition' ? `條件: ${node.condField} ${node.condOp} ${node.condValue}` : ''}
 ${node.type === 'Assignment' && node.assignment ? '指定值: ' + node.assignment : ''}</pre>
                     <pre id="jsonInfo" style="display: none;">${JSON.stringify(node.toJSON(), null, 2)}</pre>
                     <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="copyNodeJSON()">📋 複製節點 JSON</button>
@@ -804,24 +847,33 @@ ${node.type === 'Assignment' && node.assignment ? '指定值: ' + node.assignmen
 
         function updateNodeType() {
             const type = document.getElementById('nodeType').value;
-            const currentNode = treeData.selectedNode;
-
-            currentNode.type = type;
-
-            // 根據類型顯示/隱藏欄位
-            const conditionGroup = document.getElementById('conditionGroup');
-            const assignmentGroup = document.getElementById('assignmentGroup');
-
-            conditionGroup.style.display = type === 'IfCondition' ? 'block' : 'none';
-            assignmentGroup.style.display = type === 'Assignment' ? 'block' : 'none';
-
+            treeData.selectedNode.type = type;
             renderTree();
             renderEditPanel(treeData.selectedNode);
         }
 
-        function updateNodeCondition() {
-            const condition = document.getElementById('nodeCondition').value;
-            treeData.selectedNode.condition = condition;
+        function updateNodeDescription() {
+            const description = document.getElementById('nodeDescription').value;
+            treeData.selectedNode.description = description;
+            renderTree();
+            renderEditPanel(treeData.selectedNode); // Re-render to update info panel
+        }
+
+        function updateNodeCondField() {
+            const field = document.getElementById('nodeCondField').value;
+            treeData.selectedNode.condField = field;
+            renderTree();
+        }
+
+        function updateNodeCondOp() {
+            const op = document.getElementById('nodeCondOp').value;
+            treeData.selectedNode.condOp = op;
+            renderTree();
+        }
+
+        function updateNodeCondValue() {
+            const value = document.getElementById('nodeCondValue').value;
+            treeData.selectedNode.condValue = value;
             renderTree();
         }
 
@@ -830,6 +882,7 @@ ${node.type === 'Assignment' && node.assignment ? '指定值: ' + node.assignmen
             treeData.selectedNode.assignment = assignment;
             renderTree();
         }
+
 
         function toggleInfoFormat() {
             const format = document.getElementById('infoFormat').value;
@@ -1085,8 +1138,8 @@ ${node.type === 'Assignment' && node.assignment ? '指定值: ' + node.assignmen
             
             // 檢查 IF 條件
             if (node.type === 'IfCondition') {
-                if (!node.condition.trim()) {
-                    errors.push(`路徑 ${currentPath.join(' > ')}: IF 節點缺少條件`);
+                if (!node.condField.trim()) {
+                    errors.push(`路徑 ${currentPath.join(' > ')}: IF 節點缺少條件欄位`);
                 }
                 if (node.children.length === 0) {
                     warnings.push(`路徑 ${currentPath.join(' > ')}: IF 節點沒有子節點（結果）`);
@@ -1227,7 +1280,8 @@ ${node.type === 'Assignment' && node.assignment ? '指定值: ' + node.assignmen
             
             for (let child of node.children) {
                 if (child.type === 'IfCondition') {
-                    output += `${spaces}IF ${child.condition}\n`;
+                    const conditionText = `${child.condField || ''} ${child.condOp || ''} ${child.condValue || ''}`.trim();
+                    output += `${spaces}IF ${conditionText}\n`;
                     if (child.children.length > 0) {
                         output += generateTextOutput(child, indent + 1);
                     }
