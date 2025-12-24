@@ -1,65 +1,145 @@
 {
   "id": "root",
   "type": "Root",
-  "condition": "",
+  "description": "",
+  "condField": "",
+  "condOp": "",
+  "condValue": "",
   "assignment": "",
   "children": [
     {
-      "id": "node_001",
+      "id": "node_1766571517984_b05n4nw2q",
       "type": "IfCondition",
-      "condition": "A = 3",
+      "description": "新戶",
+      "condField": "ACTIVE_CARD_HOLDER",
+      "condOp": "=",
+      "condValue": "新戶",
       "assignment": "",
       "children": [
         {
-          "id": "node_002",
-          "type": "Assignment",
-          "condition": "",
-          "assignment": "'3A'",
-          "children": []
+          "id": "node_1766571694559_3jhpyoj2d",
+          "type": "IfCondition",
+          "description": "聯明卡條款未同意",
+          "condField": "P_33",
+          "condOp": "=",
+          "condValue": "Y",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_1766571832445_w5wjnvows",
+              "type": "Assignment",
+              "description": "",
+              "condField": "",
+              "condOp": "",
+              "condValue": "",
+              "assignment": "未同意",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node_1766571862695_5mfoh5gjf",
+          "type": "IfCondition",
+          "description": "未簽名",
+          "condField": "P_2",
+          "condOp": "=",
+          "condValue": "Y",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_1766571914430_zrci2gbl9",
+              "type": "Assignment",
+              "description": "",
+              "condField": "",
+              "condOp": "",
+              "condValue": "",
+              "assignment": "未簽名",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node_1766571517985_0jyp6u5kg",
+          "type": "IfCondition",
+          "description": "就是這麼簡單",
+          "condField": "B",
+          "condOp": ">",
+          "condValue": "4",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_1766571517985_68j6rzfqr",
+              "type": "Assignment",
+              "description": "dddd",
+              "condField": "",
+              "condOp": "",
+              "condValue": "",
+              "assignment": "'少數'",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node_1766571871185_auginm75q",
+          "type": "IfCondition",
+          "description": "有特殊註記",
+          "condField": "P_41",
+          "condOp": "=",
+          "condValue": "Y",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_1766571517985_thlgok0ui",
+              "type": "Assignment",
+              "description": "adfdb",
+              "condField": "",
+              "condOp": "",
+              "condValue": "",
+              "assignment": "'Bar'",
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "node_1766571517985_5hrcnuwf9",
+          "type": "IfCondition",
+          "description": "abc",
+          "condField": "A",
+          "condOp": "<",
+          "condValue": "10",
+          "assignment": "",
+          "children": [
+            {
+              "id": "node_1766571517985_a3b4nqfzv",
+              "type": "Assignment",
+              "description": "",
+              "condField": "",
+              "condOp": "",
+              "condValue": "",
+              "assignment": "N",
+              "children": []
+            }
+          ]
         }
       ]
     },
     {
-      "id": "node_003",
-      "type": "IfCondition",
-      "condition": "B = 4",
-      "assignment": "",
-      "children": [
-        {
-          "id": "node_004",
-          "type": "Assignment",
-          "condition": "",
-          "assignment": "'Bar'",
-          "children": []
-        }
-      ]
-    },
-    {
-      "id": "node_005",
-      "type": "IfCondition",
-      "condition": "A < 10",
-      "assignment": "",
-      "children": [
-        {
-          "id": "node_006",
-          "type": "Assignment",
-          "condition": "",
-          "assignment": "'少數'",
-          "children": []
-        }
-      ]
-    },
-    {
-      "id": "node_007",
+      "id": "node_1766571517985_ouw71ei1u",
       "type": "ElseBranch",
-      "condition": "",
+      "description": "不是新戶",
+      "condField": "",
+      "condOp": "",
+      "condValue": "",
       "assignment": "",
       "children": [
         {
-          "id": "node_008",
+          "id": "node_1766571517985_hn6rg5dos",
           "type": "Assignment",
-          "condition": "",
-          "assignment": "'otherwise'",
+          "description": "其他數值",
+          "condField": "",
+          "condOp": "",
+          "condValue": "",
+          "assignment": "otherwise",
           "children": []
         }
       ]

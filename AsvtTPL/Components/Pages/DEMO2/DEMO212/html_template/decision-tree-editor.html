@@ -669,21 +669,27 @@
         }
 
         function getNodeLabel(node) {
+            let baseLabel;
             if (node.type === 'IfCondition') {
                 const { condField, condOp, condValue } = node;
                 const conditionText = (condField || condOp || condValue)
                     ? `${condField || '?'} ${condOp || '?'} ${condValue || '?'}`
                     : '(未設定條件)';
-                return `IF ${conditionText}`;
+                baseLabel = `IF ${conditionText}`;
             } else if (node.type === 'ElseBranch') {
-                return 'ELSE';
+                baseLabel = 'ELSE';
             } else if (node.type === 'Assignment') {
-                return node.assignment ? node.assignment : '(未設定指定值)';
+                baseLabel = node.assignment ? node.assignment : '(未設定指定值)';
             } else if (node.type === 'Root') {
-                return '根節點';
+                baseLabel = '根節點';
             } else {
-                return 'NONE (未指定類型)';
+                baseLabel = 'NONE (未指定類型)';
             }
+
+            if (node.description) {
+                return `${baseLabel}, ${node.description}`;
+            }
+            return baseLabel;
         }
 
         // ==================== 節點操作 ====================
