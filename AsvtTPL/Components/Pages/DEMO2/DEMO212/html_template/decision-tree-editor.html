@@ -107,6 +107,7 @@
             cursor: pointer;
             transition: all 0.2s;
             border: 2px solid transparent;
+            position: relative; /* 支援 ::before 和 ::after 定位 */
         }
 
         .node-content:hover {
@@ -121,6 +122,32 @@
         .node-content.drag-over {
             border-color: #27ae60;
             background: #d5f4e6;
+        }
+
+        /* 拖拉位置指示器 - 上方插入（綠色線） */
+        .node-content.drop-above::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -2px;
+            height: 3px;
+            background: #27ae60;
+            box-shadow: 0 0 6px rgba(39, 174, 96, 0.6);
+            z-index: 100;
+        }
+
+        /* 拖拉位置指示器 - 下方插入（藍色線） */
+        .node-content.drop-below::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -2px;
+            height: 3px;
+            background: #3498db;
+            box-shadow: 0 0 6px rgba(52, 152, 219, 0.6);
+            z-index: 100;
         }
 
         .node-toggle {
@@ -678,19 +705,6 @@
         }
 
         function addChildNode(parentNode) {
-            // 檢查是否為 Assignment 節點
-            if (parentNode.type === 'Assignment') {
-                showNotification('⚠️ Assignment 是結構終止點，不能添加子節點！', 'error');
-                return;
-            }
-            
-            // 檢查父節點是否已有 Assignment 子節點
-            const hasAssignment = parentNode.children.some(child => child.type === 'Assignment');
-            if (hasAssignment) {
-                showNotification('⚠️ 該節點的子層級已有 Assignment 節點，不能再添加其他節點！\nAssignment 是終止點，同層級不能有其他節點。', 'error');
-                return;
-            }
-            
             const newNode = new TreeNode('None');
             parentNode.addChild(newNode);
             renderTree();
@@ -703,27 +717,11 @@
                 alert('根節點無法新增兄弟節點！');
                 return;
             }
-            
-            // 檢查同層級是否已有 Assignment 節點
-            const hasAssignment = parent.children.some(child => child.type === 'Assignment');
-            if (hasAssignment && currentNode.type !== 'Assignment') {
-                showNotification('⚠️ 同層級已有 Assignment 節點，不能再添加其他類型的兄弟節點！', 'error');
-                return;
-            }
-            
-            // 檢查是否要添加 Assignment，而同層級已有其他類型
-            const hasOtherTypes = parent.children.some(child => child.type !== 'Assignment');
-            if (hasOtherTypes && currentNode.type === 'Assignment') {
-                showNotification('⚠️ 同層級已有其他類型的節點，不能再添加 Assignment 兄弟節點！', 'error');
-                return;
-            }
-            
+
             const newNode = new TreeNode('None');
             const currentIndex = parent.children.findIndex(child => child.id === currentNode.id);
-            
-            // 在當前節點後面插入新節點
             parent.children.splice(currentIndex + 1, 0, newNode);
-            
+
             renderTree();
             selectNode(newNode);
         }
@@ -778,12 +776,9 @@
                 </div>
                 
                 <div class="button-group">
-                    ${node.type !== 'Assignment' 
-                        ? '<button class="btn btn-primary" onclick="addChildNode(treeData.selectedNode)">➕ 新增子節點</button>' 
-                        : '<button class="btn btn-primary" disabled style="opacity: 0.5; cursor: not-allowed;" title="Assignment 是終止點，不能添加子節點">🚫 不可添加子節點</button>'}
+                    <button class="btn btn-primary" onclick="addChildNode(treeData.selectedNode)">➕ 新增子節點</button>
                     ${parent ? '<button class="btn btn-primary" onclick="addSiblingNode(treeData.selectedNode)">➕ 新增兄弟節點</button>' : ''}
                 </div>
-                ${node.type === 'Assignment' ? '<div class="validation-message warning" style="margin-top: 10px;">💡 <strong>提示：</strong>Assignment 節點是決策樹的終止點（葉節點），不能有子節點。</div>' : ''}
                 <div class="button-group">
                     <button class="btn btn-danger" onclick="deleteNode(treeData.selectedNode, findParentNode(treeData.root, treeData.selectedNode.id))">🗑️ 刪除節點</button>
                 </div>
@@ -810,59 +805,16 @@ ${node.type === 'Assignment' && node.assignment ? '指定值: ' + node.assignmen
         function updateNodeType() {
             const type = document.getElementById('nodeType').value;
             const currentNode = treeData.selectedNode;
-            const oldType = currentNode.type;
-            
-            // 檢查類型轉換的合法性
-            if (type !== oldType) {
-                const parent = findParentNode(treeData.root, currentNode.id);
-                if (parent) {
-                    const siblings = parent.children.filter(child => child.id !== currentNode.id);
-                    
-                    // 如果要改為 Assignment
-                    if (type === 'Assignment') {
-                        const hasOtherTypes = siblings.some(child => child.type !== 'Assignment');
-                        if (hasOtherTypes) {
-                            const otherTypes = siblings
-                                .filter(child => child.type !== 'Assignment')
-                                .map(child => getNodeTypeName(child.type))
-                                .join(', ');
-                            showNotification(`⚠️ 無法改為 Assignment！\n同層級已有其他類型的節點（${otherTypes}）。`, 'error');
-                            document.getElementById('nodeType').value = oldType;
-                            return;
-                        }
-                    }
-                    
-                    // 如果從 Assignment 改為其他類型
-                    if (oldType === 'Assignment') {
-                        const hasOtherAssignments = siblings.some(child => child.type === 'Assignment');
-                        if (hasOtherAssignments) {
-                            showNotification('⚠️ 無法改變類型！\n同層級已有 Assignment 節點，不能改為其他類型。', 'error');
-                            document.getElementById('nodeType').value = oldType;
-                            return;
-                        }
-                    }
-                    
-                    // 如果要改為非 Assignment 類型
-                    if (type !== 'Assignment' && type !== 'None') {
-                        const hasAssignments = siblings.some(child => child.type === 'Assignment');
-                        if (hasAssignments) {
-                            showNotification('⚠️ 無法改變類型！\n同層級已有 Assignment 節點，不能添加其他類型的節點。', 'error');
-                            document.getElementById('nodeType').value = oldType;
-                            return;
-                        }
-                    }
-                }
-            }
-            
+
             currentNode.type = type;
-            
+
             // 根據類型顯示/隱藏欄位
             const conditionGroup = document.getElementById('conditionGroup');
             const assignmentGroup = document.getElementById('assignmentGroup');
-            
+
             conditionGroup.style.display = type === 'IfCondition' ? 'block' : 'none';
             assignmentGroup.style.display = type === 'Assignment' ? 'block' : 'none';
-            
+
             renderTree();
             renderEditPanel(treeData.selectedNode);
         }
@@ -922,12 +874,38 @@ ${node.type === 'Assignment' && node.assignment ? '指定值: ' + node.assignmen
                 e.preventDefault();
             }
             e.dataTransfer.dropEffect = 'move';
-            
+
+            // 位置偵測邏輯
+            const nodeContent = e.target.closest('.node-content');
+            if (nodeContent) {
+                const rect = nodeContent.getBoundingClientRect();
+                const mouseY = e.clientY;
+                const nodeMiddle = rect.top + (rect.height / 2);
+
+                // 上半部 = above（兄弟），下半部 = below（子節點）
+                const dropPosition = mouseY < nodeMiddle ? 'above' : 'below';
+                nodeContent.setAttribute('data-drop-position', dropPosition);
+
+                updateDropIndicator(nodeContent, dropPosition);
+            }
+
             const hint = document.getElementById('dragHint');
             hint.style.left = (e.pageX + 10) + 'px';
             hint.style.top = (e.pageY + 10) + 'px';
-            
+
             return false;
+        }
+
+        function updateDropIndicator(nodeContent, position) {
+            // 移除舊樣式
+            nodeContent.classList.remove('drop-above', 'drop-below');
+
+            // 添加新樣式
+            if (position === 'above') {
+                nodeContent.classList.add('drop-above');
+            } else {
+                nodeContent.classList.add('drop-below');
+            }
         }
 
         function handleDragEnter(e) {
@@ -935,62 +913,102 @@ ${node.type === 'Assignment' && node.assignment ? '指定值: ' + node.assignmen
         }
 
         function handleDragLeave(e) {
-            e.target.closest('.node-content')?.classList.remove('drag-over');
+            const nodeContent = e.target.closest('.node-content');
+            if (nodeContent) {
+                nodeContent.classList.remove('drag-over', 'drop-above', 'drop-below');
+                nodeContent.removeAttribute('data-drop-position');
+            }
         }
 
         function handleDrop(e, targetNode) {
             if (e.stopPropagation) {
                 e.stopPropagation();
             }
-            
-            e.target.closest('.node-content')?.classList.remove('drag-over');
-            
-            if (draggedNode && targetNode && draggedNode.id !== targetNode.id) {
-                // 檢查目標節點是否為 Assignment
-                if (targetNode.type === 'Assignment') {
-                    showNotification('⚠️ 無法拖放到 Assignment 節點下！Assignment 是結構終止點。', 'error');
-                    return false;
-                }
-                
-                // 檢查目標節點的子節點中是否已有 Assignment
-                const hasAssignment = targetNode.children.some(child => child.type === 'Assignment');
-                if (hasAssignment && draggedNode.type !== 'Assignment') {
-                    showNotification('⚠️ 目標節點的子層級已有 Assignment 節點，不能再添加其他類型的節點！', 'error');
-                    return false;
-                }
-                
-                // 檢查是否要拖入 Assignment，而目標節點已有其他類型的子節點
-                if (draggedNode.type === 'Assignment' && targetNode.children.length > 0) {
-                    const hasOtherTypes = targetNode.children.some(child => child.type !== 'Assignment');
-                    if (hasOtherTypes) {
-                        showNotification('⚠️ 目標節點已有其他類型的子節點，不能再添加 Assignment 節點！', 'error');
-                        return false;
-                    }
-                }
-                
-                // 檢查是否拖到自己的子節點
-                if (!isDescendant(draggedNode, targetNode)) {
-                    // 從原父節點移除
-                    draggedNodeParent.removeChild(draggedNode.id);
-                    // 加入新父節點
-                    targetNode.addChild(draggedNode);
-                    renderTree();
-                } else {
-                    showNotification('⚠️ 無法將節點移動到其子節點下！', 'error');
-                }
+
+            const nodeContent = e.target.closest('.node-content');
+            nodeContent?.classList.remove('drag-over', 'drop-above', 'drop-below');
+
+            // 基本檢查
+            if (!draggedNode || !targetNode || draggedNode.id === targetNode.id) {
+                return false;
             }
-            
-            return false;
+
+            // 檢查循環依賴
+            if (isDescendant(draggedNode, targetNode)) {
+                showNotification('⚠️ 無法將節點移動到其子節點下！', 'error');
+                return false;
+            }
+
+            // 取得放置位置
+            const dropPosition = nodeContent?.getAttribute('data-drop-position') || 'below';
+
+            // 根據位置執行插入
+            if (dropPosition === 'above') {
+                return handleDropAsSibling(draggedNode, draggedNodeParent, targetNode);
+            } else {
+                return handleDropAsFirstChild(draggedNode, draggedNodeParent, targetNode);
+            }
         }
 
         function handleDragEnd(e) {
             e.target.style.opacity = '1';
             document.getElementById('dragHint').style.display = 'none';
-            
-            // 移除所有 drag-over class
-            document.querySelectorAll('.drag-over').forEach(el => {
-                el.classList.remove('drag-over');
+
+            // 清理所有拖拉相關樣式和屬性
+            document.querySelectorAll('.drag-over, .drop-above, .drop-below').forEach(el => {
+                el.classList.remove('drag-over', 'drop-above', 'drop-below');
+                el.removeAttribute('data-drop-position');
             });
+        }
+
+        /**
+         * 將拖拉節點插入為目標節點的上方兄弟節點
+         */
+        function handleDropAsSibling(draggedNode, draggedNodeParent, targetNode) {
+            // 找到目標節點的父節點
+            const targetParent = findParentNode(treeData.root, targetNode.id);
+
+            // 根層級節點無法插入兄弟
+            if (!targetParent) {
+                showNotification('⚠️ 根層級節點無法插入兄弟節點！', 'warning');
+                return false;
+            }
+
+            // 找到目標節點在其父節點中的索引
+            const targetIndex = targetParent.children.findIndex(child => child.id === targetNode.id);
+
+            // 從原父節點移除
+            draggedNodeParent.removeChild(draggedNode.id);
+
+            // 處理同父節點移動的索引調整
+            let insertIndex = targetIndex;
+            if (draggedNodeParent.id === targetParent.id) {
+                // 如果原本在目標之前，移除後索引會減 1
+                const originalIndex = targetParent.children.findIndex(child => child.id === draggedNode.id);
+                if (originalIndex !== -1 && originalIndex < targetIndex) {
+                    insertIndex = targetIndex - 1;
+                }
+            }
+
+            // 在目標節點上方插入
+            targetParent.children.splice(insertIndex, 0, draggedNode);
+
+            renderTree();
+            return false;
+        }
+
+        /**
+         * 將拖拉節點插入為目標節點的第一個子節點
+         */
+        function handleDropAsFirstChild(draggedNode, draggedNodeParent, targetNode) {
+            // 從原父節點移除
+            draggedNodeParent.removeChild(draggedNode.id);
+
+            // 插入為第一個子節點
+            targetNode.children.unshift(draggedNode);
+
+            renderTree();
+            return false;
         }
 
         function isDescendant(parent, child) {

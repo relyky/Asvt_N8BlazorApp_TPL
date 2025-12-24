@@ -14,6 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 即時視覺化回饋
 - JSON 格式匯入/匯出
 - 嚴格的結構驗證規則
+- 保持高度靈活的操作體驗。操作拖拉**節點**時不進行限制，將集中在**驗證結構**時統一檢查。
 
 ---
 
