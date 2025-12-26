@@ -21,9 +21,10 @@ DEMO212/
 ├── html_template/                    # 原始 HTML 範本（保留參考）
 └── widgets/                          # 決策樹編輯器模組
     ├── DecisionTreeEditor.razor          # 主元件 UI (235 行)
-    ├── DecisionTreeEditor.razor.cs       # 業務邏輯 (670 行)
+    ├── DecisionTreeEditor.razor.cs       # 業務邏輯 (605 行)
     ├── DecisionTreeEditor.razor.css      # 主元件樣式 (277 行)
     ├── DecisionTreeEditor.razor.js       # JavaScript Interop (308 行)
+    ├── TreeNode.cs                       # 決策樹節點資料模型 (66 行)
     ├── TreeNodeWidget.razor              # 樹節點子元件 (96 行)
     ├── TreeNodeWidget.razor.css          # 節點樣式 (226 行)
     └── README.md                         # 本文件
@@ -31,15 +32,16 @@ DEMO212/
 
 ### 檔案職責
 
-| 檔案 | 職責 | 行數 |
-|------|------|------|
-| **DecisionTreeView.razor** | 頁面入口，引用 widgets 命名空間 | 8 |
-| **DecisionTreeEditor.razor** | 雙面板 UI、工具列、表單渲染 | 235 |
-| **DecisionTreeEditor.razor.cs** | TreeNode 模型、CRUD、驗證、拖拉、匯入匯出 | 670 |
-| **DecisionTreeEditor.razor.css** | 容器佈局、工具列、表單、驗證訊息樣式 | 277 |
-| **DecisionTreeEditor.razor.js** | 拖拉事件處理、檔案下載、剪貼簿操作 | 308 |
-| **TreeNodeWidget.razor** | 遞迴渲染樹狀節點、展開/收合 | 96 |
-| **TreeNodeWidget.razor.css** | 節點結構、拖拉狀態、圖示、標籤樣式 | 226 |
+| 檔案 | 職責 |
+|------|------|
+| **DecisionTreeView.razor** | 頁面入口，引用 widgets 命名空間 |
+| **DecisionTreeEditor.razor** | 雙面板 UI、工具列、表單渲染 |
+| **DecisionTreeEditor.razor.cs** | 業務邏輯、CRUD、驗證、拖拉、匯入匯出 |
+| **DecisionTreeEditor.razor.css** | 容器佈局、工具列、表單、驗證訊息樣式 |
+| **DecisionTreeEditor.razor.js** | 拖拉事件處理、檔案下載、剪貼簿操作 |
+| **TreeNode.cs** | 決策樹節點資料模型（包含 JSON 序列化） |
+| **TreeNodeWidget.razor** | 遞迴渲染樹狀節點、展開/收合 |
+| **TreeNodeWidget.razor.css** | 節點結構、拖拉狀態、圖示、標籤樣式 |
 
 **命名空間**: `AsvtTPL.Components.Pages.DEMO2.DEMO212.widgets`
 
@@ -48,6 +50,8 @@ DEMO212/
 ## 核心架構
 
 ### 1. 資料模型 (TreeNode)
+
+**檔案位置**: `TreeNode.cs`
 
 ```csharp
 public class TreeNode
@@ -492,6 +496,11 @@ public string GetNodeClass(string type) => type switch
 
 ## 重構歷史
 
+### 2025-12-26 資料模型抽離
+- 將 TreeNode 類別從 DecisionTreeEditor.razor.cs 抽出為獨立檔案 `TreeNode.cs`
+- 提升程式碼可維護性與重用性
+- DecisionTreeEditor.razor.cs 從 670 行減少至 605 行
+
 ### 2025-12-26 模組化重構
 - 將所有元件檔案移至 `widgets/` 子目錄
 - 建立 `DecisionTreeView.razor` 作為頁面入口
@@ -508,7 +517,8 @@ public string GetNodeClass(string type) => type switch
 ---
 
 **最後更新**: 2025-12-26
-**狀態**: ✅ 模組化重構完成，功能驗證通過
+**狀態**: ✅ 資料模型抽離完成，功能驗證通過
 **相容性**: .NET 8 Blazor Server, Chrome/Edge/Safari
 **命名空間**: `AsvtTPL.Components.Pages.DEMO2.DEMO212.widgets`
-**總行數**: 1812 行（不含 README.md）
+**檔案總數**: 7 個程式碼檔案
+**總行數**: 1813 行（不含 README.md）
