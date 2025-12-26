@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AsvtTPL.Components.Pages.DEMO2.DEMO212;
+namespace AsvtTPL.Components.Pages.DEMO2.DEMO212.widgets;
 
 /// <summary>
 /// 決策樹編輯器 - Code Behind
@@ -27,7 +27,7 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
         if (firstRender)
         {
             _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
-                "import", "./Components/Pages/DEMO2/DEMO212/DecisionTreeEditor.razor.js");
+                "import", "./Components/Pages/DEMO2/DEMO212/widgets/DecisionTreeEditor.razor.js");
 
             _dotNetRef = DotNetObjectReference.Create(this);
 

@@ -1,4 +1,3 @@
-@page "/demo212/decision-tree-editor"
 @using Microsoft.AspNetCore.Components.Forms
 
 <PageTitle>決策樹編輯器 - Decision Tree Editor</PageTitle>
@@ -108,7 +107,7 @@
     {
         var parent = FindParentNode(Root, node.Id);
         var hasAssignmentError = HasAssignmentError(node);
-        var operators = new[] { "=", "!=", ">", "<", ">=", "<=" };
+        var operators = new[] { "=", "!=", ">", "<", ">=", "<=", "in" };
 
         @if (hasAssignmentError)
         {
