@@ -115,7 +115,10 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
 
     #region Node Operations - CRUD
 
-    private void AddRootNode()
+    /// <summary>
+    /// 新增根節點（第一層節點）
+    /// </summary>
+    public void AddRootNode()
     {
         var newNode = new TreeNode("None");
         Root.AddChild(newNode);
@@ -158,7 +161,10 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
         SelectedNode = null;
     }
 
-    private void ClearTree()
+    /// <summary>
+    /// 清空整顆決策樹
+    /// </summary>
+    public void ClearTree()
     {
         if (Root.Children.Count == 0)
         {
@@ -319,7 +325,10 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
     private List<string> _validationWarnings = new();
     private bool _showValidation = false;
 
-    private void ValidateTree()
+    /// <summary>
+    /// 驗證決策樹結構是否符合規則
+    /// </summary>
+    public void ValidateTree()
     {
         _validationErrors.Clear();
         _validationWarnings.Clear();
@@ -455,7 +464,10 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
 
     #region Export/Import
 
-    private async Task TriggerFileInput()
+    /// <summary>
+    /// 觸發檔案選擇對話框（用於匯入 JSON）
+    /// </summary>
+    public async Task TriggerFileInput()
     {
         if (_jsModule != null)
         {
@@ -463,7 +475,10 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
         }
     }
 
-    private async Task ExportToJSON()
+    /// <summary>
+    /// 匯出決策樹為 JSON 檔案並下載
+    /// </summary>
+    public async Task ExportToJSON()
     {
         var treeJSON = Root.ToJSON();
         var jsonString = JsonSerializer.Serialize(treeJSON, new JsonSerializerOptions
@@ -483,7 +498,11 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
         await ShowNotificationAsync("✓ JSON 已匯出！", "success");
     }
 
-    private async Task ImportFromJSON(Microsoft.AspNetCore.Components.Forms.InputFileChangeEventArgs e)
+    /// <summary>
+    /// 從檔案匯入 JSON 格式的決策樹
+    /// </summary>
+    /// <param name="e">檔案變更事件參數</param>
+    public async Task ImportFromJSON(Microsoft.AspNetCore.Components.Forms.InputFileChangeEventArgs e)
     {
         try
         {
@@ -515,7 +534,10 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
         }
     }
 
-    private async Task ExportToText()
+    /// <summary>
+    /// 匯出決策樹為文字規則檔案並下載
+    /// </summary>
+    public async Task ExportToText()
     {
         var textOutput = GenerateTextOutput(Root, 0);
         var timestamp = DateTime.Now.ToString("yyyy-MM-dd-HHmmss");

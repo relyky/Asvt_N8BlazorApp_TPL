@@ -13,10 +13,22 @@
     }
 </div>
 
-<DecisionTreeEditor @ref="_editor" />
+<DecisionTreeEditor @ref="_editor">
+  <TreeHeaderContent>
+    <h2>📊 決策樹結構</h2>
+    <div class="dt-toolbar">
+      <button class="dt-btn dt-btn-primary" @onclick="_editor.AddRootNode">➕ 新增根節點</button>
+      <button class="dt-btn dt-btn-success" @onclick="_editor.ValidateTree">✓ 驗證結構</button>
+      <button class="dt-btn dt-btn-primary" @onclick="_editor.ExportToText">📄 匯出規則</button>
+      <button class="dt-btn dt-btn-primary" @onclick="_editor.ExportToJSON">💾 匯出 JSON</button>
+      <button class="dt-btn dt-btn-primary" @onclick="_editor.TriggerFileInput">📂 匯入 JSON</button>
+      <button class="dt-btn dt-btn-danger" @onclick="_editor.ClearTree">🗑️ 清空</button>
+    </div>
+  </TreeHeaderContent>
+</DecisionTreeEditor>
 
 @code {
-    private DecisionTreeEditor? _editor;
+    private DecisionTreeEditor _editor = default!;
     private TreeNode? _savedTree;
     private string _statusMessage = string.Empty;
 
