@@ -526,140 +526,33 @@ public void LoadSampleData()
 
 ---
 
-### 工具列命令方法
+### 內建工具列方法
 
-DecisionTreeEditor 提供以下公開方法供父元件自訂工具列：
+DecisionTreeEditor 內建工具列使用以下公開方法（也可從父元件程式化呼叫）：
 
-#### AddRootNode()
+| 方法 | 功能 | 備註 |
+|------|------|------|
+| `AddRootNode()` | 新增根節點（第一層節點） | 建立新的 "None" 類型節點並自動選中 |
+| `ClearTree()` | 清空整顆決策樹 | 重設 Root 為空節點，清除選中狀態 |
+| `ValidateTree()` | 驗證樹結構是否符合規則 | 檢查節點類型、條件完整性、終止點規則等 |
+| `ExportToJSON()` | 匯出 JSON 檔案並下載 | 序列化樹結構，檔名含時間戳 |
+| `ExportToText()` | 匯出文字規則檔案並下載 | 產生人類可讀的 IF-ELSE 規則 |
+| `TriggerFileInput()` | 觸發檔案選擇對話框 | 配合 ImportFromJSON 使用 |
+| `ImportFromJSON(e)` | 從檔案匯入 JSON 樹結構 | 讀取 JSON、反序列化、覆蓋當前樹 |
 
+**程式化呼叫範例**:
 ```csharp
-public void AddRootNode()
+@code {
+    private DecisionTreeEditor _editor = default!;
+
+    private void CustomAction()
+    {
+        // 從父元件呼叫內建方法
+        _editor.AddRootNode();
+        _editor.ValidateTree();
+    }
+}
 ```
-
-**功能**: 新增根節點（第一層節點）
-
-**行為**: 建立新的 "None" 類型節點並自動選中
-
-**使用場景**: 初始化樹結構或新增頂層分支
-
----
-
-#### ClearTree()
-
-```csharp
-public void ClearTree()
-```
-
-**功能**: 清空整顆決策樹
-
-**行為**: 重設 Root 為空節點，清除選中狀態，顯示通知訊息
-
-**使用場景**: 重新開始建立樹結構
-
----
-
-#### ValidateTree()
-
-```csharp
-public void ValidateTree()
-```
-
-**功能**: 驗證決策樹結構是否符合規則
-
-**行為**: 檢查節點類型、條件完整性、Assignment 終止點規則等，顯示驗證結果
-
-**使用場景**: 提交前驗證樹結構正確性
-
----
-
-#### ExportToJSON()
-
-```csharp
-public async Task ExportToJSON()
-```
-
-**功能**: 匯出決策樹為 JSON 檔案並下載
-
-**行為**: 序列化樹結構並觸發瀏覽器下載（檔名含時間戳）
-
-**使用場景**: 儲存樹結構為檔案
-
----
-
-#### ExportToText()
-
-```csharp
-public async Task ExportToText()
-```
-
-**功能**: 匯出決策樹為文字規則檔案並下載
-
-**行為**: 產生人類可讀的 IF-ELSE 規則文字並下載
-
-**使用場景**: 匯出為文件或程式碼範本
-
----
-
-#### TriggerFileInput()
-
-```csharp
-public async Task TriggerFileInput()
-```
-
-**功能**: 觸發檔案選擇對話框
-
-**行為**: 呼叫 JavaScript 顯示檔案選擇器
-
-**使用場景**: 配合 ImportFromJSON 使用，開啟檔案選擇
-
----
-
-#### ImportFromJSON()
-
-```csharp
-public async Task ImportFromJSON(InputFileChangeEventArgs e)
-```
-
-**功能**: 從檔案匯入 JSON 格式的決策樹
-
-**參數**: `e` - 檔案變更事件（由 InputFile 元件觸發）
-
-**行為**: 讀取 JSON、反序列化、覆蓋當前樹
-
-**使用場景**: 載入先前儲存的樹結構
-
----
-
-### 自訂工具列範例
-
-父元件可透過 `TreeHeaderContent` 參數完全自訂工具列：
-
-```razor
-<DecisionTreeEditor @ref="_editor">
-    <TreeHeaderContent>
-        <h2>📊 我的決策樹</h2>
-        <div class="dt-toolbar">
-            <button class="dt-btn dt-btn-primary" @onclick="_editor.AddRootNode">
-                ➕ 新增節點
-            </button>
-            <button class="dt-btn dt-btn-success" @onclick="_editor.ValidateTree">
-                ✓ 驗證
-            </button>
-            <button class="dt-btn dt-btn-primary" @onclick="_editor.ExportToJSON">
-                💾 匯出
-            </button>
-            <button class="dt-btn dt-btn-danger" @onclick="_editor.ClearTree">
-                🗑️ 清空
-            </button>
-        </div>
-    </TreeHeaderContent>
-</DecisionTreeEditor>
-```
-
-**注意事項**:
-- `ImportFromJSON` 需搭配 `<InputFile>` 元件使用
-- 父元件可自由組合這些方法建立自訂工具列
-- 所有匯出方法都會觸發瀏覽器下載
 
 ---
 
@@ -757,13 +650,12 @@ public async Task ImportFromJSON(InputFileChangeEventArgs e)
 
 ## 重構歷史
 
-### 2025-12-26 工具列參數化重構
+### 2025-12-26 工具列命令方法公開化
 
-**目標**: 將工具列區塊參數化，讓父元件可完全自訂命令面板
+**目標**: 將內建工具列使用的私有方法改為公開，供父元件程式化呼叫
 
-**新增內容**:
-- `[Parameter] TreeHeaderContent`: RenderFragment 參數供父元件自訂工具列 UI
-- 7 個公開命令方法（原為私有方法）：
+**修改內容**:
+- 7 個內建工具列方法從 `private` 改為 `public`：
   - `AddRootNode()`: 新增根節點
   - `ClearTree()`: 清空整顆樹
   - `ValidateTree()`: 驗證樹結構
@@ -771,20 +663,15 @@ public async Task ImportFromJSON(InputFileChangeEventArgs e)
   - `ExportToText()`: 匯出文字規則檔案
   - `TriggerFileInput()`: 觸發檔案選擇對話框
   - `ImportFromJSON(InputFileChangeEventArgs)`: 匯入 JSON 檔案
-
-**修改內容**:
-- DecisionTreeEditor.razor: `<div class="dt-tree-header">` 內容改為 `@TreeHeaderContent`
-- DecisionTreeView.razor: 定義 `<TreeHeaderContent>` 區塊包含所有工具列按鈕
 - 所有公開方法添加 XML 文件註解（繁體中文）
 
-**架構改進**:
-- UI 控制權完全交給父元件
-- 保持元件職責單一：DecisionTreeEditor 只負責編輯邏輯
-- 父元件可自由組合命令建立自訂工具列
+**使用場景**:
+- 內建工具列直接呼叫這些方法
+- 父元件可透過 `@ref` 程式化呼叫（例如：`_editor.AddRootNode()`）
+- 適用於自訂業務邏輯觸發編輯器命令
 
 **檔案變更**:
 - DecisionTreeEditor.razor.cs: 657 行 → 679 行 (+22 行，XML 註解)
-- DecisionTreeView.razor: 修正按鈕 onclick 處理器使用 `_editor.MethodName` 語法
 
 ### 2025-12-26 公開 API 新增
 
@@ -826,7 +713,7 @@ public async Task ImportFromJSON(InputFileChangeEventArgs e)
 ---
 
 **最後更新**: 2025-12-26
-**狀態**: ✅ 工具列參數化重構完成，功能驗證通過
+**狀態**: ✅ 工具列命令方法公開化完成，功能驗證通過
 **相容性**: .NET 8 Blazor Server, Chrome/Edge/Safari
 **命名空間**: `AsvtTPL.Components.Pages.DEMO2.DEMO212.widgets`
 **檔案總數**: 7 個程式碼檔案
