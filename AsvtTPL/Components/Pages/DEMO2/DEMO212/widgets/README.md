@@ -17,16 +17,16 @@ DecisionTreeEditor 是一個互動式決策樹編輯器，從單一 HTML 檔案�
 ```
 DEMO212/
 ├── _DEMO212.razor                    # 路由定義頁面
-├── DecisionTreeView.razor            # 頁面入口元件 (8 行)
+├── DecisionTreeView.razor            # 頁面入口元件
 ├── html_template/                    # 原始 HTML 範本（保留參考）
 └── widgets/                          # 決策樹編輯器模組
-    ├── DecisionTreeEditor.razor          # 主元件 UI (235 行)
-    ├── DecisionTreeEditor.razor.cs       # 業務邏輯 (605 行)
-    ├── DecisionTreeEditor.razor.css      # 主元件樣式 (277 行)
-    ├── DecisionTreeEditor.razor.js       # JavaScript Interop (308 行)
-    ├── TreeNode.cs                       # 決策樹節點資料模型 (66 行)
-    ├── TreeNodeWidget.razor              # 樹節點子元件 (96 行)
-    ├── TreeNodeWidget.razor.css          # 節點樣式 (226 行)
+    ├── DecisionTreeEditor.razor          # 主元件 UI
+    ├── DecisionTreeEditor.razor.cs       # 業務邏輯
+    ├── DecisionTreeEditor.razor.css      # 主元件樣式
+    ├── DecisionTreeEditor.razor.js       # JavaScript Interop
+    ├── TreeNode.cs                       # 決策樹節點資料模型
+    ├── TreeNodeWidget.razor              # 樹節點子元件
+    ├── TreeNodeWidget.razor.css          # 節點樣式
     └── README.md                         # 本文件
 ```
 
@@ -402,6 +402,130 @@ public string GetNodeClass(string type) => type switch
 
 ---
 
+## 公開 API
+
+DecisionTreeEditor 提供以下公開方法供父元件控制樹實例：
+
+### ExportTree()
+
+```csharp
+public TreeNode ExportTree()
+```
+
+**功能**: 匯出整顆決策樹的深度複製副本
+
+**回傳值**: `TreeNode` - 樹結構的深度複製物件
+
+**使用場景**:
+- 父元件需要保存當前編輯狀態
+- 實作復原/重做功能
+- 將樹結構傳遞給其他元件處理
+
+**注意事項**:
+- 回傳的是深度複製，修改不會影響元件內部狀態
+- `Collapsed` 屬性不會被複製（有 `[JsonIgnore]`）
+
+---
+
+### ImportTree(TreeNode tree)
+
+```csharp
+public void ImportTree(TreeNode tree)
+```
+
+**功能**: 匯入整顆決策樹結構，覆蓋當前編輯內容
+
+**參數**:
+- `tree` - 要匯入的樹結構
+
+**行為**:
+1. 驗證參數有效性（null 檢查、必要欄位檢查）
+2. 深度複製輸入的樹結構
+3. 覆蓋 `Root` 狀態
+4. 清空 `SelectedNode`
+5. 觸發 UI 重新渲染
+
+**異常**:
+- `ArgumentNullException` - tree 為 null
+- `ArgumentException` - tree 結構缺少必要欄位
+
+**使用場景**:
+- 從外部來源載入樹結構
+- 復原先前保存的狀態
+- 實作多個樹實例之間的切換
+
+---
+
+### LoadSampleData()
+
+```csharp
+public void LoadSampleData()
+```
+
+**功能**: 載入預設的範例決策樹資料
+
+**行為**:
+- 建立預定義的範例樹結構
+- 覆蓋當前 `Root`
+- 觸發 UI 重新渲染
+
+**使用場景**:
+- 父元件需要提供「載入範例」功能
+- 初始化元件時載入預設資料
+- 重置為範例狀態
+
+**注意**:
+- 元件不會在 `OnInitialized` 自動載入範例資料
+- 父元件需主動呼叫此方法或使用 `ImportTree` 進行初始化
+
+---
+
+### 父元件使用範例
+
+```razor
+@page "/demo212/decision-tree-editor"
+@using AsvtTPL.Components.Pages.DEMO2.DEMO212.widgets
+
+<h1>決策樹管理</h1>
+
+<div>
+    <button @onclick="LoadSample">載入範例</button>
+    <button @onclick="SaveTree">保存樹</button>
+    <button @onclick="RestoreTree">復原樹</button>
+</div>
+
+<DecisionTreeEditor @ref="_editor" />
+
+@code {
+    private DecisionTreeEditor? _editor;
+    private TreeNode? _savedTree;
+
+    private void LoadSample()
+    {
+        _editor?.LoadSampleData();
+    }
+
+    private void SaveTree()
+    {
+        if (_editor != null)
+        {
+            _savedTree = _editor.ExportTree();
+            // 可選：序列化到檔案或資料庫
+        }
+    }
+
+    private void RestoreTree()
+    {
+        if (_editor != null && _savedTree != null)
+        {
+            _editor.ImportTree(_savedTree);
+        }
+    }
+}
+```
+
+---
+
 ## 使用說明
 
 ### 基本操作流程
@@ -495,6 +619,25 @@ public string GetNodeClass(string type) => type switch
 ---
 
 ## 重構歷史
+
+### 2025-12-26 公開 API 新增
+
+**目標**: 提供父元件控制樹實例的能力
+
+**新增內容**:
+- `ExportTree()`: 匯出樹結構的深度複製
+- `ImportTree(TreeNode tree)`: 匯入樹結構並覆蓋當前資料
+- `LoadSampleData()`: 從私有改為公開
+
+**修改內容**:
+- `OnInitialized()`: 移除自動載入範例資料
+
+**深度複製實作**:
+- 使用 JSON 序列化/反序列化實現
+- 確保狀態獨立，避免引用共享問題
+
+**檔案變更**:
+- DecisionTreeEditor.razor.cs: 605 行 → 657 行 (+52 行)
 
 ### 2025-12-26 資料模型抽離
 - 將 TreeNode 類別從 DecisionTreeEditor.razor.cs 抽出為獨立檔案 `TreeNode.cs`

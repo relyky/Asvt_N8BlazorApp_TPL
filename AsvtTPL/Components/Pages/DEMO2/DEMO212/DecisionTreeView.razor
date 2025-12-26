@@ -1,7 +1,49 @@
 ﻿@using AsvtTPL.Components.Pages.DEMO2.DEMO212.widgets
 
-<DecisionTreeEditor />
+<div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px;">
+    <h3 style="margin: 0 0 10px 0;">🧪 公開 API 測試區</h3>
+    <button @onclick="TestLoadSample" style="margin-right: 10px;">載入範例資料</button>
+    <button @onclick="TestExportTree" style="margin-right: 10px;">匯出樹結構</button>
+    <button @onclick="TestImportTree" style="margin-right: 10px;" disabled="@(_savedTree == null)">
+        匯入已保存的樹
+    </button>
+    @if (!string.IsNullOrEmpty(_statusMessage))
+    {
+        <span style="margin-left: 10px; color: #28a745;">@_statusMessage</span>
+    }
+</div>
+
+<DecisionTreeEditor @ref="_editor" />
 
 @code {
+    private DecisionTreeEditor? _editor;
+    private TreeNode? _savedTree;
+    private string _statusMessage = string.Empty;
 
+    private void TestLoadSample()
+    {
+        _editor?.LoadSampleData();
+        _statusMessage = "✓ 範例資料已載入";
+        StateHasChanged();
+    }
+
+    private void TestExportTree()
+    {
+        if (_editor != null)
+        {
+            _savedTree = _editor.ExportTree();
+            _statusMessage = $"✓ 樹結構已匯出並保存（節點數: {_savedTree.Children.Count}）";
+            StateHasChanged();
+        }
+    }
+
+    private void TestImportTree()
+    {
+        if (_editor != null && _savedTree != null)
+        {
+            _editor.ImportTree(_savedTree);
+            _statusMessage = "✓ 已從保存的狀態復原樹結構";
+            StateHasChanged();
+        }
+    }
 }

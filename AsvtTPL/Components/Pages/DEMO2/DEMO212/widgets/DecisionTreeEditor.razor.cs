@@ -61,10 +61,14 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
 
     protected override void OnInitialized()
     {
-        LoadSampleData();
+        // 不再自動載入範例資料
+        // 父元件可透過 @ref 呼叫 LoadSampleData() 或 ImportTree() 進行初始化
     }
 
-    private void LoadSampleData()
+    /// <summary>
+    /// 載入範例決策樹資料
+    /// </summary>
+    public void LoadSampleData()
     {
         // 範例一的結構
         var if1 = new TreeNode("IfCondition")
@@ -103,6 +107,8 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
         Root.AddChild(if2);
         Root.AddChild(if3);
         Root.AddChild(else1);
+
+        StateHasChanged();
     }
 
     #endregion
@@ -397,6 +403,52 @@ public partial class DecisionTreeEditor : ComponentBase, IAsyncDisposable
     private void CloseValidation()
     {
         _showValidation = false;
+    }
+
+    #endregion
+
+    #region 公開 API - 供父元件控制樹實例
+
+    /// <summary>
+    /// 深度複製樹節點（使用 JSON 序列化）
+    /// </summary>
+    private TreeNode DeepClone(TreeNode source)
+    {
+        var json = JsonSerializer.Serialize(source, new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+        var cloned = JsonSerializer.Deserialize<TreeNode>(json);
+        return cloned ?? throw new InvalidOperationException("深度複製失敗：反序列化返回 null");
+    }
+
+    /// <summary>
+    /// 匯出決策樹的深度複製副本
+    /// </summary>
+    /// <returns>樹結構的深度複製物件</returns>
+    public TreeNode ExportTree()
+    {
+        return DeepClone(Root);
+    }
+
+    /// <summary>
+    /// 匯入決策樹結構，覆蓋當前樹狀資料
+    /// </summary>
+    /// <param name="tree">要匯入的樹結構（會進行深度複製）</param>
+    /// <exception cref="ArgumentNullException">tree 為 null</exception>
+    /// <exception cref="ArgumentException">tree 結構不正確</exception>
+    public void ImportTree(TreeNode tree)
+    {
+        if (tree == null)
+            throw new ArgumentNullException(nameof(tree));
+
+        if (string.IsNullOrEmpty(tree.Id) || tree.Children == null)
+            throw new ArgumentException("樹結構不正確：缺少必要欄位", nameof(tree));
+
+        Root = DeepClone(tree);
+        SelectedNode = null;
+        StateHasChanged();
     }
 
     #endregion
