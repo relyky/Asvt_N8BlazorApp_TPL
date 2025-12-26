@@ -29,16 +29,16 @@
             {
                 @foreach (var child in Root.Children)
                 {
-                    <TreeNodeView Node="child"
-                                  Parent="Root"
-                                  SelectedNode="SelectedNode"
-                                  OnSelectNode="SelectNode"
-                                  OnToggleNode="ToggleNode"
-                                  GetNodeLabel="GetNodeLabel"
-                                  GetNodeIcon="GetNodeIcon"
-                                  GetNodeClass="GetNodeClass"
-                                  GetNodeTypeName="GetNodeTypeName"
-                                  HasAssignmentError="HasAssignmentError" />
+                    <TreeNodeWidget Node="child"
+                                    Parent="Root"
+                                    SelectedNode="SelectedNode"
+                                    OnSelectNode="SelectNode"
+                                    OnToggleNode="ToggleNode"
+                                    GetNodeLabel="GetNodeLabel"
+                                    GetNodeIcon="GetNodeIcon"
+                                    GetNodeClass="GetNodeClass"
+                                    GetNodeTypeName="GetNodeTypeName"
+                                    HasAssignmentError="HasAssignmentError" />
                 }
             }
         </div>

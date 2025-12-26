@@ -1,0 +1,226 @@
+/* ===================================================================
+   TreeNodeWidget.razor.css
+   決策樹節點子元件專屬樣式
+   =================================================================== */
+
+/* ===================================================================
+   第一區：節點基礎結構
+   =================================================================== */
+
+/* 節點容器 */
+.dt-tree-node {
+    margin: 5px 0;
+    user-select: none;
+}
+
+/* 節點內容區（主要互動區域） */
+.dt-node-content {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.dt-node-content:hover {
+    background: #ecf0f1;
+}
+
+.dt-node-content.selected {
+    background: #d5e8f7;
+    border-color: #3498db;
+}
+
+/* 展開/收合按鈕 */
+.dt-node-toggle {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #7f8c8d;
+}
+
+/* ===================================================================
+   第二區：拖拉互動狀態（Drag & Drop）
+   說明：這些樣式由 JavaScript 動態添加/移除，控制拖拉時的視覺回饋
+   相關檔案：DecisionTreeEditor.razor.js (handleDragOver, handleDragLeave)
+   =================================================================== */
+
+/* 拖拉經過時的背景高亮 */
+.dt-node-content.drag-over {
+    border-color: #27ae60;
+    background: #d5f4e6;
+}
+
+/* 拖拉位置指示器 - 上方插入（綠色線） */
+.dt-node-content.drop-above::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -2px;
+    height: 3px;
+    background: #27ae60;
+    box-shadow: 0 0 6px rgba(39, 174, 96, 0.6);
+    z-index: 100;
+}
+
+/* 拖拉位置指示器 - 下方插入（藍色線） */
+.dt-node-content.drop-below::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 3px;
+    background: #3498db;
+    box-shadow: 0 0 6px rgba(52, 152, 219, 0.6);
+    z-index: 100;
+}
+
+/* ===================================================================
+   第三區：節點圖示樣式
+   說明：四種節點類型的彩色方塊圖示
+   =================================================================== */
+
+/* 基礎圖示樣式（備用，目前未使用） */
+.dt-node-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* IF 條件節點 - 藍色 */
+.dt-node-icon-if {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #3498db;
+    color: white;
+}
+
+/* ELSE 分支節點 - 橘色 */
+.dt-node-icon-else {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #e67e22;
+    color: white;
+}
+
+/* Assignment 指定節點 - 綠色 */
+.dt-node-icon-assignment {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #27ae60;
+    color: white;
+}
+
+/* NONE 未指定節點 - 灰色 */
+.dt-node-icon-none {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #95a5a6;
+    color: white;
+}
+
+/* 節點標籤文字 */
+.dt-node-label {
+    flex: 1;
+    font-size: 14px;
+}
+
+/* ===================================================================
+   第四區：類型標籤（Badges）
+   =================================================================== */
+
+/* 基礎標籤樣式 */
+.dt-node-type-badge {
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 8px;
+}
+
+/* IF 標籤 */
+.dt-badge-if {
+    background: #3498db;
+    color: white;
+}
+
+/* ELSE 標籤 */
+.dt-badge-else {
+    background: #e67e22;
+    color: white;
+}
+
+/* Assignment 標籤 */
+.dt-badge-assignment {
+    background: #27ae60;
+    color: white;
+}
+
+/* NONE 標籤 */
+.dt-badge-none {
+    background: #95a5a6;
+    color: white;
+}
+
+/* 錯誤標籤（例如：Assignment 有子節點時） */
+/* 注意：animation: pulse 引用主 CSS 的 @keyframes pulse */
+.dt-badge-error {
+    background: #e74c3c;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
+/* ===================================================================
+   第五區：子節點容器
+   =================================================================== */
+
+/* 子節點容器（帶虛線縮排） */
+.dt-node-children {
+    margin-left: 30px;
+    border-left: 2px dotted #bdc3c7;
+    padding-left: 10px;
+}
+
+/* 收合狀態 */
+.dt-node-children.collapsed {
+    display: none;
+}

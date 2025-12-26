@@ -48,16 +48,16 @@
         <div class="dt-node-children @(Node.Collapsed ? "collapsed" : "")">
             @foreach (var child in Node.Children)
             {
-                <TreeNodeView Node="child"
-                              Parent="Node"
-                              SelectedNode="SelectedNode"
-                              OnSelectNode="OnSelectNode"
-                              OnToggleNode="OnToggleNode"
-                              GetNodeLabel="GetNodeLabel"
-                              GetNodeIcon="GetNodeIcon"
-                              GetNodeClass="GetNodeClass"
-                              GetNodeTypeName="GetNodeTypeName"
-                              HasAssignmentError="HasAssignmentError" />
+                <TreeNodeWidget Node="child"
+                                Parent="Node"
+                                SelectedNode="SelectedNode"
+                                OnSelectNode="OnSelectNode"
+                                OnToggleNode="OnToggleNode"
+                                GetNodeLabel="GetNodeLabel"
+                                GetNodeIcon="GetNodeIcon"
+                                GetNodeClass="GetNodeClass"
+                                GetNodeTypeName="GetNodeTypeName"
+                                HasAssignmentError="HasAssignmentError" />
             }
         </div>
     }

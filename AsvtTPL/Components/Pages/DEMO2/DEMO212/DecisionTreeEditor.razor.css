@@ -79,177 +79,18 @@
     padding: 20px;
 }
 
-/* 樹狀結構樣式 */
-::deep .dt-tree-node {
-    margin: 5px 0;
-    user-select: none;
-}
+/* ===================================================================
+   節點相關樣式已移至 TreeNodeWidget.razor.css
 
-::deep .dt-node-content {
-    display: flex;
-    align-items: center;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-    position: relative;
-}
+   移動的樣式包含：
+   - 節點結構 (.dt-tree-node, .dt-node-content, .dt-node-toggle)
+   - 拖拉狀態 (.drag-over, .drop-above, .drop-below)
+   - 節點圖示 (.dt-node-icon-if/else/assignment/none)
+   - 類型標籤 (.dt-badge-*)
+   - 子節點容器 (.dt-node-children)
 
-::deep .dt-node-content:hover {
-    background: #ecf0f1;
-}
-
-::deep .dt-node-content.selected {
-    background: #d5e8f7;
-    border-color: #3498db;
-}
-
-::deep .dt-node-content.drag-over {
-    border-color: #27ae60;
-    background: #d5f4e6;
-}
-
-/* 拖拉位置指示器 - 上方插入（綠色線） */
-::deep .dt-node-content.drop-above::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: -2px;
-    height: 3px;
-    background: #27ae60;
-    box-shadow: 0 0 6px rgba(39, 174, 96, 0.6);
-    z-index: 100;
-}
-
-/* 拖拉位置指示器 - 下方插入（藍色線） */
-::deep .dt-node-content.drop-below::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -2px;
-    height: 3px;
-    background: #3498db;
-    box-shadow: 0 0 6px rgba(52, 152, 219, 0.6);
-    z-index: 100;
-}
-
-::deep .dt-node-toggle {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    color: #7f8c8d;
-}
-
-::deep .dt-node-icon {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-/* 節點圖示樣式 - 修正為單一 class */
-::deep .dt-node-icon-if {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    font-size: 14px;
-    background: #3498db;
-    color: white;
-}
-
-::deep .dt-node-icon-else {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    font-size: 14px;
-    background: #e67e22;
-    color: white;
-}
-
-::deep .dt-node-icon-assignment {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    font-size: 14px;
-    background: #27ae60;
-    color: white;
-}
-
-::deep .dt-node-icon-none {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    font-size: 14px;
-    background: #95a5a6;
-    color: white;
-}
-
-::deep .dt-node-label {
-    flex: 1;
-    font-size: 14px;
-}
-
-::deep .dt-node-type-badge {
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: bold;
-    margin-left: 8px;
-}
-
-::deep .dt-badge-if {
-    background: #3498db;
-    color: white;
-}
-
-::deep .dt-badge-else {
-    background: #e67e22;
-    color: white;
-}
-
-::deep .dt-badge-assignment {
-    background: #27ae60;
-    color: white;
-}
-
-::deep .dt-badge-none {
-    background: #95a5a6;
-    color: white;
-}
-
-::deep .dt-badge-error {
-    background: #e74c3c;
-    color: white;
-    animation: pulse 1.5s infinite;
-}
+   相關檔案：TreeNodeWidget.razor.css
+   =================================================================== */
 
 @keyframes pulse {
     0%, 100% {
@@ -259,16 +100,6 @@
     50% {
         opacity: 0.6;
     }
-}
-
-::deep .dt-node-children {
-    margin-left: 30px;
-    border-left: 2px dotted #bdc3c7;
-    padding-left: 10px;
-}
-
-::deep .dt-node-children.collapsed {
-    display: none;
 }
 
 /* 右側編輯區 */
