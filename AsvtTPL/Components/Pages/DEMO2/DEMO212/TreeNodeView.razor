@@ -1,0 +1,96 @@
+@namespace AsvtTPL.Components.Pages.DEMO2.DEMO212
+
+<div class="dt-tree-node" data-node-id="@Node.Id">
+    <div class="dt-node-content @(SelectedNode?.Id == Node.Id ? "selected" : "")"
+         draggable="true"
+         data-node-id="@Node.Id"
+         data-parent-id="@Parent.Id"
+         @onclick="() => OnSelectNode(Node)"
+         @onclick:stopPropagation="true">
+
+        <!-- 展開/收合按鈕 -->
+        <span class="dt-node-toggle" @onclick="() => OnToggleNode(Node.Id)" @onclick:stopPropagation="true">
+            @if (Node.Children.Count > 0)
+            {
+                @(Node.Collapsed ? "▶" : "▼")
+            }
+        </span>
+
+        <!-- 節點圖示 -->
+        <span class="dt-node-icon-@GetNodeClass(Node.Type)">
+            @GetNodeIcon(Node.Type)
+        </span>
+
+        <!-- 節點標籤 -->
+        <span class="dt-node-label">
+            @GetNodeLabel(Node)
+        </span>
+
+        <!-- 類型標籤 -->
+        <span class="dt-node-type-badge dt-badge-@GetNodeClass(Node.Type)">
+            @GetNodeTypeName(Node.Type)
+        </span>
+
+        <!-- 如果 Assignment 有子節點，顯示錯誤標記 -->
+        @if (HasAssignmentError(Node))
+        {
+            <span class="dt-node-type-badge dt-badge-error"
+                  title="Assignment 不應該有子節點"
+                  style="margin-left: 5px;">
+                ⚠️ 錯誤
+            </span>
+        }
+    </div>
+
+    <!-- 子節點 -->
+    @if (Node.Children.Count > 0)
+    {
+        <div class="dt-node-children @(Node.Collapsed ? "collapsed" : "")">
+            @foreach (var child in Node.Children)
+            {
+                <TreeNodeView Node="child"
+                              Parent="Node"
+                              SelectedNode="SelectedNode"
+                              OnSelectNode="OnSelectNode"
+                              OnToggleNode="OnToggleNode"
+                              GetNodeLabel="GetNodeLabel"
+                              GetNodeIcon="GetNodeIcon"
+                              GetNodeClass="GetNodeClass"
+                              GetNodeTypeName="GetNodeTypeName"
+                              HasAssignmentError="HasAssignmentError" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public TreeNode Node { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public TreeNode Parent { get; set; } = default!;
+
+    [Parameter]
+    public TreeNode? SelectedNode { get; set; }
+
+    [Parameter, EditorRequired]
+    public Action<TreeNode> OnSelectNode { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Action<string> OnToggleNode { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<TreeNode, string> GetNodeLabel { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<string, string> GetNodeIcon { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<string, string> GetNodeClass { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<string, string> GetNodeTypeName { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Func<TreeNode, bool> HasAssignmentError { get; set; } = default!;
+}

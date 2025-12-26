@@ -1,0 +1,236 @@
+@page "/demo212/decision-tree-editor"
+@using Microsoft.AspNetCore.Components.Forms
+
+<PageTitle>決策樹編輯器 - Decision Tree Editor</PageTitle>
+
+<div class="dt-container">
+    <!-- 左側 Tree View -->
+    <div class="dt-tree-panel">
+        <div class="dt-tree-header">
+            <h2>📊 決策樹結構</h2>
+            <div class="dt-toolbar">
+                <button class="dt-btn dt-btn-primary" @onclick="AddRootNode">➕ 新增根節點</button>
+                <button class="dt-btn dt-btn-success" @onclick="ValidateTree">✓ 驗證結構</button>
+                <button class="dt-btn dt-btn-primary" @onclick="ExportToText">📄 匯出規則</button>
+                <button class="dt-btn dt-btn-primary" @onclick="ExportToJSON">💾 匯出 JSON</button>
+                <button class="dt-btn dt-btn-primary" @onclick="TriggerFileInput">📂 匯入 JSON</button>
+                <button class="dt-btn dt-btn-danger" @onclick="ClearTree">🗑️ 清空</button>
+            </div>
+        </div>
+        <InputFile OnChange="ImportFromJSON" accept=".json" style="display: none;" id="fileInput" />
+        <div class="dt-tree-content">
+            @if (Root.Children.Count == 0)
+            {
+                <div class="dt-placeholder">
+                    <p>尚無節點，請點擊「新增根節點」開始建立決策樹</p>
+                </div>
+            }
+            else
+            {
+                @foreach (var child in Root.Children)
+                {
+                    <TreeNodeView Node="child"
+                                  Parent="Root"
+                                  SelectedNode="SelectedNode"
+                                  OnSelectNode="SelectNode"
+                                  OnToggleNode="ToggleNode"
+                                  GetNodeLabel="GetNodeLabel"
+                                  GetNodeIcon="GetNodeIcon"
+                                  GetNodeClass="GetNodeClass"
+                                  GetNodeTypeName="GetNodeTypeName"
+                                  HasAssignmentError="HasAssignmentError" />
+                }
+            }
+        </div>
+    </div>
+
+    <!-- 右側編輯區 -->
+    <div class="dt-edit-panel">
+        <div class="dt-edit-header">
+            <h2>✏️ 節點編輯器</h2>
+        </div>
+        <div class="dt-edit-content">
+            @if (_showValidation)
+            {
+                <div>
+                    @if (_validationErrors.Count == 0 && _validationWarnings.Count == 0)
+                    {
+                        <div class="dt-validation-success">✓ 決策樹結構驗證通過！</div>
+                    }
+
+                    @if (_validationErrors.Count > 0)
+                    {
+                        <div class="dt-validation-error">
+                            <strong>❌ 發現錯誤:</strong>
+                            <ul>
+                                @foreach (var err in _validationErrors)
+                                {
+                                    <li>@err</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    @if (_validationWarnings.Count > 0)
+                    {
+                        <div class="dt-validation-warning">
+                            <strong>⚠️ 警告訊息:</strong>
+                            <ul>
+                                @foreach (var warn in _validationWarnings)
+                                {
+                                    <li>@warn</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <div class="dt-button-group">
+                        <button class="dt-btn dt-btn-primary" @onclick="CloseValidation">返回編輯</button>
+                    </div>
+                </div>
+            }
+            else if (SelectedNode == null)
+            {
+                <div class="dt-placeholder">
+                    <p>請從左側選擇一個節點進行編輯</p>
+                </div>
+            }
+            else
+            {
+                @RenderEditPanel(SelectedNode)
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private RenderFragment RenderEditPanel(TreeNode node) => __builder =>
+    {
+        var parent = FindParentNode(Root, node.Id);
+        var hasAssignmentError = HasAssignmentError(node);
+        var operators = new[] { "=", "!=", ">", "<", ">=", "<=" };
+
+        @if (hasAssignmentError)
+        {
+            <div class="dt-validation-error">
+                ⚠️ <strong>結構錯誤：</strong>Assignment 是終止點，不應該有子節點！目前有 @node.Children.Count 個子節點。<br />
+                請刪除所有子節點或調整結構。
+            </div>
+        }
+
+        <div class="dt-form-group">
+            <label>節點類型</label>
+            <select @bind="node.Type" @bind:after="StateHasChanged">
+                <option value="None">NONE (未指定)</option>
+                <option value="IfCondition">IF (條件判斷)</option>
+                <option value="ElseBranch">ELSE (其它分支)</option>
+                <option value="Assignment">Assignment (指定數值)</option>
+            </select>
+        </div>
+
+        <div class="dt-form-group">
+            <label>說明 (Description)</label>
+            <input type="text" @bind="node.Description" @bind:after="StateHasChanged"
+                   placeholder="此節點的說明文字..." />
+        </div>
+
+        @if (node.Type == "IfCondition")
+        {
+            <div id="conditionGroup">
+                <fieldset style="border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                    <legend style="font-weight: bold; color: #2c3e50; padding: 0 5px;">條件 (Condition)</legend>
+                    <div style="margin-top: 5px;">
+                        <div class="dt-form-group">
+                            <label>比較欄位</label>
+                            <input type="text" @bind="node.CondField" @bind:after="StateHasChanged"
+                                   placeholder="例如: age, score" />
+                        </div>
+                        <div class="dt-form-group">
+                            <label>比較運算子</label>
+                            <select @bind="node.CondOp" @bind:after="StateHasChanged">
+                                @foreach (var op in operators)
+                                {
+                                    <option value="@op">@op</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="dt-form-group">
+                            <label>比較數值</label>
+                            <input type="text" @bind="node.CondValue" @bind:after="StateHasChanged"
+                                   placeholder="例如: 18, 'true', 'Admin'" />
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        }
+
+        @if (node.Type == "Assignment")
+        {
+            <div class="dt-form-group">
+                <label>指定值 (Assignment)</label>
+                <textarea @bind="node.Assignment" @bind:after="StateHasChanged"
+                          placeholder="例如: '3A', 'Bar', result"></textarea>
+            </div>
+        }
+
+        <div class="dt-button-group">
+            <button class="dt-btn dt-btn-primary" @onclick="() => AddChildNode(node)">➕ 新增子節點</button>
+            @if (parent != null)
+            {
+                <button class="dt-btn dt-btn-primary" @onclick="() => AddSiblingNode(node)">➕ 新增兄弟節點</button>
+            }
+        </div>
+        <div class="dt-button-group">
+            <button class="dt-btn dt-btn-danger" @onclick="() => DeleteNode(node)">🗑️ 刪除節點</button>
+        </div>
+
+        <div class="dt-output-section">
+            <h3>節點資訊</h3>
+            <div class="dt-form-group">
+                <select @bind="_infoFormat" @bind:after="StateHasChanged">
+                    <option value="text">基本資訊</option>
+                    <option value="json">JSON 格式</option>
+                </select>
+            </div>
+            @if (_infoFormat == "text")
+            {
+                <pre>ID: @node.Id
+類型: @GetNodeTypeName(node.Type)
+子節點數: @node.Children.Count
+說明: @(string.IsNullOrWhiteSpace(node.Description) ? "(無)" : node.Description)
+@if (node.Type == "IfCondition")
+{<text>條件: @node.CondField @node.CondOp @node.CondValue</text>}
+@if (node.Type == "Assignment" && !string.IsNullOrWhiteSpace(node.Assignment))
+{<text>指定值: @node.Assignment</text>}</pre>
+            }
+            else
+            {
+                <pre>@System.Text.Json.JsonSerializer.Serialize(node.ToJSON(), new System.Text.Json.JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                })</pre>
+            }
+            <button class="dt-btn dt-btn-primary" style="width: 100%; margin-top: 10px;" @onclick="() => CopyNodeJSON(node)">
+                📋 複製節點 JSON
+            </button>
+        </div>
+    };
+
+    private string _infoFormat = "text";
+
+    private async Task CopyNodeJSON(TreeNode node)
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(node.ToJSON(), new System.Text.Json.JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        });
+
+        if (_jsModule != null)
+        {
+            await _jsModule.InvokeVoidAsync("copyToClipboard", json);
+        }
+        await ShowNotificationAsync("✓ 節點 JSON 已複製！", "success");
+    }
+}
