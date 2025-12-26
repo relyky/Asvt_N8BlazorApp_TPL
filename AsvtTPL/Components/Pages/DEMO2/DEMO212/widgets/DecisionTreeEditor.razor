@@ -8,7 +8,15 @@
     <!-- 左側 Tree View -->
     <div class="dt-tree-panel">
         <div class="dt-tree-header">
-            @TreeHeaderContent        
+            <h2>📊 決策樹結構</h2>
+            <div class="dt-toolbar">
+                <button class="dt-btn dt-btn-primary" @onclick="AddRootNode">➕ 新增根節點</button>
+                <button class="dt-btn dt-btn-success" @onclick="ValidateTree">✓ 驗證結構</button>
+                <button class="dt-btn dt-btn-primary" @onclick="ExportToText">📄 匯出規則</button>
+                <button class="dt-btn dt-btn-primary" @onclick="ExportToJSON">💾 匯出 JSON</button>
+                <button class="dt-btn dt-btn-primary" @onclick="TriggerFileInput">📂 匯入 JSON</button>
+                <button class="dt-btn dt-btn-danger" @onclick="ClearTree">🗑️ 清空</button>
+            </div>
         </div>
         <InputFile OnChange="ImportFromJSON" accept=".json" style="display: none;" id="fileInput" />
         <div class="dt-tree-content">
@@ -97,8 +105,6 @@
 </div>
 
 @code {
-    [Parameter] public required RenderFragment TreeHeaderContent { get; set; }
-
     private RenderFragment RenderEditPanel(TreeNode node) => __builder =>
     {
         var parent = FindParentNode(Root, node.Id);
