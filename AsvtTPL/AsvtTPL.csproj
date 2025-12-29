@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazilla" Version="2.1.0" />
     <PackageReference Include="BlazorComponentBus" Version="2.2.0" />
-    <PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
     <PackageReference Include="BlazorTemplater" Version="1.5.1" />
     <PackageReference Include="FluentValidation" Version="12.1.1" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />

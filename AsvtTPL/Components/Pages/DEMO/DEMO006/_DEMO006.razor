@@ -7,9 +7,9 @@
 @inject IDialogServiceEx dlgSvc
 @inject IAuthUser userSvc
 
-<MudContainer MaxWidth="MaxWidth.Large">
+<MudContainer>
   <EditForm Model=formData>
-    <FluentValidationValidator />
+    <FluentValidator Validator=formValidator AsyncMode />
 
     <MudPaper role="panel">
       <MudToolBar>
@@ -146,7 +146,7 @@
     </MudTable> *@
 
     <MudStack Row Justify=Justify.Center Class="my-3">
-      <MudButton Variant=Variant.Filled Color=Color.Primary OnClick=@(()=>HandleSubmit(context))>送出</MudButton>
+      <MudButton Variant=Variant.Filled Color=Color.Primary OnClick="()=>HandleSubmit(context)" >送出</MudButton>
       <MudButton Variant=Variant.Outlined Color=Color.Primary OnClick=HandleReset>重置</MudButton>
     </MudStack>
 
@@ -215,6 +215,7 @@
   //[CascadingParameter] Task<AuthenticationState> AuthStateTask { get; set; } = default!;
 
   //## Resource
+  SampleFormDataValidator formValidator = new SampleFormDataValidator();
   SampleCodeRepo sampleRepo = new();
   SampleCodeRepo sample2Repo = new();
   SimsBankRepo bankRepo = new();
@@ -234,9 +235,10 @@
     loginUser = await userSvc.GetCurrentUserAsync();
   }
 
-  void HandleSubmit(EditContext ctx)
+  async Task HandleSubmit(EditContext ctx)
   {
-    if (!ctx.Validate())
+    var validated = await ctx.ValidateAsync();
+    if (!validated)
     {
       // 未通過基本表單驗證！將觸發 CustomValidationSummary。
       return;
