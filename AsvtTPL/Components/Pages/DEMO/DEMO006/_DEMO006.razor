@@ -215,7 +215,7 @@
   //[CascadingParameter] Task<AuthenticationState> AuthStateTask { get; set; } = default!;
 
   //## Resource
-  SampleFormDataValidator formValidator = new SampleFormDataValidator();
+  SampleFormDataValidator formValidator = new();
   SampleCodeRepo sampleRepo = new();
   SampleCodeRepo sample2Repo = new();
   SimsBankRepo bankRepo = new();
@@ -237,7 +237,7 @@
 
   async Task HandleSubmit(EditContext ctx)
   {
-    var validated = await ctx.ValidateAsync();
+    bool validated = await ctx.ValidateAsync();
     if (!validated)
     {
       // 未通過基本表單驗證！將觸發 CustomValidationSummary。

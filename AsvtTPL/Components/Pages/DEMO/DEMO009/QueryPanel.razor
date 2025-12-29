@@ -4,7 +4,7 @@
 
 <MudPaper role="panel">
   <EditForm Model=@qryArgs>
-    <FluentValidationValidator />
+    <FluentValidator Validator=argsValidator AsyncMode />
     <AsvtFormRow>
       <AsvtTextField For="()=>qryArgs.Arg1" HelperText="用大寫'Ａ'為查詢參數" />
       <AsvtTextField For="()=>qryArgs.Arg2" />
@@ -25,6 +25,9 @@
 @code {
   [Parameter] public string? QArg1 { get; set; }
   [Parameter] public EventCallback<List<DEMO009Data>> OnRetrieveDataList { get; set; }
+
+  //## Resource
+  DEMO009QryArgsValidator argsValidator = new();
 
   //## State
   bool f_loading = false;
@@ -48,7 +51,8 @@
     try
     {
       //# 查詢條件檢查
-      if (!ctx.Validate())
+      bool validated = await ctx.ValidateAsync();
+      if (!validated)
       {
         // 未通過基本表單驗證！將觸發 CustomValidationSummary。
         return;

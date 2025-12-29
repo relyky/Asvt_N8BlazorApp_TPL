@@ -14,7 +14,7 @@
   </MudToolBar>
 
   <EditForm Model=shadowItem OnSubmit=HandleSubmit>
-    <FluentValidationValidator />
+    <FluentValidator Validator=itemValidator AsyncMode />
 
     <AsvtFormRow Grid=@([6])>
       <AsvtStaticField For="()=>shadowItem.Order">
@@ -40,6 +40,7 @@
   //## Resource
   // 用來避免當掉！
   static CommentItem emptyItem = new CommentItem { Order = -1, Comment = string.Empty };
+  CommentItemValidator itemValidator = new();
 
   //## State
   CommentItem? shadowItem = null;

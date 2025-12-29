@@ -15,7 +15,7 @@
   </MudToolBar>
 
   <EditForm Model=ItemAim>
-    <FluentValidationValidator />
+    <FluentValidator Validator=itemValidator AsyncMode />
 
     <AsvtFormRow Grid=@([12])>
       <AsvtStaticField For="()=>ItemAim.Order" Label="項目編號">
@@ -49,6 +49,9 @@
   [Parameter] public EventCallback OnClose { get; set; }
   [Parameter] public bool EnableRemove { get; set; }
   [Parameter] public EventCallback<bool> EnableRemoveChanged { get; set; }
+
+  //## Resource
+  DropItemValidator itemValidator = new();
 
   //## State
   //bool f_remove = false;

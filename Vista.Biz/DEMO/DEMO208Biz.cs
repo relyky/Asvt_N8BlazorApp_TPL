@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentValidation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -61,3 +62,12 @@ public class DropItem
   public int L2Num { get; set; }
 }
 
+public class DropItemValidator : AbstractValidator<DropItem>
+{
+  public DropItemValidator()
+  {
+    //RuleFor(m => m.userId).NotEmpty();
+    //RuleFor(m => m.credential).NotEmpty();
+    //RuleFor(m => m.vcode).NotEmpty();
+  }
+}

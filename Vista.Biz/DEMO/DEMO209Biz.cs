@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FluentValidation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,5 +25,15 @@ public class CommentItem
       Order = this.Order,
       Comment = this.Comment
     };
+  }
+}
+
+public class CommentItemValidator : AbstractValidator<CommentItem>
+{
+  public CommentItemValidator()
+  {
+    //RuleFor(m => m.userId).NotEmpty();
+    //RuleFor(m => m.credential).NotEmpty();
+    //RuleFor(m => m.vcode).NotEmpty();
   }
 }

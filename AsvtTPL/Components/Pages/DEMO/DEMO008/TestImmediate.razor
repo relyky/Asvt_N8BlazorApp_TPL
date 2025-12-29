@@ -5,7 +5,7 @@
 <MudText Typo=Typo.h3>測試 Immediate 屬性</MudText>
 
 <EditForm Model="info" OnValidSubmit=HandleSubmit Context="formCtx">
-  <FluentValidationValidator />
+  <FluentValidator Validator=infoValidator AsyncMode />
 
   <MudPaper role="panel">
     <AsvtFormRow>
@@ -41,6 +41,7 @@
 </pre>
 
 @code {
+  TestModelValidator infoValidator = new();
   TestModel info = new();
   // OnChange=@(v => snackSvc.Add($"TextValue1.Changed → {v}"))
   // OnChange="v => {}"

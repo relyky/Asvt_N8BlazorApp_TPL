@@ -19,7 +19,7 @@
   <NotAuthorized>
 
     <EditForm Model=@loginModel OnValidSubmit=@HandleValidSubmit Context="loginModelContext">
-      <FluentValidationValidator />
+      <FluentValidator Validator=modelValidator />
       @*<DataAnnotationsValidator />*@
       <MudCard Class="ma-16 pa-4 mx-auto" Style="max-width:400px;background:var(--mud-palette-background-gray);">
         <MudCardHeader>
@@ -63,6 +63,9 @@
   [SupplyParameterFromQuery(Name = "returnUrl")]
   private string? ReturnUrl { get; set; }
 
+  //## Resource
+  LoginArgsValidator modelValidator = new();
+
   //## State
   LoginArgs loginModel = new() { userId = "smart", credential = "asvt", vcode = "0222210505", rememberMe = true };
   bool f_authing = false;
@@ -70,7 +73,8 @@
   async Task HandleValidSubmit(EditContext context)
   {
     // 基本檢查
-    if (!context.Validate()) return;
+    bool validated = await context.ValidateAsync();
+    if (!validated) return;
 
     f_authing = true; // 表示執行登入中，可以用來鎖住【登入】按鈕避免亂按。
     StateHasChanged();

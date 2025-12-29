@@ -5,7 +5,7 @@
 <ScreenOverlay Visible=f_loading />
 <MudContainer>
   <EditForm Model=formData>
-    <FluentValidationValidator />
+    <FluentValidator Validator=formValidator AsyncMode />
 
     <MudPaper role="panel">
       <AsvtFormRow>
@@ -38,6 +38,9 @@
 @code {
   [CascadingParameter] _DEMO012 BizState { get; init; } = default!;
 
+  //## Resource
+  DEMO012FormDataValidator formValidator = new();
+
   //## State
   bool f_loading = false;
   DEMO012FormData formData { get => BizState.formData; set => BizState.formData = value; }
@@ -69,7 +72,8 @@
     try
     {
       //# 基本檢查
-      if (!context.Validate()) return;
+      bool validated = await context.ValidateAsync();
+      if (!validated) return;
 
       //# 進階檢查
       //if (!ValidateMore())

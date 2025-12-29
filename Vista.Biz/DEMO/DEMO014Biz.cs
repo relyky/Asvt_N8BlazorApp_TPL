@@ -72,7 +72,7 @@ class DEMO014Biz(ILogger<DEMO014Biz> _logger, IAuthUser _auth)
     // 模擬長時間運算，正式版請移除。
     System.Threading.SpinWait.SpinUntil(() => false, 800);
 
-    var validator = new DEMO004FormDataValidator();
+    var validator = new DEMO014FormDataValidator();
     var result = validator.Validate(formData);
 
     if (!result.IsValid)
@@ -174,9 +174,9 @@ public class DEMO014FormItem
   public string? DetailG { get; set; }
 }
 
-public class DEMO004FormDataValidator : AbstractValidator<DEMO014FormData>
+public class DEMO014FormDataValidator : AbstractValidator<DEMO014FormData>
 {
-  public DEMO004FormDataValidator()
+  public DEMO014FormDataValidator()
   {
     RuleFor(m => m.FormNo).NotEmpty();
     RuleFor(m => m.SpentAmount).NotEmpty();

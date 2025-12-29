@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using Dapper;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
@@ -125,6 +126,15 @@ public record DEMO009QryArgs
 
   [Display(Name = "查詢條件２")]
   public string? Arg2 { get; set; }
+}
+
+public class DEMO009QryArgsValidator : AbstractValidator<DEMO009QryArgs>
+{
+  public DEMO009QryArgsValidator()
+  {
+    //RuleFor(m => m.dateBgn).NotEmpty();
+    //RuleFor(m => m.dateEnd).NotEmpty();
+  }
 }
 
 public record DEMO009Data

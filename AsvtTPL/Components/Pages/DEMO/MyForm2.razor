@@ -8,7 +8,7 @@
   <MudText Typo=Typo.h3>EditForm with FluentValidation</MudText>
 
   <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-    <FluentValidationValidator />
+    <FluentValidator Validator=validator AsyncMode />
 
     <MudGrid>
       <MudItem xs="12" sm="7">
@@ -54,6 +54,7 @@
 </MudContainer>
 
 @code {
+  RegisterAccountFormValidator validator = new();
   RegisterAccountForm model = new RegisterAccountForm();
   bool success;
 

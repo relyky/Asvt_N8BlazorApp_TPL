@@ -11,7 +11,7 @@
   </MudAlert>
 
   <EditForm Model=formStep4 OnSubmit=NextStep>
-    <FluentValidationValidator />
+    <FluentValidator Validator=step4Validator AsyncMode />
 
     <AsvtFormRow>
       <AsvtCheckField For="()=>formStep4.ReadAndAgree" OnChange=ResetPassed />
@@ -33,6 +33,9 @@
 @code {
   [CascadingParameter] _DEMO013 BizState { get; init; } = default!;
 
+  //## Resource
+  DEMO013FormStep4Validator step4Validator = new();
+
   //## State
   DEMO013FormStep4 formStep4 { get => BizState.formData.Step4; set => BizState.formData.Step4 = value; }
 
@@ -45,7 +48,8 @@
   async Task NextStep(EditContext context)
   {
     //# 基本檢查
-    if (!context.Validate())
+    bool validated = await context.ValidateAsync();
+    if (!validated)
     {
       formStep4.HasPassed = false;
       return;

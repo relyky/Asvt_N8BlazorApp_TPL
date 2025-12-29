@@ -4,7 +4,7 @@
 
 <MudPaper role="panel">
   <EditForm Model=@qryArgs>
-    <FluentValidationValidator />
+    <FluentValidator Validator=argsValidator AsyncMode />
     <AsvtFormRow>
       <AsvtTextField For="()=>qryArgs.CreditNo" />
       <AsvtTextField For="()=>qryArgs.IsSkiProject" />
@@ -27,6 +27,9 @@
 @code {
   [CascadingParameter] _DEMO014 BizState { get; init; } = default!;
 
+  //## Resource
+  DEMO014QryArgsValidator argsValidator = new();
+
   //## State
   bool f_loading = false;
   DEMO014QryArgs qryArgs { get => BizState.qryArgs; set => BizState.qryArgs = value; }
@@ -39,7 +42,8 @@
     try
     {
       //# 查詢條件檢查
-      if (!ctx.Validate())
+      bool validated = await ctx.ValidateAsync();
+      if (!validated)
       {
         // 未通過基本表單驗證！將觸發 CustomValidationSummary。
         return;

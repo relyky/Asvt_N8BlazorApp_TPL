@@ -4,7 +4,7 @@
   <MudText Typo=Typo.h4 GutterBottom>Step 2</MudText>
 
   <EditForm Model=formStep2 OnSubmit=NextStep>
-    <FluentValidationValidator />
+    <FluentValidator Validator=step2Validator AsyncMode />
 
     <AsvtFormRow>
       <AsvtTextField For="()=>formStep2.ApplyForSubsidy" OnChange=ResetPassed />
@@ -24,6 +24,9 @@
 @code {
   [CascadingParameter] _DEMO013 BizState { get; init; } = default!;
 
+  //## Resource
+  DEMO013FormStep2Validator step2Validator = new();
+
   //## State
   DEMO013FormStep2 formStep2 { get => BizState.formData.Step2; set => BizState.formData.Step2 = value; }
 
@@ -36,7 +39,8 @@
   async Task NextStep(EditContext context)
   {
     //# 基本檢查
-    if (!context.Validate())
+    bool validated = await context.ValidateAsync();
+    if (!validated)
     {
       formStep2.HasPassed = false;
       return;

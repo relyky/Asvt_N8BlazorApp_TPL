@@ -47,7 +47,7 @@
   </TitleContent>
   <DialogContent>
     <EditForm Model=@queryArgs>
-      <FluentValidationValidator />
+      <FluentValidator Validator=argsValidator AsyncMode />
       <AsvtFormRow Grid=@([12,6])>
         <AsvtTextField For=@(()=>queryArgs.formNo) />
         <AsvtTextField For=@(()=>queryArgs.dataFieldA) />
@@ -67,6 +67,7 @@
 
   //## Resource
   DialogOptions dlgOption = new() { Position = DialogPosition.TopCenter };
+  DEMO012QryArgsValidator argsValidator = new();
 
   //## State
   List<DEMO012Profile> dataList { get => BizState.dataList; set => BizState.dataList = value; }
@@ -88,10 +89,14 @@
     try
     {
       //# 查詢條件檢查
-      if (ctx != null && !ctx.Validate())
+      if(ctx != null)
       {
-        //dlgSvc.ShowAlert("未通過查詢條件檢查！");
-        return;
+        bool validated = await ctx.ValidateAsync();
+        if (!validated)
+        {
+          //dlgSvc.ShowAlert("未通過查詢條件檢查！");
+          return;
+        }
       }
 
       //# block UI

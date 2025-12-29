@@ -8,7 +8,7 @@
 
 <MudContainer>
   <EditForm Model=formData>
-    <FluentValidationValidator />
+    <FluentValidator Validator=formValidator AsyncMode />
 
     <div @ref=refTop></div>
     <MudPaper role="panel">
@@ -226,13 +226,15 @@
 </MudContainer>
 
 @code {
+  FooModelValidator formValidator = new();
   FooModel formData = new();
   bool f_readOnly = false;
   ElementReference refTop, refBottom;
 
-  void HandleSubmit(EditContext ctx)
+  async Task HandleSubmit(EditContext ctx)
   {
-    if (!ctx.Validate())
+    bool validated = await ctx.ValidateAsync();
+    if (!validated)
     {
       // 未通過基本表單驗證！將觸發 CustomValidationSummary。
       return;

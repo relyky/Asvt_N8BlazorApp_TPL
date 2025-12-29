@@ -4,7 +4,7 @@
   <MudText Typo=Typo.h4 GutterBottom>Step 3</MudText>
 
   <EditForm Model=formStep3 OnSubmit=NextStep>
-    <FluentValidationValidator />
+    <FluentValidator Validator=step3Validator AsyncMode />
 
     <AsvtFormRow>
       <AsvtTextField For="()=>formStep3.UploadFile" OnChange=ResetPassed />
@@ -25,6 +25,9 @@
 @code {
   [CascadingParameter] _DEMO013 BizState { get; init; } = default!;
 
+  //## Resource
+  DEMO013FormStep3Validator step3Validator = new();
+
   //## State
   DEMO013FormStep3 formStep3 { get => BizState.formData.Step3; set => BizState.formData.Step3 = value; }
 
@@ -37,7 +40,8 @@
   async Task NextStep(EditContext context)
   {
     //# 基本檢查
-    if (!context.Validate())
+    bool validated = await context.ValidateAsync();
+    if (!validated)
     {
       formStep3.HasPassed = false;
       return;
